@@ -40,10 +40,11 @@ export class TenantController {
     status: HttpStatus.OK,
     type: TenantResponse,
   })
-  update(
+  async update(
     @Param('tenantId') id: number,
     @Body(ValidationPipe) updateTenant: UpdateTenantRequest,
   ) {
-    return this.tenantService.update(id, updateTenant);
+    const tenant = await this.tenantService.update(id, updateTenant);
+    return this.tenantService.fmtResponse(tenant);
   }
 }

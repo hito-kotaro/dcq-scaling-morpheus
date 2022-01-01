@@ -59,11 +59,15 @@ export class TenantService {
 
   // テナント作成
   async create(tenant: CreateTenantRequest): Promise<Tenants> {
-    const createdTenant = await this.tenantRepository.save({
+    const newTenant = this.tenantRepository.create({
       name: tenant.name,
       password: await bcrypt.hash(tenant.password, 12),
     });
-    return createdTenant;
+
+    const tmp = await this.tenantRepository.save(newTenant);
+    console.log('save-console');
+    console.log(tmp);
+    return tmp;
   }
 
   // テナント情報更新
