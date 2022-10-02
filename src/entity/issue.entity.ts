@@ -8,36 +8,38 @@ import {
   PrimaryGeneratedColumn,
   Timestamp,
 } from 'typeorm';
-import { Roles } from './role.entity';
+import { Penalties } from './penalty.entity';
 import { Teams } from './teams.entity';
 import { Tenants } from './tenant.entity';
+import { Users } from './user.entity';
 
 @Entity()
-@Index(['tenant', 'name'], { unique: true })
-export class Users {
-  @PrimaryGeneratedColumn()
+@Index(['tenant', 'title'], { unique: true })
+export class Issues {
+  @PrimaryGeneratedColumn({ comment: '発行済みペナルティID' })
   id: number;
 
   @ManyToOne((type) => Tenants, { cascade: true })
   @JoinColumn()
   tenant: Tenants;
 
-  @ManyToOne((type) => Roles, { cascade: true })
+  @ManyToOne((type) => Users, { cascade: true })
   @JoinColumn()
-  role: Roles;
+  authorizer: Users;
 
   @ManyToOne((type) => Teams, { cascade: true })
   @JoinColumn()
   team: Teams;
 
-  @Column()
-  name: string;
+  @ManyToOne((type) => Penalties, { cascade: true })
+  @JoinColumn()
+  penalty: Penalties;
 
-  @Column()
-  password: string;
+  @Column({ comment: 'ペナルティ付与タイトル' })
+  title: string;
 
-  @Column()
-  point: number;
+  @Column({ comment: 'ペナルティ付与コメント', type: 'text' })
+  comment: string;
 
   @CreateDateColumn({ comment: '登録日時' })
   created_at?: Timestamp;

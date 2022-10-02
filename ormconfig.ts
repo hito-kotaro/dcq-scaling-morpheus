@@ -5,7 +5,7 @@ const source = new DataSource({
   port: 5432,
   username: 'app',
   password: 'password',
-  database: 'nestjs_pg_test',
+  database: 'dcq_dev',
   entities: ['src/entity/*.entity.ts'],
   migrations: ['src/migration/**/*.ts'],
   synchronize: true, // TODO: 本番環境では推奨されていないため、環境によって分ける
