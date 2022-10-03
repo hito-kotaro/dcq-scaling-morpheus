@@ -1,5 +1,13 @@
-import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
+import { CreateUserDto, GetUsersResponse } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -7,8 +15,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @ApiResponse({ status: HttpStatus.OK, type: GetUsersResponse })
+  findAll(): GetUsersResponse {
+    return { users: [] };
   }
 
   @Post()

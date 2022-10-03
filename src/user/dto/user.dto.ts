@@ -1,4 +1,11 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength, MinLength } from 'class-validator';
+import { Users } from 'src/entity/user.entity';
+
+export class GetUsersResponse {
+  @ApiProperty({ type: [Users] })
+  users: Users[];
+}
 
 export class CreateUserDto {
   @IsString()
