@@ -4,7 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // app.setGlobalPrefix('');
+  app.setGlobalPrefix('v1');
   const options = new DocumentBuilder()
     .setTitle('dcq-scaling-morpheus')
     .build();
