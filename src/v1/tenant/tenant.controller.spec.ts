@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { request } from 'express';
 import { Tenants } from 'src/entity/tenant.entity';
 import { Repository } from 'typeorm';
+import { CreateTenantDto } from './dto/tenant.dto';
 import { TenantController } from './tenant.controller';
 import { TenantService } from './tenant.service';
 
@@ -27,5 +27,48 @@ describe('TenantController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('findOne method returns a user.', async () => {
+    // 独自実装したメソッドでtestデータの生成
+    const tenant: Tenants = {
+      id: 1,
+      tenantName: 'MockunTenant',
+      password: 'password',
+      seasonId: 1,
+      slackId: 'slacknochannelaidexidesu',
+      createdAt: new Date('2022/01/01'),
+      updatedAt: new Date('2022/01/01'),
+    };
+
+    const tenant2: Tenants = {
+      id: 111,
+      tenantName: 'MockunTenant2',
+      password: 'password2',
+      seasonId: 2,
+      slackId: 'slacknochannelaidexidesu2',
+      createdAt: new Date('2022/01/01'),
+      updatedAt: new Date('2022/01/01'),
+    };
+
+    // モックしたい関数のモック実装を渡す
+    jest
+      .spyOn(mockRepository, 'findOne')
+      .mockImplementation(async () => tenant);
+
+    // Get(findOne)のテスト
+    const test = await controller.findOne(tenant.id);
+    console.log(test);
+    const test2 = await controller.findOne(tenant2.id);
+    console.log(test2);
+    expect((await controller.findOne(tenant.id)) === tenant2);
+
+    // Post(create)のテスト
+    const createTenant: CreateTenantDto = {
+      tenantName: 'MockunTenant2',
+      password: 'password',
+    };
+
+    expect(await controller.create(createTenant));
   });
 });
