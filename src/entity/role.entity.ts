@@ -1,22 +1,35 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  Timestamp,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class Roles {
   @PrimaryGeneratedColumn({ comment: 'ロールID' })
-  id: number;
+  readonly id: number;
 
   @Column({ comment: 'ロール名' })
-  name: string;
+  readonly name: string;
 
-  @CreateDateColumn({ comment: '登録日時' })
-  created_at?: Timestamp;
+  @ApiProperty()
+  @CreateDateColumn({
+    // name: 'created_at',
+    type: 'timestamp',
+    precision: 0,
+    comment: '登録日時',
+  })
+  createdAt: Date;
 
-  @CreateDateColumn({ comment: '更新日時' })
-  updated_at?: Timestamp;
+  @ApiProperty()
+  @UpdateDateColumn({
+    // name: 'updated_at',
+    type: 'timestamp',
+    precision: 0,
+    comment: '更新日時',
+  })
+  updatedAt: Date;
 }
