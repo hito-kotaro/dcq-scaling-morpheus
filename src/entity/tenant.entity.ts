@@ -9,13 +9,15 @@ import {
 
 @Entity()
 export class Tenants {
+  // 変更不可
   @ApiProperty()
   @PrimaryGeneratedColumn({ comment: 'テナントID' })
   id: number;
 
+  // 変更不可
   @ApiProperty()
   @Column({ comment: 'テナント名', unique: true })
-  tenant_name: string;
+  tenantName: string;
 
   @ApiProperty()
   @Column({ comment: 'テナントパスワード' })
@@ -23,27 +25,27 @@ export class Tenants {
 
   @ApiProperty()
   @Column({ comment: 'シーズンID', default: 1 })
-  season: number;
+  seasonId: number;
 
   @ApiProperty()
   @Column({ comment: 'slack連携ID', default: '' })
-  slack: string;
+  slackId: string;
 
   @ApiProperty()
   @CreateDateColumn({
-    name: 'created_at',
+    // name: 'created_at',
     type: 'timestamp',
     precision: 0,
     comment: '登録日時',
   })
-  readonly createdAt: Date;
+  createdAt: Date;
 
   @ApiProperty()
   @UpdateDateColumn({
-    name: 'updated_at',
+    // name: 'updated_at',
     type: 'timestamp',
     precision: 0,
     comment: '更新日時',
   })
-  readonly updatedAt: Date;
+  updatedAt: Date;
 }

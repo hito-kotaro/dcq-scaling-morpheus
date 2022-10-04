@@ -5,32 +5,46 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   CreateTenantDto,
-  CreateTenantResponse,
   GetOneTenantResponse,
+  TenantSuccessResponse,
+  UpdateTenantDto,
 } from './dto/tenant.dto';
 import { TenantService } from './tenant.service';
 
+@ApiTags('tenant')
 @Controller('tenant')
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
 
-  @Get(':id')
+  @Get(':tenantId')
   @ApiResponse({ status: HttpStatus.OK, type: GetOneTenantResponse })
-  async findOne(@Param('id') id: number): Promise<GetOneTenantResponse> {
-    return await this.tenantService.findOne(id);
+  async findOne(
+    @Param('tenantId') tenantId: number,
+  ): Promise<GetOneTenantResponse> {
+    return await this.tenantService.findOne(tenantId);
   }
 
   @Post()
   @ApiResponse({
     status: HttpStatus.OK,
-    type: CreateTenantResponse,
+    type: TenantSuccessResponse,
   })
   create(@Body(ValidationPipe) createTenant: CreateTenantDto) {
     return this.tenantService.create(createTenant);
+  }
+
+  @Put()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: TenantSuccessResponse,
+  })
+  update(@Body(ValidationPipe) updateTenant: UpdateTenantDto) {
+    return this.tenantService.update(updateTenant);
   }
 }
