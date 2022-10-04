@@ -71,7 +71,7 @@ export class TenantService {
 
   async create(tenant: CreateTenantDto): Promise<TenantSuccessResponse> {
     const existTenant = await this.nameExists(tenant.tenantName);
-
+    console.log(tenant);
     // 同名のテナントが存在していたらエラーを投げる
     if (existTenant === true) {
       throw new BadRequestException('tenant already exist');
