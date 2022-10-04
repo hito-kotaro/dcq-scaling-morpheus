@@ -39,12 +39,15 @@ export class TenantController {
     return this.tenantService.create(createTenant);
   }
 
-  @Put()
+  @Put(':tenantId')
   @ApiResponse({
     status: HttpStatus.OK,
     type: TenantSuccessResponse,
   })
-  update(@Body(ValidationPipe) updateTenant: UpdateTenantDto) {
-    return this.tenantService.update(updateTenant);
+  update(
+    @Param('tenantId') id: number,
+    @Body(ValidationPipe) updateTenant: UpdateTenantDto,
+  ) {
+    return this.tenantService.update(id, updateTenant);
   }
 }

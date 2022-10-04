@@ -85,9 +85,12 @@ export class TenantService {
     return { tenantId: createdTenant.id, message: 'create success' };
   }
 
-  async update(tenant: UpdateTenantDto): Promise<TenantSuccessResponse> {
+  async update(
+    id: number,
+    tenant: UpdateTenantDto,
+  ): Promise<TenantSuccessResponse> {
     // 対象を探す -> 対象がなければfindOne内でエラーを投げる
-    const updateTenant = await this.findOne(tenant.id);
+    const updateTenant = await this.findOne(id);
 
     // 更新する値を設定 -> 値がない場合は既存の値をそのまま残す
     updateTenant.password = tenant.password ?? updateTenant.password;

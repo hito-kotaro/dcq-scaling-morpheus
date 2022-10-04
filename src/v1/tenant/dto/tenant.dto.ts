@@ -47,8 +47,6 @@ export class CreateTenantDto {
 }
 
 export class UpdateTenantDto {
-  @ApiProperty({ type: Number, description: 'テナントID' })
-  readonly id: number;
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   @IsString()
   @MinLength(8)
