@@ -43,12 +43,12 @@ describe('TenantController', () => {
 
     const tenant2: Tenants = {
       id: 111,
-      tenantName: 'MockunTenant2',
+      tenant_name: 'MockunTenant2',
       password: 'password2',
-      seasonId: 2,
-      slackId: 'slacknochannelaidexidesu2',
-      createdAt: new Date('2022/01/01'),
-      updatedAt: new Date('2022/01/01'),
+      season_id: 2,
+      slack_token: 'slacknochannelaidexidesu2',
+      created_at: new Date('2022/01/01'),
+      updated_at: new Date('2022/01/01'),
     };
 
     // モックしたい関数のモック実装を渡す
@@ -58,14 +58,12 @@ describe('TenantController', () => {
 
     // Get(findOne)のテスト
     const test = await controller.findOne(tenant.id);
-    console.log(test);
     const test2 = await controller.findOne(tenant2.id);
-    console.log(test2);
     expect((await controller.findOne(tenant.id)) === tenant2);
 
     // Post(create)のテスト
     const createTenant: CreateTenantDto = {
-      tenantName: 'MockunTenant2',
+      tenant_name: 'MockunTenant2',
       password: 'password',
     };
 

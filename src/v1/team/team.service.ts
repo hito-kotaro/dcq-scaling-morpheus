@@ -28,7 +28,6 @@ export class TeamService {
     if (!team) {
       throw new NotFoundException('team could not found');
     }
-    console.log(team);
     return team;
   }
 
