@@ -17,7 +17,7 @@ export class Tenants {
   // 変更不可
   @ApiProperty()
   @Column({ comment: 'テナント名', unique: true })
-  tenantName: string;
+  name: string;
 
   @ApiProperty()
   @Column({ comment: 'テナントパスワード' })
@@ -25,11 +25,11 @@ export class Tenants {
 
   @ApiProperty()
   @Column({ comment: 'シーズンID', default: 1 })
-  seasonId: number;
+  season_id: number;
 
   @ApiProperty()
-  @Column({ comment: 'slack連携ID', default: '' })
-  slackId: string;
+  @Column({ comment: 'slack連携トークン', default: '' })
+  slack_token: string;
 
   @ApiProperty()
   @CreateDateColumn({
@@ -38,7 +38,7 @@ export class Tenants {
     precision: 0,
     comment: '登録日時',
   })
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty()
   @UpdateDateColumn({
@@ -47,5 +47,5 @@ export class Tenants {
     precision: 0,
     comment: '更新日時',
   })
-  updatedAt: Date;
+  updated_at: Date;
 }

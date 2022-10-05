@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Roles } from './role.entity';
-import { Teams } from './teams.entity';
+import { Teams } from './team.entity';
 import { Tenants } from './tenant.entity';
 import { ApiProperty } from '@nestjs/swagger';
 

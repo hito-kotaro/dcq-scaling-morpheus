@@ -9,7 +9,7 @@ import {
   Timestamp,
 } from 'typeorm';
 import { Penalties } from './penalty.entity';
-import { Teams } from './teams.entity';
+import { Teams } from './team.entity';
 import { Tenants } from './tenant.entity';
 import { Users } from './user.entity';
 

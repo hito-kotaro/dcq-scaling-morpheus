@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Teams } from 'src/entity/teams.entity';
+import { Teams } from 'src/entity/team.entity';
 import { Repository } from 'typeorm';
 import {
   CreateTeamDto,
   FindAllTeamResponse,
   FindOneTeamResponse,
   TeamSuccessResponse,
+  UpdateTeamDto,
 } from './dto/team.dto';
 
 // チーム取得
@@ -50,5 +51,20 @@ export class TeamService {
     });
 
     return { teamId: 1, message: 'create success' };
+  }
+
+  // チーム更新
+  // 更新可能なパラメータ
+  //  penalty, name
+  async update(id: number, team: UpdateTeamDto): Promise<TeamSuccessResponse> {
+    // 更新対象を取得
+    const updateTeam = await this.findOne(id);
+
+    // 更新する値を設定 => 値がない場合は既存の値をそのまま残す
+    updateTeam.name = team.name ?? updateTeam.name;
+    updateTeam.penalty = team.penalty ?? updateTeam.penalty;
+    this.teamRepository.save(updateTeam);
+
+    return { teamId: id, message: 'update success' };
   }
 }

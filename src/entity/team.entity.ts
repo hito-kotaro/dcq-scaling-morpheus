@@ -20,8 +20,8 @@ export class Teams {
   id: number;
 
   @ApiProperty()
-  @ManyToOne((type) => Tenants, { cascade: true })
-  @JoinColumn()
+  @ManyToOne((type) => Tenants, (tenant) => tenant.id)
+  @JoinColumn({ name: 'tenant_id' })
   tenant: Tenants;
 
   @ApiProperty()
@@ -40,7 +40,7 @@ export class Teams {
     precision: 0,
     comment: '登録日時',
   })
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty()
   @UpdateDateColumn({
@@ -49,5 +49,5 @@ export class Teams {
     precision: 0,
     comment: '更新日時',
   })
-  updatedAt: Date;
+  updated_at: Date;
 }

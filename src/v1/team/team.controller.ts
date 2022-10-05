@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -13,6 +14,7 @@ import {
   FindAllTeamResponse,
   FindOneTeamResponse,
   TeamSuccessResponse,
+  UpdateTeamDto,
 } from './dto/team.dto';
 import { TeamService } from './team.service';
 
@@ -37,5 +39,14 @@ export class TeamController {
   @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
   create(@Body() createTeam: CreateTeamDto) {
     return this.teamService.create(createTeam);
+  }
+
+  @Put(':teamId')
+  @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
+  update(
+    @Param('tenantId') id: number,
+    @Body(ValidationPipe) updateTeam: UpdateTeamDto,
+  ) {
+    return this.teamService.update(id, updateTeam);
   }
 }

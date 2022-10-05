@@ -22,7 +22,7 @@ export class Roles {
     precision: 0,
     comment: '登録日時',
   })
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty()
   @UpdateDateColumn({
@@ -31,5 +31,5 @@ export class Roles {
     precision: 0,
     comment: '更新日時',
   })
-  updatedAt: Date;
+  updated_at: Date;
 }
