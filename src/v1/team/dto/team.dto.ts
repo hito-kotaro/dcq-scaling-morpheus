@@ -7,7 +7,7 @@ export class FindOneTeamResponse {
   readonly id: number;
 
   @ApiProperty({ type: String })
-  name: string;
+  team_name: string;
 
   @ApiProperty({ type: Number })
   penalty: number;
@@ -25,8 +25,10 @@ export class FindAllTeamResponse {
 }
 
 export class CreateTeamDto {
+  @ApiProperty({ type: Number })
+  readonly tenant_id: number;
   @ApiProperty({ type: String })
-  readonly name: string;
+  readonly team_name: string;
   @ApiProperty({ type: Tenants })
   tenant: Tenants;
 }
@@ -34,7 +36,7 @@ export class CreateTeamDto {
 export class UpdateTeamDto {
   @ApiProperty({ type: String })
   @IsOptional()
-  readonly name?: string;
+  readonly team_name?: string;
   @ApiProperty({ type: Number })
   @IsOptional()
   readonly penalty?: number;
@@ -42,7 +44,7 @@ export class UpdateTeamDto {
 
 export class TeamSuccessResponse {
   @ApiProperty({ type: Number })
-  readonly teamId!: number;
+  readonly id!: number;
 
   @ApiProperty({ type: String })
   readonly message: string;

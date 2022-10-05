@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class createTables1664973284929 implements MigrationInterface {
-    name = 'createTables1664973284929'
+export class createTables1664979362330 implements MigrationInterface {
+    name = 'createTables1664979362330'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "penalties" ("id" SERIAL NOT NULL, "title" character varying NOT NULL, "description" text NOT NULL, "penalty" integer NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "tenantId" integer, "ownerId" integer, CONSTRAINT "PK_c917b09222ad10103d984fc4e7e" PRIMARY KEY ("id")); COMMENT ON COLUMN "penalties"."id" IS 'ペナルティID'; COMMENT ON COLUMN "penalties"."title" IS 'ペナルティタイトル'; COMMENT ON COLUMN "penalties"."description" IS 'ペナルティ内容'; COMMENT ON COLUMN "penalties"."penalty" IS 'ペナルティポイント'; COMMENT ON COLUMN "penalties"."created_at" IS '登録日時'; COMMENT ON COLUMN "penalties"."updated_at" IS '更新日時'; COMMENT ON COLUMN "penalties"."tenantId" IS 'テナントID'`);

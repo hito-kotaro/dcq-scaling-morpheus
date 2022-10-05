@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teams } from 'src/entity/team.entity';
 import { Repository } from 'typeorm';
@@ -10,12 +14,7 @@ import {
   UpdateTeamDto,
 } from './dto/team.dto';
 
-// チーム取得
-// チーム全取得
-// チーム作成
-// チーム更新
-// チーム削除
-// FixMe:Findの結果で外部キーのtenantIdが取得できない
+// FixMe:Findの結果で外部キーのtenantIdが取得できない -> relationsオプションで取得
 @Injectable()
 export class TeamService {
   constructor(
@@ -33,9 +32,12 @@ export class TeamService {
     return team;
   }
 
-  //全チームの取得
-  async findAll(): Promise<FindAllTeamResponse> {
-    const teams = await this.teamRepository.find();
+  //テナント内の全チーム取得
+  async findAll(tenant_id: number): Promise<FindAllTeamResponse> {
+    const teams = await this.teamRepository.find({
+      relations: ['tenant'],
+      where: { tenant: { id: tenant_id } },
+    });
     const response = {
       total: teams.length,
       teams,
@@ -43,28 +45,48 @@ export class TeamService {
     return response;
   }
 
+  // チーム存在チェック
+  async teamExist(team_name: string, tenant_id: number) {
+    const team = await this.teamRepository.findOne({
+      relations: ['tenant'],
+      where: { team_name: team_name, tenant: { id: tenant_id } },
+    });
+
+    if (team) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // チーム作成
   async create(team: CreateTeamDto): Promise<TeamSuccessResponse> {
+    // テナント内に同名のチームが既に存在する場合エラーを投げる
+    // fixMe: エラーを一括してハンドリングしたい(duplicate/外部キー)
+    if ((await this.teamExist(team.team_name, team.tenant_id)) === true) {
+      throw new BadRequestException(
+        `tenant ${team.team_name} is already exist`,
+      );
+    }
+
     await this.teamRepository.save({
-      name: team.name,
+      team_name: team.team_name,
       tenant: team.tenant,
     });
 
-    return { teamId: 1, message: 'create success' };
+    return { id: 1, message: 'create success' };
   }
 
   // チーム更新
-  // 更新可能なパラメータ
-  //  penalty, name
+  // 更新可能なパラメータ:penalty, name
   async update(id: number, team: UpdateTeamDto): Promise<TeamSuccessResponse> {
     // 更新対象を取得
     const updateTeam = await this.findOne(id);
 
     // 更新する値を設定 => 値がない場合は既存の値をそのまま残す
-    updateTeam.name = team.name ?? updateTeam.name;
+    updateTeam.team_name = team.team_name ?? updateTeam.team_name;
     updateTeam.penalty = team.penalty ?? updateTeam.penalty;
     this.teamRepository.save(updateTeam);
-
-    return { teamId: id, message: 'update success' };
+    return { id, message: 'update success' };
   }
 }

@@ -1,28 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MinLength, MaxLength, IsOptional } from 'class-validator';
+import {
+  IsString,
+  MinLength,
+  MaxLength,
+  IsOptional,
+  IsInt,
+} from 'class-validator';
 
 export class GetOneTenantResponse {
+  // @ApiProperty({ type: Tenants, description: 'テナント情報' })
+  // tenant: Tenants;
   @ApiProperty({ type: Number, description: 'テナントID' })
   readonly id: number;
 
   @ApiProperty({ type: String, description: 'テナント名' })
   @IsString()
-  readonly tenantName: string;
+  readonly tenant_name: string;
 
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   password: string;
 
   @ApiProperty({ type: Number, description: 'シーズン設定' })
-  seasonId: number;
+  season_id: number;
 
   @ApiProperty({ type: Number, description: 'slack設定' })
-  slackId: string;
+  slack_token: string;
 
   @ApiProperty({ type: Date, description: '登録日時' })
-  readonly createdAt: Date;
+  readonly created_at: Date;
 
   @ApiProperty({ type: Date, description: '更新日時' })
-  updatedAt: Date;
+  updated_at: Date;
 }
 
 export class TenantSuccessResponse {
@@ -38,7 +46,7 @@ export class CreateTenantDto {
   @IsString()
   @MinLength(1)
   @MaxLength(20)
-  readonly tenantName!: string;
+  readonly tenant_name!: string;
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   @IsString()
   @MinLength(8)
@@ -54,11 +62,11 @@ export class UpdateTenantDto {
   @IsOptional()
   password?: string;
   @ApiProperty({ type: Number, description: 'シーズンID' })
-  @IsString()
+  @IsInt()
   @IsOptional()
-  seasonId?: number;
+  season_id?: number;
   @ApiProperty({ type: String, description: 'SlackID' })
   @IsString()
   @IsOptional()
-  slackId?: string;
+  slack_token?: string;
 }

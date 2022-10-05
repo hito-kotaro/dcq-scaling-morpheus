@@ -13,7 +13,7 @@ import {
 import { Tenants } from './tenant.entity';
 
 @Entity()
-@Index(['tenant', 'name'], { unique: true })
+@Index(['tenant', 'team_name'], { unique: true })
 export class Teams {
   @ApiProperty()
   @PrimaryGeneratedColumn({ comment: 'チームID' })
@@ -27,7 +27,7 @@ export class Teams {
   @ApiProperty()
   @PrimaryColumn()
   @Column({ comment: 'チーム名' })
-  name: string;
+  team_name: string;
 
   @ApiProperty()
   @Column({ comment: 'ペナルティポイント', default: 0 })

@@ -29,10 +29,10 @@ export class TeamController {
     return await this.teamService.findOne(id);
   }
 
-  @Get()
+  @Get('/all/:tenantId')
   @ApiResponse({ status: HttpStatus.OK, type: FindAllTeamResponse })
-  async findAll() {
-    return await this.teamService.findAll();
+  async findAll(@Param('tenantId') tenant_id: number) {
+    return await this.teamService.findAll(tenant_id);
   }
 
   @Post()
@@ -44,7 +44,7 @@ export class TeamController {
   @Put(':teamId')
   @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
   update(
-    @Param('tenantId') id: number,
+    @Param('teamId') id: number,
     @Body(ValidationPipe) updateTeam: UpdateTeamDto,
   ) {
     return this.teamService.update(id, updateTeam);

@@ -9,15 +9,13 @@ import {
 
 @Entity()
 export class Tenants {
-  // 変更不可
   @ApiProperty()
   @PrimaryGeneratedColumn({ comment: 'テナントID' })
   id: number;
 
-  // 変更不可
   @ApiProperty()
   @Column({ comment: 'テナント名', unique: true })
-  name: string;
+  tenant_name: string;
 
   @ApiProperty()
   @Column({ comment: 'テナントパスワード' })

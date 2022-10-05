@@ -35,9 +35,9 @@ export class TenantService {
 
   // 引数のテナント名が存在すればtrue/しなければfalseを返す。
   // 各メソッドで存在チェックをするためfindOneからは分離
-  async nameExists(tenantName: string) {
+  async nameExists(tenant_name: string) {
     const tenant: Tenants = await this.tenantRepository.findOne({
-      where: { tenantName },
+      where: { tenant_name },
     });
 
     if (!tenant) {
@@ -60,17 +60,17 @@ export class TenantService {
 
     return {
       id: tenant.id,
-      tenantName: tenant.tenantName,
+      tenant_name: tenant.tenant_name,
       password: tenant.password,
-      seasonId: tenant.seasonId,
-      slackId: tenant.slackId,
-      createdAt: tenant.createdAt,
-      updatedAt: tenant.updatedAt,
+      season_id: tenant.season_id,
+      slack_token: tenant.slack_token,
+      created_at: tenant.created_at,
+      updated_at: tenant.updated_at,
     };
   }
 
   async create(tenant: CreateTenantDto): Promise<TenantSuccessResponse> {
-    const existTenant = await this.nameExists(tenant.tenantName);
+    const existTenant = await this.nameExists(tenant.tenant_name);
     console.log(tenant);
     // 同名のテナントが存在していたらエラーを投げる
     if (existTenant === true) {
@@ -78,7 +78,7 @@ export class TenantService {
     }
 
     const createdTenant = await this.tenantRepository.save({
-      tenantName: tenant.tenantName,
+      tenant_name: tenant.tenant_name,
       password: tenant.password,
     });
 
@@ -94,8 +94,8 @@ export class TenantService {
 
     // 更新する値を設定 -> 値がない場合は既存の値をそのまま残す
     updateTenant.password = tenant.password ?? updateTenant.password;
-    updateTenant.seasonId = tenant.seasonId ?? updateTenant.seasonId;
-    updateTenant.slackId = tenant.slackId ?? updateTenant.slackId;
+    updateTenant.season_id = tenant.season_id ?? updateTenant.season_id;
+    updateTenant.slack_token = tenant.slack_token ?? updateTenant.slack_token;
     this.tenantRepository.save(updateTenant);
 
     return { tenantId: updateTenant.id, message: 'update success' };

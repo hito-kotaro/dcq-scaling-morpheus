@@ -13,7 +13,7 @@ export class Roles {
   readonly id: number;
 
   @Column({ comment: 'ロール名' })
-  readonly name: string;
+  readonly role_name: string;
 
   @ApiProperty()
   @CreateDateColumn({
