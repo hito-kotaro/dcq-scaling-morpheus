@@ -25,7 +25,10 @@ export class TeamService {
 
   //特定チームの取得
   async findOne(id: number): Promise<FindOneTeamResponse> {
-    const team = await this.teamRepository.findOne({ where: { id } });
+    const team = await this.teamRepository.findOne({
+      relations: ['tenant'],
+      where: { id },
+    });
     // 対象がない時
     if (!team) {
       throw new NotFoundException('team could not found');
