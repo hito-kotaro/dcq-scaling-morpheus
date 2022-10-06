@@ -8,7 +8,7 @@ const source = new DataSource({
   database: 'dcq_dev',
   entities: ['src/entity/*.entity.ts'],
   migrations: ['src/migration/**/*.ts'],
-  synchronize: true, // TODO: 本番環境では推奨されていないため、環境によって分ける
+  // synchronize: true, // TODO: 本番環境では推奨されていないため、環境によって分ける
 });
 
 export default source;

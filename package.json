@@ -19,7 +19,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-commonjs -d ./ormconfig.ts"
+    "typeorm": "typeorm-ts-node-commonjs -d ./ormconfig.ts",
+    "typeorm:drop": "yarn typeorm schema:drop",
+    "migrations:clear": "rm src/migration/*"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

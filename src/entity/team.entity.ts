@@ -20,7 +20,7 @@ export class Teams {
   id: number;
 
   @ApiProperty()
-  @ManyToOne((type) => Tenants, (tenant) => tenant.id)
+  @ManyToOne(() => Tenants, (tenant) => tenant.id)
   @JoinColumn({ name: 'tenant_id' })
   tenant: Tenants;
 

@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teams } from 'src/entity/team.entity';
 import { Repository } from 'typeorm';
+import { TenantService } from '../tenant/tenant.service';
 import {
   CreateTeamDto,
   FindAllTeamResponse,
@@ -18,6 +19,7 @@ import {
 @Injectable()
 export class TeamService {
   constructor(
+    private readonly tenantService: TenantService,
     @InjectRepository(Teams) private teamRepository: Repository<Teams>,
   ) {}
 
@@ -60,6 +62,7 @@ export class TeamService {
 
   // チーム作成
   async create(team: CreateTeamDto): Promise<TeamSuccessResponse> {
+    const tenant = await this.tenantService.findOne(team.tenant_id);
     // テナント内に同名のチームが既に存在する場合エラーを投げる
     // fixMe: エラーを一括してハンドリングしたい(duplicate/外部キー)
     if ((await this.teamExist(team.team_name, team.tenant_id)) === true) {
@@ -70,7 +73,7 @@ export class TeamService {
 
     await this.teamRepository.save({
       team_name: team.team_name,
-      tenant: team.tenant,
+      tenant: tenant,
     });
 
     return { id: 1, message: 'create success' };
