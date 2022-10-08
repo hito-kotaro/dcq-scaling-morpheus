@@ -74,12 +74,12 @@ export class TeamService {
       );
     }
 
-    await this.teamRepository.save({
+    const createdTeam = await this.teamRepository.save({
       team_name: team.team_name,
       tenant: tenant,
     });
 
-    return { id: 1, message: 'create success' };
+    return { id: createdTeam.id, message: 'create success' };
   }
 
   // チーム更新

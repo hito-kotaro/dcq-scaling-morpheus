@@ -14,30 +14,30 @@ import { Tenants } from './tenant.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
-@Index(['tenant', 'name'], { unique: true })
+@Index(['tenant', 'user_name'], { unique: true })
 export class Users {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
   @ApiProperty()
-  @ManyToOne((type) => Tenants, { cascade: true })
-  @JoinColumn()
+  @ManyToOne(() => Tenants, (tenant) => tenant.id)
+  @JoinColumn({ name: 'tenant_id' })
   tenant: Tenants;
 
   @ApiProperty()
-  @ManyToOne((type) => Roles, { cascade: true })
-  @JoinColumn()
+  @ManyToOne(() => Roles, (role) => role.id)
+  @JoinColumn({ name: 'role_id' })
   role: Roles;
 
   @ApiProperty()
-  @ManyToOne((type) => Teams, { cascade: true })
-  @JoinColumn()
+  @ManyToOne(() => Teams, (team) => team.id)
+  @JoinColumn({ name: 'team_id' })
   team: Teams;
 
   @ApiProperty()
   @Column()
-  name: string;
+  user_name: string;
 
   @ApiProperty()
   @Column()
@@ -49,19 +49,19 @@ export class Users {
 
   @ApiProperty()
   @CreateDateColumn({
-    name: 'created_at',
+    // name: 'created_at',
     type: 'timestamp',
     precision: 0,
     comment: '登録日時',
   })
-  readonly createdAt: Date;
+  created_at: Date;
 
   @ApiProperty()
   @UpdateDateColumn({
-    name: 'updated_at',
+    // name: 'updated_at',
     type: 'timestamp',
     precision: 0,
     comment: '更新日時',
   })
-  readonly updatedAt: Date;
+  updated_at: Date;
 }
