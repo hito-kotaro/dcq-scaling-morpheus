@@ -29,8 +29,6 @@ export class CreateTeamDto {
   readonly tenant_id: number;
   @ApiProperty({ type: String })
   readonly team_name: string;
-  @ApiProperty({ type: Tenants })
-  tenant: Tenants;
 }
 
 export class UpdateTeamDto {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -35,6 +39,19 @@ export class UserService {
     }
   }
 
+  //作成時重複確認
+  async userNameExist(userName: string): Promise<boolean> {
+    const user: Users = await this.userRepository.findOne({
+      where: { user_name: userName },
+    });
+
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // GetUser
   // パスワード以外のユーザ情報を返す
   async findOne(id: number): Promise<FindOneUserResponse> {
@@ -62,6 +79,11 @@ export class UserService {
   async create(createUser: CreateUserDto): Promise<UserSuccessResponse> {
     const { role_id, tenant_id, team_id, user_name, password, point } =
       createUser;
+
+    // テナント内重複チェック
+    if ((await this.userNameExist(user_name)) === true) {
+      throw new BadRequestException(`${user_name} already exist`);
+    }
     // tenant取得
     const tenant = await this.tenantService.findOne(tenant_id);
     const team = await this.teamService.findOne(team_id);
@@ -88,7 +110,6 @@ export class UserService {
   ): Promise<UserSuccessResponse> {
     const { updated_user_name, updated_team_id, updated_role_id, add_point } =
       user;
-    console.log(user);
     const updateUser = await this.findOne(user_id);
 
     // チーム、ロールの変更先を取得

@@ -65,6 +65,7 @@ export class TeamService {
 
   // チーム作成
   async create(team: CreateTeamDto): Promise<TeamSuccessResponse> {
+    // 対象のテナントを取得
     const tenant = await this.tenantService.findOne(team.tenant_id);
     // テナント内に同名のチームが既に存在する場合エラーを投げる
     // fixMe: エラーを一括してハンドリングしたい(duplicate/外部キー)
