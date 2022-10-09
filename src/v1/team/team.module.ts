@@ -9,5 +9,6 @@ import { TeamService } from './team.service';
   imports: [TenantModule, TypeOrmModule.forFeature([Teams])],
   controllers: [TeamController],
   providers: [TeamService],
+  exports: [TeamService],
 })
 export class TeamModule {}

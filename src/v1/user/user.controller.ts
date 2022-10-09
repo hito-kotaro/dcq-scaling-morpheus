@@ -1,6 +1,10 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { FindOneUserResponse } from './dto/user.dto';
+import {
+  CreateUserDto,
+  FindOneUserResponse,
+  UserSuccessResponse,
+} from './dto/user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('user')
@@ -12,5 +16,11 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponse })
   async findOne(@Param('userId') id: number) {
     return await this.userService.findOne(id);
+  }
+
+  @Post()
+  @ApiResponse({ status: HttpStatus.OK, type: UserSuccessResponse })
+  async create(@Body() CreateUser: CreateUserDto) {
+    return this.userService.create(CreateUser);
   }
 }
