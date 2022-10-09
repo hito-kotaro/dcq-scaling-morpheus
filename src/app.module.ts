@@ -7,6 +7,7 @@ import { TenantModule } from './v1/tenant/tenant.module';
 import { RoleModule } from './v1/role/role.module';
 import { TeamModule } from './v1/team/team.module';
 import { UserModule } from './v1/user/user.module';
+import { QuestModule } from './v1/quest/quest.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UserModule } from './v1/user/user.module';
     TenantModule,
     RoleModule,
     TeamModule,
+    QuestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
