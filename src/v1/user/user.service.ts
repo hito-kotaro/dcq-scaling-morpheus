@@ -82,7 +82,7 @@ export class UserService {
       createUser;
 
     // テナント内重複チェック
-    if ((await this.userNameExist(user_name)) === true) {
+    if ((await this.userNameExist(tenant_id, user_name)) === true) {
       throw new BadRequestException(`${user_name} already exist`);
     }
     // tenant取得
