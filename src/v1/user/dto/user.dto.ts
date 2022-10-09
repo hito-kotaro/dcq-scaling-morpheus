@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 import { Roles } from 'src/entity/role.entity';
 import { Teams } from 'src/entity/team.entity';
 import { Tenants } from 'src/entity/tenant.entity';
@@ -8,7 +9,7 @@ export class FindOneUserResponse {
   readonly id: number;
 
   @ApiProperty({ type: String })
-  readonly user_name: string;
+  user_name: string;
 
   @ApiProperty({ type: Roles })
   role: Roles;
@@ -48,14 +49,18 @@ export class CreateUserDto {
 
 export class UpdateUserDto {
   @ApiProperty({ type: String })
-  readonly user_name: string;
+  @IsOptional()
+  readonly updated_user_name: string;
 
-  @ApiProperty({ type: Roles })
-  readonly role: Roles;
-
-  @ApiProperty({ type: Tenants })
-  readonly tenant: Tenants;
-
+  @IsOptional()
   @ApiProperty({ type: Number })
-  readonly point: number;
+  readonly updated_role_id: number;
+
+  @IsOptional()
+  @ApiProperty({ type: Number })
+  readonly updated_team_id: number;
+
+  @IsOptional()
+  @ApiProperty({ type: Number })
+  readonly add_point: number;
 }

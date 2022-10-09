@@ -8,6 +8,7 @@ import { TenantService } from '../tenant/tenant.service';
 import {
   CreateUserDto,
   FindOneUserResponse,
+  UpdateUserDto,
   UserSuccessResponse,
 } from './dto/user.dto';
 
@@ -79,5 +80,33 @@ export class UserService {
     });
 
     return { id: createdUser.id, message: 'create success' };
+  }
+
+  async update(
+    user_id: number,
+    user: UpdateUserDto,
+  ): Promise<UserSuccessResponse> {
+    const { updated_user_name, updated_team_id, updated_role_id, add_point } =
+      user;
+    console.log(user);
+    const updateUser = await this.findOne(user_id);
+
+    // チーム、ロールの変更先を取得
+    let role;
+    let team;
+    if (updated_team_id) {
+      team = await this.teamService.findOne(updated_team_id);
+    }
+    if (updated_role_id) {
+      role = await this.roleService.findOne(updated_role_id);
+    }
+
+    updateUser.team = team ?? updateUser.team;
+    updateUser.role = role ?? updateUser.role;
+    updateUser.user_name = updated_user_name ?? updateUser.user_name;
+    updateUser.point = updateUser.point + (add_point ?? 0);
+    this.userRepository.save(updateUser);
+
+    return { id: user_id, message: 'update success' };
   }
 }
