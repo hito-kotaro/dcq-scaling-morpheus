@@ -40,9 +40,10 @@ export class UserService {
   }
 
   //作成時重複確認
-  async userNameExist(userName: string): Promise<boolean> {
+  async userNameExist(tenantId: number, userName: string): Promise<boolean> {
     const user: Users = await this.userRepository.findOne({
-      where: { user_name: userName },
+      relations: ['user'],
+      where: { user_name: userName, tenant: { id: tenantId } },
     });
 
     if (user) {
