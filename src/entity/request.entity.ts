@@ -30,6 +30,7 @@ export class Requests {
   @ApiProperty()
   @ManyToOne(() => Users, (user) => user.id)
   @JoinColumn({ name: 'user_id' })
+  // fixMe: appilcant -> applicant
   appilcant: Users;
 
   @Column({ comment: 'リクエストタイトル' })

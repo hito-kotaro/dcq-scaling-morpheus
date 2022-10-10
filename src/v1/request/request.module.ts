@@ -5,9 +5,15 @@ import { Requests } from 'src/entity/request.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { QuestModule } from '../quest/quest.module';
 import { UserModule } from '../user/user.module';
+import { TenantModule } from '../tenant/tenant.module';
 
 @Module({
-  imports: [QuestModule, UserModule, TypeOrmModule.forFeature([Requests])],
+  imports: [
+    TenantModule,
+    QuestModule,
+    UserModule,
+    TypeOrmModule.forFeature([Requests]),
+  ],
   providers: [RequestService],
   controllers: [RequestController],
 })

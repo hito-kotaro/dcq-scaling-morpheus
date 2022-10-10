@@ -35,8 +35,26 @@ export class CreateRequestDto {
   readonly description: string;
 
   @ApiProperty({ type: Number })
+  readonly tenant_id: number;
+
+  @ApiProperty({ type: Number })
   readonly quest_id: number;
 
   @ApiProperty({ type: Number })
   readonly applicant_id: number;
+}
+
+export class UpdateRequestDto {
+  @ApiProperty({ type: Number })
+  readonly id: number;
+  @ApiProperty({ type: String })
+  updatedStatus: string;
+}
+
+export class RequestSuccessResponse {
+  @ApiProperty({ type: Number, description: 'リクエストID' })
+  readonly id: number;
+
+  @ApiProperty({ type: String, description: 'メッセージ' })
+  readonly message: string;
 }

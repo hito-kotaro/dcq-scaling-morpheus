@@ -3,14 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Requests } from 'src/entity/request.entity';
 import { Repository } from 'typeorm';
 import { QuestService } from '../quest/quest.service';
+import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
-import { CreateRequestDto } from './dto/request.dto';
+import { CreateRequestDto, UpdateRequestDto } from './dto/request.dto';
 
 @Injectable()
 export class RequestService {
   constructor(
     private readonly userService: UserService,
     private readonly questService: QuestService,
+    private readonly tenantService: TenantService,
     @InjectRepository(Requests) private requestRepository: Repository<Requests>,
   ) {}
 
@@ -26,7 +28,6 @@ export class RequestService {
   }
 
   async findOne(id: number) {
-    console.log(id);
     const isExist = await this.requestExist(id);
 
     if (isExist === false) {
@@ -43,14 +44,40 @@ export class RequestService {
 
   async findAll(tenantId: number) {
     const requests = await this.requestRepository.find({
+      relations: ['quest'],
       where: { tenant: { id: tenantId } },
     });
-    console.log(requests);
     return { requests, total: requests.length };
   }
+
   async create(createRequest: CreateRequestDto) {
-    // import済み
-    // 申請者
-    // クエスト取得
+    const { title, description, quest_id, applicant_id, tenant_id } =
+      createRequest;
+    // fixMe: appilcant -> applicant
+    const appilcant = await this.userService.findOne(applicant_id);
+    const quest = await this.questService.findOne(quest_id);
+    const tenant = await this.tenantService.findOne(tenant_id);
+    const createdRequest = await this.requestRepository.save({
+      title,
+      description,
+      quest,
+      // fixMe: appilcant -> applicant
+      appilcant,
+      tenant,
+      status: 'open',
+    });
+
+    return { id: createdRequest.id, message: 'create success' };
+  }
+
+  async update(updateRequest: UpdateRequestDto) {
+    const { id, updatedStatus } = updateRequest;
+    console.log(updatedStatus);
+    //ターゲットを取得
+    const targetRequest = await this.findOne(id);
+    console.log(targetRequest);
+    targetRequest.status = updatedStatus;
+    this.requestRepository.save(targetRequest);
+    return { id: targetRequest.id, message: 'update success' };
   }
 }

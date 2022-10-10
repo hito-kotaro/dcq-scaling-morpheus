@@ -1,6 +1,20 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { FindOneRequestResponse } from './dto/request.dto';
+import {
+  CreateRequestDto,
+  FindOneRequestResponse,
+  RequestSuccessResponse,
+  UpdateRequestDto,
+} from './dto/request.dto';
 import { RequestService } from './request.service';
 
 @ApiTags('request')
@@ -18,5 +32,17 @@ export class RequestController {
   @ApiResponse({ status: HttpStatus.OK, type: FindOneRequestResponse })
   async findAll(@Param('tenantId') id: number) {
     return await this.requestService.findAll(id);
+  }
+
+  @Post()
+  @ApiResponse({ status: HttpStatus.OK, type: RequestSuccessResponse })
+  async create(@Body(ValidationPipe) createRequest: CreateRequestDto) {
+    return this.requestService.create(createRequest);
+  }
+
+  @Put()
+  @ApiResponse({ status: HttpStatus.OK, type: RequestSuccessResponse })
+  async updadte(@Body(ValidationPipe) updateRequest: UpdateRequestDto) {
+    return await this.requestService.update(updateRequest);
   }
 }
