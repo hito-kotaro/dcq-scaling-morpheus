@@ -8,6 +8,7 @@ import { RoleModule } from './v1/role/role.module';
 import { TeamModule } from './v1/team/team.module';
 import { UserModule } from './v1/user/user.module';
 import { QuestModule } from './v1/quest/quest.module';
+import { RequestModule } from './v1/request/request.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { QuestModule } from './v1/quest/quest.module';
     RoleModule,
     TeamModule,
     QuestModule,
+    RequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

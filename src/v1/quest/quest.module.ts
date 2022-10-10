@@ -10,5 +10,6 @@ import { QuestService } from './quest.service';
   imports: [TenantModule, UserModule, TypeOrmModule.forFeature([Quests])],
   controllers: [QuestController],
   providers: [QuestService],
+  exports: [QuestService],
 })
 export class QuestModule {}

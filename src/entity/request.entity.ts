@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -5,7 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Timestamp,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Quests } from './quest.entity';
 import { Tenants } from './tenant.entity';
@@ -16,21 +17,20 @@ export class Requests {
   @PrimaryGeneratedColumn({ comment: 'リクエストID' })
   id: number;
 
-  @ManyToOne((type) => Tenants, { cascade: true })
-  @JoinColumn()
+  @ApiProperty()
+  @ManyToOne(() => Tenants, (tenant) => tenant.id)
+  @JoinColumn({ name: 'tenant_id' })
   tenant: Tenants;
 
-  @ManyToOne((type) => Users, { cascade: true })
-  @JoinColumn()
-  owner: Users;
-
-  @ManyToOne((type) => Users, { cascade: true })
-  @JoinColumn()
-  applicant: Users;
-
-  @ManyToOne((type) => Quests, { cascade: true })
-  @JoinColumn()
+  @ApiProperty()
+  @ManyToOne(() => Quests, (quest) => quest.id)
+  @JoinColumn({ name: 'quest_id' })
   quest: Quests;
+
+  @ApiProperty()
+  @ManyToOne(() => Users, (user) => user.id)
+  @JoinColumn({ name: 'user_id' })
+  appilcant: Users;
 
   @Column({ comment: 'リクエストタイトル' })
   title: string;
@@ -41,9 +41,21 @@ export class Requests {
   @Column({ comment: 'リクエストステータス' })
   status: string;
 
-  @CreateDateColumn({ comment: '登録日時' })
-  created_at?: Timestamp;
+  @ApiProperty()
+  @CreateDateColumn({
+    // name: 'created_at',
+    type: 'timestamp',
+    precision: 0,
+    comment: '登録日時',
+  })
+  created_at: Date;
 
-  @CreateDateColumn({ comment: '更新日時' })
-  updated_at?: Timestamp;
+  @ApiProperty()
+  @UpdateDateColumn({
+    // name: 'updated_at',
+    type: 'timestamp',
+    precision: 0,
+    comment: '更新日時',
+  })
+  updated_at: Date;
 }
