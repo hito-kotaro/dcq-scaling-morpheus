@@ -10,6 +10,7 @@ import { UserModule } from './v1/user/user.module';
 import { QuestModule } from './v1/quest/quest.module';
 import { RequestModule } from './v1/request/request.module';
 import { PenaltyModule } from './v1/penalty/penalty.module';
+import { IssueModule } from './v1/issue/issue.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PenaltyModule } from './v1/penalty/penalty.module';
     QuestModule,
     RequestModule,
     PenaltyModule,
+    IssueModule,
   ],
   controllers: [AppController],
   providers: [AppService],

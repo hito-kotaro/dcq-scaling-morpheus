@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -7,8 +8,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   Timestamp,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Penalties } from './penalty.entity';
+import { Quests } from './quest.entity';
 import { Teams } from './team.entity';
 import { Tenants } from './tenant.entity';
 import { Users } from './user.entity';
@@ -19,21 +22,25 @@ export class Issues {
   @PrimaryGeneratedColumn({ comment: '発行済みペナルティID' })
   id: number;
 
-  @ManyToOne((type) => Tenants, { cascade: true })
-  @JoinColumn()
+  @ApiProperty()
+  @ManyToOne(() => Tenants, (tenant) => tenant.id)
+  @JoinColumn({ name: 'tenant_id' })
   tenant: Tenants;
 
-  @ManyToOne((type) => Users, { cascade: true })
-  @JoinColumn()
+  @ApiProperty()
+  @ManyToOne(() => Penalties, (penalty) => penalty.id)
+  @JoinColumn({ name: 'penalty_id' })
+  penalty: Quests;
+
+  @ApiProperty()
+  @ManyToOne(() => Users, (user) => user.id)
+  @JoinColumn({ name: 'authorizer_id' })
   authorizer: Users;
 
-  @ManyToOne((type) => Teams, { cascade: true })
-  @JoinColumn()
-  team: Teams;
-
-  @ManyToOne((type) => Penalties, { cascade: true })
-  @JoinColumn()
-  penalty: Penalties;
+  @ApiProperty()
+  @ManyToOne(() => Teams, (team) => team.id)
+  @JoinColumn({ name: 'team_id' })
+  team: Users;
 
   @Column({ comment: 'ペナルティ付与タイトル' })
   title: string;
@@ -41,9 +48,21 @@ export class Issues {
   @Column({ comment: 'ペナルティ付与コメント', type: 'text' })
   comment: string;
 
-  @CreateDateColumn({ comment: '登録日時' })
-  created_at?: Timestamp;
+  @ApiProperty()
+  @CreateDateColumn({
+    // name: 'created_at',
+    type: 'timestamp',
+    precision: 0,
+    comment: '登録日時',
+  })
+  created_at: Date;
 
-  @CreateDateColumn({ comment: '更新日時' })
-  updated_at?: Timestamp;
+  @ApiProperty()
+  @UpdateDateColumn({
+    // name: 'updated_at',
+    type: 'timestamp',
+    precision: 0,
+    comment: '更新日時',
+  })
+  updated_at: Date;
 }
