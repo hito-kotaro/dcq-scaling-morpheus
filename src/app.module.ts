@@ -9,6 +9,7 @@ import { TeamModule } from './v1/team/team.module';
 import { UserModule } from './v1/user/user.module';
 import { QuestModule } from './v1/quest/quest.module';
 import { RequestModule } from './v1/request/request.module';
+import { PenaltyModule } from './v1/penalty/penalty.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RequestModule } from './v1/request/request.module';
     TeamModule,
     QuestModule,
     RequestModule,
+    PenaltyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
