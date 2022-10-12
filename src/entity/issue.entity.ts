@@ -7,11 +7,9 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Timestamp,
   UpdateDateColumn,
 } from 'typeorm';
 import { Penalties } from './penalty.entity';
-import { Quests } from './quest.entity';
 import { Teams } from './team.entity';
 import { Tenants } from './tenant.entity';
 import { Users } from './user.entity';
@@ -30,7 +28,7 @@ export class Issues {
   @ApiProperty()
   @ManyToOne(() => Penalties, (penalty) => penalty.id)
   @JoinColumn({ name: 'penalty_id' })
-  penalty: Quests;
+  penalty: Penalties;
 
   @ApiProperty()
   @ManyToOne(() => Users, (user) => user.id)
@@ -40,7 +38,7 @@ export class Issues {
   @ApiProperty()
   @ManyToOne(() => Teams, (team) => team.id)
   @JoinColumn({ name: 'team_id' })
-  team: Users;
+  team: Teams;
 
   @Column({ comment: 'ペナルティ付与タイトル' })
   title: string;

@@ -10,5 +10,6 @@ import { PenaltyService } from './penalty.service';
   imports: [TenantModule, UserModule, TypeOrmModule.forFeature([Penalties])],
   controllers: [PenaltyController],
   providers: [PenaltyService],
+  exports: [PenaltyService],
 })
 export class PenaltyModule {}

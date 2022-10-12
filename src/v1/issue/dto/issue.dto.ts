@@ -24,9 +24,12 @@ export class FindOneIssueResonse {
   penalty: Penalties;
 }
 
-export class FindAllRequestResponse {
+export class FindAllIssueResponse {
   @ApiProperty({ type: FindOneIssueResonse })
   issues: FindOneIssueResonse[];
+
+  @ApiProperty({ type: Number })
+  total: number;
 }
 
 export class CreateIssueDto {
@@ -35,6 +38,9 @@ export class CreateIssueDto {
 
   @ApiProperty({ type: String })
   comment: string;
+
+  @ApiProperty({ type: Number })
+  tenant_id: number;
 
   @ApiProperty({ type: Number })
   authorizer_id: number;
@@ -59,4 +65,12 @@ export class UpdateIssueDto {
 export class DeleteIssueDto {
   @ApiProperty({ type: Number })
   id: number;
+}
+
+export class IssueSuccessResponse {
+  @ApiProperty({ type: Number, description: 'ペナルティ付与ID' })
+  readonly id: number;
+
+  @ApiProperty({ type: String, description: 'メッセージ' })
+  readonly message: string;
 }
