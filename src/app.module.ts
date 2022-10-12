@@ -11,6 +11,7 @@ import { QuestModule } from './v1/quest/quest.module';
 import { RequestModule } from './v1/request/request.module';
 import { PenaltyModule } from './v1/penalty/penalty.module';
 import { IssueModule } from './v1/issue/issue.module';
+import { AuthModule } from './v1/auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { IssueModule } from './v1/issue/issue.module';
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
     }),
+    AuthModule,
     UserModule,
     TenantModule,
     RoleModule,
