@@ -15,6 +15,7 @@ import {
   UpdateUserDto,
   UserSuccessResponse,
 } from './dto/user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -77,6 +78,20 @@ export class UserService {
     };
   }
 
+  // fixMe: 同一テナント内に同姓同名がいるとログインで特定できないので、userServiceで絞る
+  async findLoginUser(userName: string, tenantName: string) {
+    const user = await this.userRepository.findOne({
+      relations: ['tenant'],
+      where: { user_name: userName, tenant: { tenant_name: tenantName } },
+      // where: { user_name: userName },
+    });
+    console.log(user);
+    if (!user) {
+      throw new NotFoundException('could not found user');
+    }
+    return user;
+  }
+
   async create(createUser: CreateUserDto): Promise<UserSuccessResponse> {
     const { role_id, tenant_id, team_id, user_name, password, point } =
       createUser;
@@ -98,7 +113,7 @@ export class UserService {
       team,
       role,
       user_name,
-      password,
+      password: await bcrypt.hash(password, 12),
       point,
     });
 

@@ -10,6 +10,6 @@ export class AuthController {
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: LoginParamDto })
   async login(@Body() loginParams: LoginParamDto) {
-    return this.authService.login(loginParams);
+    return this.authService.userLogin(loginParams);
   }
 }

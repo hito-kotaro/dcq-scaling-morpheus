@@ -12,6 +12,7 @@ import {
   TenantSuccessResponse,
   UpdateTenantDto,
 } from './dto/tenant.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class TenantService {
@@ -78,7 +79,7 @@ export class TenantService {
 
     const createdTenant = await this.tenantRepository.save({
       tenant_name: tenant.tenant_name,
-      password: tenant.password,
+      password: await bcrypt.hash(tenant.password, 12),
     });
 
     return { tenantId: createdTenant.id, message: 'create success' };

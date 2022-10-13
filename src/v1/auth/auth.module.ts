@@ -3,9 +3,13 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { TenantModule } from '../tenant/tenant.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
+    TenantModule,
+    UserModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => {
         return {
@@ -22,8 +26,4 @@ import { ConfigService } from '@nestjs/config';
   providers: [AuthService],
   controllers: [AuthController],
 })
-export class AuthModule {
-  constructor(config: ConfigService) {
-    console.log(config.get<string>('HOGE_ENV')); // "hoge"
-  }
-}
+export class AuthModule {}
