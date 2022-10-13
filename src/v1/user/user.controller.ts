@@ -6,8 +6,11 @@ import {
   Param,
   Post,
   Put,
+  Request,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   CreateUserDto,
@@ -23,8 +26,10 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(':userId')
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponse })
-  async findOne(@Param('userId') id: number) {
+  async findOne(@Param('userId') id: number, @Request() req: any) {
+    console.log(req.user);
     return await this.userService.findOne(id);
   }
 
