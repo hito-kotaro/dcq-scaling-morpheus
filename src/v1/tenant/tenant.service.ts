@@ -34,6 +34,17 @@ export class TenantService {
     }
   }
 
+  async findLoginTenant(tenantName: string) {
+    const tenant = await this.tenantRepository.findOne({
+      where: { tenant_name: tenantName },
+    });
+    console.log(tenant);
+    if (!tenant) {
+      throw new NotFoundException('could not found user');
+    }
+    return tenant;
+  }
+
   // 引数のテナント名が存在すればtrue/しなければfalseを返す。
   // 各メソッドで存在チェックをするためfindOneからは分離
   async nameExists(tenant_name: string) {
