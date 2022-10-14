@@ -35,14 +35,19 @@ export class UserSuccessResponse {
 export class CreateUserDto {
   @ApiProperty({ type: Number })
   readonly tenant_id: number;
+
   @ApiProperty({ type: Number })
   readonly role_id: number;
+
   @ApiProperty({ type: Number })
   readonly team_id: number;
+
   @ApiProperty({ type: String })
   readonly user_name: string;
+
   @ApiProperty({ type: String })
   readonly password: string;
+
   @ApiProperty({ type: Number })
   readonly point: number;
 }

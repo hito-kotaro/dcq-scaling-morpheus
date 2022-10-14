@@ -76,7 +76,7 @@ export class QuestService {
     // テナント取得
     const tenant = await this.tenantService.findOneById(tenant_id);
     // ユーザ取得(クエストオーナー)
-    const owner = await this.userService.findOne(owner_id);
+    const owner = await this.userService.findOneById(owner_id);
 
     const createdQuest = await this.questRepository.save({
       tenant,

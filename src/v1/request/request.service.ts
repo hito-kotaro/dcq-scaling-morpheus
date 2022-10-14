@@ -54,7 +54,7 @@ export class RequestService {
     const { title, description, quest_id, applicant_id, tenant_id } =
       createRequest;
     // fixMe: appilcant -> applicant
-    const appilcant = await this.userService.findOne(applicant_id);
+    const appilcant = await this.userService.findOneById(applicant_id);
     const quest = await this.questService.findOne(quest_id);
     const tenant = await this.tenantService.findOneById(tenant_id);
     const createdRequest = await this.requestRepository.save({

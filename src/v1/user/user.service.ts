@@ -26,56 +26,40 @@ export class UserService {
     @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
 
-  // 存在チェック
-  async userExist(id: number): Promise<boolean> {
-    const user: Users = await this.userRepository.findOne({
-      relations: ['role', 'tenant'],
-      where: { id },
-    });
-
-    if (user) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  //作成時重複確認
-  async userNameExist(tenantId: number, userName: string): Promise<boolean> {
-    const user: Users = await this.userRepository.findOne({
-      relations: ['tenant'],
-      where: { user_name: userName, tenant: { id: tenantId } },
-    });
-
-    if (user) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  // GetUser
-  // パスワード以外のユーザ情報を返す
-  async findOne(id: number): Promise<FindOneUserResponse> {
-    const isExist = await this.userExist(id);
-
-    if (isExist === false) {
-      throw new NotFoundException('user could not found');
-    }
-
+  async findOneById(
+    id: number,
+    isPassword?: boolean,
+  ): Promise<FindOneUserResponse> {
     const user: Users = await this.userRepository.findOne({
       relations: ['role', 'team', 'tenant'],
       where: { id },
     });
 
-    return {
-      id: user.id,
-      user_name: user.user_name,
-      tenant: user.tenant,
-      role: user.role,
-      team: user.team,
-      point: user.point,
-    };
+    if (!user) {
+      throw new NotFoundException('could not found user');
+    }
+    const password = isPassword ? user.password : '';
+    user.password = password;
+
+    return user;
+  }
+
+  async findOneByName(
+    userName: string,
+    isPassword?: boolean,
+  ): Promise<FindOneUserResponse> {
+    const user: Users = await this.userRepository.findOne({
+      relations: ['role', 'team', 'tenant'],
+      where: { user_name: userName },
+    });
+
+    if (!user) {
+      throw new NotFoundException('could not found user');
+    }
+    const password = isPassword ? user.password : '';
+    user.password = password;
+
+    return user;
   }
 
   // fixMe: 同一テナント内に同姓同名がいるとログインで特定できないので、userServiceで絞る
@@ -96,17 +80,16 @@ export class UserService {
     const { role_id, tenant_id, team_id, user_name, password, point } =
       createUser;
 
-    // テナント内重複チェック
-    if ((await this.userNameExist(tenant_id, user_name)) === true) {
-      throw new BadRequestException(`${user_name} already exist`);
+    const isExist = await this.findOneByName(createUser.user_name);
+
+    if (isExist) {
+      throw new BadRequestException(`${createUser.user_name} already exist`);
     }
+
     // tenant取得
     const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOne(team_id);
     const role = await this.roleService.findOne(role_id);
-    console.log(tenant);
-    console.log(team);
-    console.log(role);
 
     const createdUser = await this.userRepository.save({
       tenant,
@@ -126,7 +109,7 @@ export class UserService {
   ): Promise<UserSuccessResponse> {
     const { updated_user_name, updated_team_id, updated_role_id, add_point } =
       user;
-    const updateUser = await this.findOne(user_id);
+    const updateUser = await this.findOneById(user_id);
 
     // チーム、ロールの変更先を取得
     let role;

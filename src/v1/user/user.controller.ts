@@ -30,7 +30,7 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponse })
   async findOne(@Param('userId') id: number, @Request() req: any) {
     console.log(req.user);
-    return await this.userService.findOne(id);
+    return await this.userService.findOneById(id);
   }
 
   @Post()
