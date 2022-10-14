@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { throwError } from 'rxjs';
 import { Teams } from 'src/entity/team.entity';
 import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
@@ -11,7 +12,6 @@ import {
   CreateTeamDto,
   FindAllTeamResponse,
   FindOneTeamResponse,
-  TeamEntity,
   TeamSuccessResponse,
   UpdateTeamDto,
 } from './dto/team.dto';
@@ -26,83 +26,62 @@ export class TeamService {
 
   //特定チームの取得
   async findOne(id: number): Promise<FindOneTeamResponse> {
-    console.log(id);
     if (!id) {
       throw new BadRequestException('team id is empty');
     }
+
     const team = await this.teamRepository.findOne({
       relations: ['tenant'],
       where: { id },
     });
-    // 対象がない時
+
     if (!team) {
       throw new NotFoundException('team could not found');
     }
 
-    const teamResponse: FindOneTeamResponse = {
-      id: team.id,
-      teamName: team.team_name,
-      penalty: team.penalty,
-      tenant: team.tenant,
-    };
-
-    return teamResponse;
+    return team;
   }
 
   //テナント内の全チーム取得
   async findAll(tenantId: number): Promise<FindAllTeamResponse> {
-    console.log(tenantId);
-    console.log('AAAAAAAA');
     const teams = await this.teamRepository.find({
       relations: ['tenant'],
       where: { tenant: { id: tenantId } },
     });
 
-    // プロパティ名の変換
-    const teamsResponse: FindOneTeamResponse[] = teams.map((t: TeamEntity) => {
-      const teamResponse: FindOneTeamResponse = {
-        id: t.id,
-        teamName: t.team_name,
-        penalty: t.penalty,
-        tenant: t.tenant,
-      };
-      return teamResponse;
-    });
-
     const response = {
-      total: teamsResponse.length,
-      teams: teamsResponse,
+      total: teams.length,
+      teams: teams,
     };
 
     return response;
   }
 
   // チーム存在チェック
-  async teamExist(team_name: string, tenant_id: number) {
-    const team = await this.teamRepository.findOne({
-      relations: ['tenant'],
-      where: { team_name: team_name, tenant: { id: tenant_id } },
-    });
+  // async teamExist(team_name: string, tenant_id: number) {
+  //   const team = await this.teamRepository.findOne({
+  //     relations: ['tenant'],
+  //     where: { team_name: team_name, tenant: { id: tenant_id } },
+  //   });
 
-    if (team) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  //   if (team) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   // チーム作成
   async create(team: CreateTeamDto): Promise<TeamSuccessResponse> {
     // 対象のテナントを取得
-    const tenant = await this.tenantService.findOneById(team.tenantId);
-    // テナント内に同名のチームが既に存在する場合エラーを投げる
+    const tenant = await this.tenantService.findOneById(team.tenant_id);
     // fixMe: エラーを一括してハンドリングしたい(duplicate/外部キー)
-    if ((await this.teamExist(team.teamName, team.tenantId)) === true) {
-      throw new BadRequestException(`tenant ${team.teamName} is already exist`);
+    if (tenant) {
+      throw new BadRequestException(`${team.team_name} already exist`);
     }
 
     const createdTeam = await this.teamRepository.save({
-      team_name: team.teamName,
+      team_name: team.team_name,
       tenant: tenant,
     });
 
@@ -116,7 +95,7 @@ export class TeamService {
     const updateTeam = await this.findOne(id);
 
     // 更新する値を設定 => 値がない場合は既存の値をそのまま残す
-    updateTeam.teamName = team.teamName ?? updateTeam.teamName;
+    updateTeam.team_name = team.team_name ?? updateTeam.team_name;
     updateTeam.penalty = team.penalty ?? updateTeam.penalty;
     this.teamRepository.save(updateTeam);
     return { id, message: 'update success' };
