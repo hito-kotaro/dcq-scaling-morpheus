@@ -15,27 +15,27 @@ export class GetOneTenantResponse {
 
   @ApiProperty({ type: String, description: 'テナント名' })
   @IsString()
-  readonly tenantName: string;
+  readonly tenant_name: string;
 
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   password: string;
 
   @ApiProperty({ type: Number, description: 'シーズン設定' })
-  seasonId: number;
+  season_id: number;
 
   @ApiProperty({ type: Number, description: 'slack設定' })
-  slackToken: string;
+  slack_token: string;
 
   @ApiProperty({ type: Date, description: '登録日時' })
-  readonly createdAt: Date;
+  readonly created_at: Date;
 
   @ApiProperty({ type: Date, description: '更新日時' })
-  updatedAt: Date;
+  updated_at: Date;
 }
 
 export class TenantSuccessResponse {
   @ApiProperty({ type: Number, description: 'テナントID' })
-  readonly tenantId!: number;
+  readonly tenant_id: number;
 
   @ApiProperty({ type: String, description: 'メッセージ' })
   readonly message: string;
@@ -46,7 +46,7 @@ export class CreateTenantRequest {
   @IsString()
   @MinLength(1)
   @MaxLength(20)
-  readonly tenantName: string;
+  readonly tenant_name: string;
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   @IsString()
   @MinLength(8)
@@ -64,9 +64,9 @@ export class UpdateTenantRequest {
   @ApiProperty({ type: Number, description: 'シーズンID' })
   @IsInt()
   @IsOptional()
-  seasonId?: number;
+  season_id?: number;
   @ApiProperty({ type: String, description: 'SlackID' })
   @IsString()
   @IsOptional()
-  slackToken?: string;
+  slack_token?: string;
 }

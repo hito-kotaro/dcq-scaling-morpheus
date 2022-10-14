@@ -16,7 +16,7 @@ export class AuthService {
 
   async tenantLogin(tenantLoginParam: TenantLoginParamDto) {
     const { tenant_name, password } = tenantLoginParam;
-    const tenant = await this.tenantService.findLoginTenant(tenant_name);
+    const tenant = await this.tenantService.findOneByName(tenant_name);
 
     const isValid = await bcrypt.compare(password, tenant.password);
     if (!isValid) {

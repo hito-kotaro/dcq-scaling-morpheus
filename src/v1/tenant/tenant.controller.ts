@@ -22,12 +22,20 @@ import { TenantService } from './tenant.service';
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
 
-  @Get(':tenantName')
+  @Get('/name/:tenantName')
   @ApiResponse({ status: HttpStatus.OK, type: GetOneTenantResponse })
   async findOneByName(
     @Param('tenantName') tenantName: string,
   ): Promise<GetOneTenantResponse> {
     return await this.tenantService.findOneByName(tenantName);
+  }
+
+  @Get('/id/:tenantId')
+  @ApiResponse({ status: HttpStatus.OK, type: GetOneTenantResponse })
+  async findOneById(
+    @Param('tenantId') tenantId: number,
+  ): Promise<GetOneTenantResponse> {
+    return await this.tenantService.findOneById(tenantId);
   }
 
   @Post()
