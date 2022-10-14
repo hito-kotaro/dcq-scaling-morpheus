@@ -101,7 +101,7 @@ export class UserService {
       throw new BadRequestException(`${user_name} already exist`);
     }
     // tenant取得
-    const tenant = await this.tenantService.findOne(tenant_id);
+    const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOne(team_id);
     const role = await this.roleService.findOne(role_id);
     console.log(tenant);

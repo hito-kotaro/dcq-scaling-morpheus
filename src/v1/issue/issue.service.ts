@@ -48,7 +48,7 @@ export class IssueService {
   async create(createIssue: CreateIssueDto): Promise<IssueSuccessResponse> {
     const { title, comment, tenant_id, team_id, authorizer_id, penalty_id } =
       createIssue;
-    const tenant = await this.tenantService.findOne(tenant_id);
+    const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOne(team_id);
     const authorizer = await this.userService.findOne(authorizer_id);
     const penalty = await this.penaltyService.findOne(penalty_id);

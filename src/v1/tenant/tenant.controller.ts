@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  CreateTenantDto,
+  CreateTenantRequest,
   GetOneTenantResponse,
   TenantSuccessResponse,
-  UpdateTenantDto,
+  UpdateTenantRequest,
 } from './dto/tenant.dto';
 import { TenantService } from './tenant.service';
 
@@ -22,12 +22,12 @@ import { TenantService } from './tenant.service';
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
 
-  @Get(':tenantId')
+  @Get(':tenantName')
   @ApiResponse({ status: HttpStatus.OK, type: GetOneTenantResponse })
-  async findOne(
-    @Param('tenantId') tenantId: number,
+  async findOneByName(
+    @Param('tenantName') tenantName: string,
   ): Promise<GetOneTenantResponse> {
-    return await this.tenantService.findOne(tenantId);
+    return await this.tenantService.findOneByName(tenantName);
   }
 
   @Post()
@@ -35,7 +35,7 @@ export class TenantController {
     status: HttpStatus.OK,
     type: TenantSuccessResponse,
   })
-  create(@Body(ValidationPipe) createTenant: CreateTenantDto) {
+  create(@Body(ValidationPipe) createTenant: CreateTenantRequest) {
     return this.tenantService.create(createTenant);
   }
 
@@ -46,7 +46,7 @@ export class TenantController {
   })
   update(
     @Param('tenantId') id: number,
-    @Body(ValidationPipe) updateTenant: UpdateTenantDto,
+    @Body(ValidationPipe) updateTenant: UpdateTenantRequest,
   ) {
     return this.tenantService.update(id, updateTenant);
   }

@@ -70,7 +70,7 @@ export class PenaltyService {
       throw new BadRequestException(`${title} is already exist`);
     }
     // テナント取得
-    const tenant = await this.tenantService.findOne(tenant_id);
+    const tenant = await this.tenantService.findOneById(tenant_id);
     // ユーザ取得(クエストオーナー)
     const owner = await this.userService.findOne(owner_id);
 
