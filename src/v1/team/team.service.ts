@@ -11,6 +11,7 @@ import {
   CreateTeamDto,
   FindAllTeamResponse,
   FindOneTeamResponse,
+  TeamEntity,
   TeamSuccessResponse,
   UpdateTeamDto,
 } from './dto/team.dto';
@@ -25,6 +26,10 @@ export class TeamService {
 
   //特定チームの取得
   async findOne(id: number): Promise<FindOneTeamResponse> {
+    console.log(id);
+    if (!id) {
+      throw new BadRequestException('team id is empty');
+    }
     const team = await this.teamRepository.findOne({
       relations: ['tenant'],
       where: { id },
@@ -33,19 +38,42 @@ export class TeamService {
     if (!team) {
       throw new NotFoundException('team could not found');
     }
-    return team;
+
+    const teamResponse: FindOneTeamResponse = {
+      id: team.id,
+      teamName: team.team_name,
+      penalty: team.penalty,
+      tenant: team.tenant,
+    };
+
+    return teamResponse;
   }
 
   //テナント内の全チーム取得
-  async findAll(tenant_id: number): Promise<FindAllTeamResponse> {
+  async findAll(tenantId: number): Promise<FindAllTeamResponse> {
+    console.log(tenantId);
+    console.log('AAAAAAAA');
     const teams = await this.teamRepository.find({
       relations: ['tenant'],
-      where: { tenant: { id: tenant_id } },
+      where: { tenant: { id: tenantId } },
     });
+
+    // プロパティ名の変換
+    const teamsResponse: FindOneTeamResponse[] = teams.map((t: TeamEntity) => {
+      const teamResponse: FindOneTeamResponse = {
+        id: t.id,
+        teamName: t.team_name,
+        penalty: t.penalty,
+        tenant: t.tenant,
+      };
+      return teamResponse;
+    });
+
     const response = {
-      total: teams.length,
-      teams,
+      total: teamsResponse.length,
+      teams: teamsResponse,
     };
+
     return response;
   }
 
@@ -66,17 +94,15 @@ export class TeamService {
   // チーム作成
   async create(team: CreateTeamDto): Promise<TeamSuccessResponse> {
     // 対象のテナントを取得
-    const tenant = await this.tenantService.findOneById(team.tenant_id);
+    const tenant = await this.tenantService.findOneById(team.tenantId);
     // テナント内に同名のチームが既に存在する場合エラーを投げる
     // fixMe: エラーを一括してハンドリングしたい(duplicate/外部キー)
-    if ((await this.teamExist(team.team_name, team.tenant_id)) === true) {
-      throw new BadRequestException(
-        `tenant ${team.team_name} is already exist`,
-      );
+    if ((await this.teamExist(team.teamName, team.tenantId)) === true) {
+      throw new BadRequestException(`tenant ${team.teamName} is already exist`);
     }
 
     const createdTeam = await this.teamRepository.save({
-      team_name: team.team_name,
+      team_name: team.teamName,
       tenant: tenant,
     });
 
@@ -90,7 +116,7 @@ export class TeamService {
     const updateTeam = await this.findOne(id);
 
     // 更新する値を設定 => 値がない場合は既存の値をそのまま残す
-    updateTeam.team_name = team.team_name ?? updateTeam.team_name;
+    updateTeam.teamName = team.teamName ?? updateTeam.teamName;
     updateTeam.penalty = team.penalty ?? updateTeam.penalty;
     this.teamRepository.save(updateTeam);
     return { id, message: 'update success' };

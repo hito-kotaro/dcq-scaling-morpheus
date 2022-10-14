@@ -31,8 +31,8 @@ export class TeamController {
 
   @Get('/all/:tenantId')
   @ApiResponse({ status: HttpStatus.OK, type: FindAllTeamResponse })
-  async findAll(@Param('tenantId') tenant_id: number) {
-    return await this.teamService.findAll(tenant_id);
+  async findAll(@Param('tenantId') tenantId: number) {
+    return await this.teamService.findAll(tenantId);
   }
 
   @Post()
