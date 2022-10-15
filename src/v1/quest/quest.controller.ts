@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  CreateQuestDto,
+  CreateQuestRequest,
   FindOneQuestResponse,
   QuestSuccessResponse,
-  UpdateQuestDto,
+  UpdateQuestRequest,
 } from './dto/quest.dto';
 import { QuestService } from './quest.service';
 
@@ -36,13 +36,13 @@ export class QuestController {
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: QuestSuccessResponse })
-  async create(@Body(ValidationPipe) createQuest: CreateQuestDto) {
+  async create(@Body(ValidationPipe) createQuest: CreateQuestRequest) {
     return this.questService.create(createQuest);
   }
 
   @Put()
   @ApiResponse({ status: HttpStatus.OK, type: QuestSuccessResponse })
-  async update(@Body(ValidationPipe) updateQuest: UpdateQuestDto) {
+  async update(@Body(ValidationPipe) updateQuest: UpdateQuestRequest) {
     return this.questService.update(updateQuest);
   }
 }

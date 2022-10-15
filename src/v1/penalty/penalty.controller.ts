@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  CreatePenaltyDto,
+  CreatePenaltyRequest,
   FindAllPenaltyResponse,
   FindOnePenaltyResponse,
   PenaltySuccessResponse,
-  UpdatePenaltyDto,
+  UpdatePenaltyRequest,
 } from './dto/penalty.dto';
 import { PenaltyService } from './penalty.service';
 
@@ -37,13 +37,13 @@ export class PenaltyController {
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: PenaltySuccessResponse })
-  async create(@Body(ValidationPipe) createQuest: CreatePenaltyDto) {
+  async create(@Body(ValidationPipe) createQuest: CreatePenaltyRequest) {
     return this.penaltyService.create(createQuest);
   }
 
   @Put()
   @ApiResponse({ status: HttpStatus.OK, type: PenaltySuccessResponse })
-  async update(@Body(ValidationPipe) updateQuest: UpdatePenaltyDto) {
+  async update(@Body(ValidationPipe) updateQuest: UpdatePenaltyRequest) {
     return this.penaltyService.update(updateQuest);
   }
 }

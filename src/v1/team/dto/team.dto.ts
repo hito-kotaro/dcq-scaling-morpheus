@@ -24,14 +24,14 @@ export class FindAllTeamResponse {
   readonly total: number;
 }
 
-export class CreateTeamDto {
+export class CreateTeamRequest {
   @ApiProperty({ type: Number })
   readonly tenant_id: number;
   @ApiProperty({ type: String })
   readonly team_name: string;
 }
 
-export class UpdateTeamDto {
+export class UpdateTeamRequest {
   @ApiProperty({ type: String })
   @IsOptional()
   readonly team_name?: string;

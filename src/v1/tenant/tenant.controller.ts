@@ -11,7 +11,7 @@ import {
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   CreateTenantRequest,
-  GetOneTenantResponse,
+  FindOneTenantResponse,
   TenantSuccessResponse,
   UpdateTenantRequest,
 } from './dto/tenant.dto';
@@ -23,18 +23,18 @@ export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
 
   @Get('/name/:tenantName')
-  @ApiResponse({ status: HttpStatus.OK, type: GetOneTenantResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })
   async findOneByName(
     @Param('tenantName') tenantName: string,
-  ): Promise<GetOneTenantResponse> {
+  ): Promise<FindOneTenantResponse> {
     return await this.tenantService.findOneByName(tenantName);
   }
 
   @Get('/id/:tenantId')
-  @ApiResponse({ status: HttpStatus.OK, type: GetOneTenantResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })
   async findOneById(
     @Param('tenantId') tenantId: number,
-  ): Promise<GetOneTenantResponse> {
+  ): Promise<FindOneTenantResponse> {
     return await this.tenantService.findOneById(tenantId);
   }
 

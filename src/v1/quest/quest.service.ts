@@ -9,11 +9,11 @@ import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
-  CreateQuestDto,
+  CreateQuestRequest,
   FindAllQuestResponse,
   FindOneQuestResponse,
   QuestSuccessResponse,
-  UpdateQuestDto,
+  UpdateQuestRequest,
 } from './dto/quest.dto';
 
 @Injectable()
@@ -76,7 +76,7 @@ export class QuestService {
   }
 
   // クエスト作成
-  async create(createQuest: CreateQuestDto): Promise<QuestSuccessResponse> {
+  async create(createQuest: CreateQuestRequest): Promise<QuestSuccessResponse> {
     const { tenant_id, owner_id, title, description, example, reward } =
       createQuest;
     const isExist = await this.titleExist(tenant_id, title);
@@ -103,7 +103,7 @@ export class QuestService {
     return { id: createdQuest.id, message: 'create success' };
   }
 
-  async update(updateQuest: UpdateQuestDto): Promise<QuestSuccessResponse> {
+  async update(updateQuest: UpdateQuestRequest): Promise<QuestSuccessResponse> {
     const { id, title, description, example, reward, status } = updateQuest;
 
     // 対象のクエストを取得

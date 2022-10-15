@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  CreateRequestDto,
+  CreateRequestRequest,
   FindOneRequestResponse,
   RequestSuccessResponse,
-  UpdateRequestDto,
+  UpdateRequestRequest,
 } from './dto/request.dto';
 import { RequestService } from './request.service';
 
@@ -36,13 +36,13 @@ export class RequestController {
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: RequestSuccessResponse })
-  async create(@Body(ValidationPipe) createRequest: CreateRequestDto) {
+  async create(@Body(ValidationPipe) createRequest: CreateRequestRequest) {
     return this.requestService.create(createRequest);
   }
 
   @Put()
   @ApiResponse({ status: HttpStatus.OK, type: RequestSuccessResponse })
-  async updadte(@Body(ValidationPipe) updateRequest: UpdateRequestDto) {
+  async updadte(@Body(ValidationPipe) updateRequest: UpdateRequestRequest) {
     return await this.requestService.update(updateRequest);
   }
 }

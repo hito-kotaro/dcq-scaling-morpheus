@@ -9,11 +9,11 @@ import { Teams } from 'src/entity/team.entity';
 import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
 import {
-  CreateTeamDto,
+  CreateTeamRequest,
   FindAllTeamResponse,
   FindOneTeamResponse,
   TeamSuccessResponse,
-  UpdateTeamDto,
+  UpdateTeamRequest,
 } from './dto/team.dto';
 
 // FixMe:Findの結果で外部キーのtenantIdが取得できない -> relationsオプションで取得
@@ -72,7 +72,7 @@ export class TeamService {
   // }
 
   // チーム作成
-  async create(team: CreateTeamDto): Promise<TeamSuccessResponse> {
+  async create(team: CreateTeamRequest): Promise<TeamSuccessResponse> {
     // 対象のテナントを取得
     const tenant = await this.tenantService.findOneById(team.tenant_id);
     // fixMe: エラーを一括してハンドリングしたい(duplicate/外部キー)
@@ -90,7 +90,10 @@ export class TeamService {
 
   // チーム更新
   // 更新可能なパラメータ:penalty, name
-  async update(id: number, team: UpdateTeamDto): Promise<TeamSuccessResponse> {
+  async update(
+    id: number,
+    team: UpdateTeamRequest,
+  ): Promise<TeamSuccessResponse> {
     // 更新対象を取得
     const updateTeam = await this.findOne(id);
 

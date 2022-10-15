@@ -32,7 +32,7 @@ export class FindAllIssueResponse {
   total: number;
 }
 
-export class CreateIssueDto {
+export class CreateIssueRequest {
   @ApiProperty({ type: String })
   title: string;
 
@@ -53,17 +53,7 @@ export class CreateIssueDto {
   penalty_id: number;
 }
 
-export class UpdateIssueDto {
-  @ApiProperty({ type: String })
-  @IsOptional()
-  title: string;
-
-  @ApiProperty({ type: String })
-  @IsOptional()
-  comment: string;
-}
-
-export class DeleteIssueDto {
+export class DeleteIssueRequest {
   @ApiProperty({ type: Number })
   id: number;
 }

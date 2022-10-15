@@ -32,7 +32,7 @@ export class UserSuccessResponse {
   readonly message: string;
 }
 
-export class CreateUserDto {
+export class CreateUserRequest {
   @ApiProperty({ type: Number })
   readonly tenant_id: number;
 
@@ -52,7 +52,7 @@ export class CreateUserDto {
   readonly point: number;
 }
 
-export class UpdateUserDto {
+export class UpdateUserRequest {
   @ApiProperty({ type: String })
   @IsOptional()
   readonly updated_user_name: string;

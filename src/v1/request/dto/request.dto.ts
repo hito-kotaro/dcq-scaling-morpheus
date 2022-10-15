@@ -27,7 +27,7 @@ export class FindAllRequestResponse {
   readonly total: number;
 }
 
-export class CreateRequestDto {
+export class CreateRequestRequest {
   @ApiProperty({ type: String })
   readonly title: string;
 
@@ -44,7 +44,7 @@ export class CreateRequestDto {
   readonly applicant_id: number;
 }
 
-export class UpdateRequestDto {
+export class UpdateRequestRequest {
   @ApiProperty({ type: Number })
   readonly id: number;
   @ApiProperty({ type: String })

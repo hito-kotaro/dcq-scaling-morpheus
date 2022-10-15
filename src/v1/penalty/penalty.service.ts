@@ -9,11 +9,11 @@ import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
-  CreatePenaltyDto,
+  CreatePenaltyRequest,
   FindAllPenaltyResponse,
   FindOnePenaltyResponse,
   PenaltySuccessResponse,
-  UpdatePenaltyDto,
+  UpdatePenaltyRequest,
 } from './dto/penalty.dto';
 
 @Injectable()
@@ -75,7 +75,7 @@ export class PenaltyService {
   }
 
   async create(
-    createPenalty: CreatePenaltyDto,
+    createPenalty: CreatePenaltyRequest,
   ): Promise<PenaltySuccessResponse> {
     const { title, description, penalty, tenant_id, owner_id } = createPenalty;
     const isExist = await this.titleExist(tenant_id, title);
@@ -99,7 +99,7 @@ export class PenaltyService {
   }
 
   async update(
-    updatePenalty: UpdatePenaltyDto,
+    updatePenalty: UpdatePenaltyRequest,
   ): Promise<PenaltySuccessResponse> {
     const { id, title, description, penalty } = updatePenalty;
     const targetPenalty = await this.findOneById(id);

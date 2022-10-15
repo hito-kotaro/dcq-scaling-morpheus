@@ -33,7 +33,7 @@ export class FindAllPenaltyResponse {
   total: number;
 }
 
-export class CreatePenaltyDto {
+export class CreatePenaltyRequest {
   @ApiProperty({ type: String })
   title: string;
 
@@ -51,7 +51,7 @@ export class CreatePenaltyDto {
   owner_id: number;
 }
 
-export class UpdatePenaltyDto {
+export class UpdatePenaltyRequest {
   @ApiProperty({ type: Number })
   id: number;
 

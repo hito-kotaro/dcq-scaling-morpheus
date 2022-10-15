@@ -7,8 +7,8 @@ import { TeamService } from '../team/team.service';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
-  CreateIssueDto,
-  DeleteIssueDto,
+  CreateIssueRequest,
+  DeleteIssueRequest,
   FindAllIssueResponse,
   FindOneIssueResonse,
   IssueSuccessResponse,
@@ -45,7 +45,7 @@ export class IssueService {
     return { issues, total: issues.length };
   }
 
-  async create(createIssue: CreateIssueDto): Promise<IssueSuccessResponse> {
+  async create(createIssue: CreateIssueRequest): Promise<IssueSuccessResponse> {
     const { title, comment, tenant_id, team_id, authorizer_id, penalty_id } =
       createIssue;
     const tenant = await this.tenantService.findOneById(tenant_id);

@@ -7,9 +7,7 @@ import {
   IsInt,
 } from 'class-validator';
 
-export class GetOneTenantResponse {
-  // @ApiProperty({ type: Tenants, description: 'テナント情報' })
-  // tenant: Tenants;
+export class FindOneTenantResponse {
   @ApiProperty({ type: Number, description: 'テナントID' })
   readonly id: number;
 

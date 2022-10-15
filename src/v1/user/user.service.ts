@@ -10,9 +10,9 @@ import { RoleService } from '../role/role.service';
 import { TeamService } from '../team/team.service';
 import { TenantService } from '../tenant/tenant.service';
 import {
-  CreateUserDto,
+  CreateUserRequest,
   FindOneUserResponse,
-  UpdateUserDto,
+  UpdateUserRequest,
   UserSuccessResponse,
 } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -76,7 +76,7 @@ export class UserService {
     return user;
   }
 
-  async create(createUser: CreateUserDto): Promise<UserSuccessResponse> {
+  async create(createUser: CreateUserRequest): Promise<UserSuccessResponse> {
     const { role_id, tenant_id, team_id, user_name, password, point } =
       createUser;
 
@@ -105,7 +105,7 @@ export class UserService {
 
   async update(
     user_id: number,
-    user: UpdateUserDto,
+    user: UpdateUserRequest,
   ): Promise<UserSuccessResponse> {
     const { updated_user_name, updated_team_id, updated_role_id, add_point } =
       user;

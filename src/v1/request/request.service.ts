@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { QuestService } from '../quest/quest.service';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
-import { CreateRequestDto, UpdateRequestDto } from './dto/request.dto';
+import { CreateRequestRequest, UpdateRequestRequest } from './dto/request.dto';
 
 @Injectable()
 export class RequestService {
@@ -48,7 +48,7 @@ export class RequestService {
     return { requests, total: requests.length };
   }
 
-  async create(createRequest: CreateRequestDto) {
+  async create(createRequest: CreateRequestRequest) {
     const { title, description, quest_id, applicant_id, tenant_id } =
       createRequest;
     // fixMe: appilcant -> applicant
@@ -68,7 +68,7 @@ export class RequestService {
     return { id: createdRequest.id, message: 'create success' };
   }
 
-  async update(updateRequest: UpdateRequestDto) {
+  async update(updateRequest: UpdateRequestRequest) {
     const { id, status } = updateRequest;
     console.log(status);
     //ターゲットを取得

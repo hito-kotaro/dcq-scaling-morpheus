@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  CreateIssueDto,
+  CreateIssueRequest,
   FindAllIssueResponse,
   FindOneIssueResonse,
   IssueSuccessResponse,
@@ -36,7 +36,7 @@ export class IssueController {
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: IssueSuccessResponse })
-  async create(@Body(ValidationPipe) createQuest: CreateIssueDto) {
+  async create(@Body(ValidationPipe) createQuest: CreateIssueRequest) {
     return this.issueService.create(createQuest);
   }
 

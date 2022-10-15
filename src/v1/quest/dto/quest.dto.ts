@@ -40,7 +40,7 @@ export class FindAllQuestResponse {
   total: number;
 }
 
-export class CreateQuestDto {
+export class CreateQuestRequest {
   @ApiProperty({ type: String })
   title: string;
 
@@ -71,7 +71,7 @@ export class QuestSuccessResponse {
   readonly message: string;
 }
 
-export class UpdateQuestDto {
+export class UpdateQuestRequest {
   @ApiProperty({ type: Number })
   readonly id: number;
 

@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  CreateTeamDto,
+  CreateTeamRequest,
   FindAllTeamResponse,
   FindOneTeamResponse,
   TeamSuccessResponse,
-  UpdateTeamDto,
+  UpdateTeamRequest,
 } from './dto/team.dto';
 import { TeamService } from './team.service';
 
@@ -37,7 +37,7 @@ export class TeamController {
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
-  create(@Body() createTeam: CreateTeamDto) {
+  create(@Body() createTeam: CreateTeamRequest) {
     return this.teamService.create(createTeam);
   }
 
@@ -45,7 +45,7 @@ export class TeamController {
   @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
   update(
     @Param('teamId') id: number,
-    @Body(ValidationPipe) updateTeam: UpdateTeamDto,
+    @Body(ValidationPipe) updateTeam: UpdateTeamRequest,
   ) {
     return this.teamService.update(id, updateTeam);
   }

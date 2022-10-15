@@ -8,7 +8,7 @@ import { Tenants } from 'src/entity/tenant.entity';
 import { Repository } from 'typeorm';
 import {
   CreateTenantRequest,
-  GetOneTenantResponse,
+  FindOneTenantResponse,
   TenantSuccessResponse,
   UpdateTenantRequest,
 } from './dto/tenant.dto';
@@ -23,7 +23,7 @@ export class TenantService {
   async findOneById(
     tenantId: number,
     isPassword?: boolean,
-  ): Promise<GetOneTenantResponse> {
+  ): Promise<FindOneTenantResponse> {
     const tenant: Tenants = await this.tenantRepository.findOne({
       where: { id: tenantId },
     });
@@ -40,7 +40,7 @@ export class TenantService {
   async findOneByName(
     tenantName: string,
     isPassword?: boolean,
-  ): Promise<GetOneTenantResponse> {
+  ): Promise<FindOneTenantResponse> {
     const tenant: Tenants = await this.tenantRepository.findOne({
       where: { tenant_name: tenantName },
     });
