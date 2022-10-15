@@ -25,13 +25,25 @@ export class QuestService {
   ) {}
 
   // findOne
-  async findOne(id: number): Promise<FindOneQuestResponse> {
+  async findOneById(id: number): Promise<FindOneQuestResponse> {
     const quest = await this.questRepository.findOne({
       relations: ['tenant', 'owner'],
       where: { id },
     });
     if (!quest) {
-      throw new NotFoundException('quest could not found');
+      throw new NotFoundException('could not found quest');
+    }
+
+    return quest;
+  }
+
+  async findOneByName(title: string): Promise<FindOneQuestResponse> {
+    const quest = await this.questRepository.findOne({
+      relations: ['tenant', 'owner'],
+      where: { title },
+    });
+    if (!quest) {
+      throw new NotFoundException('could not found quest');
     }
 
     return quest;
@@ -92,23 +104,15 @@ export class QuestService {
   }
 
   async update(updateQuest: UpdateQuestDto): Promise<QuestSuccessResponse> {
-    const {
-      id,
-      updated_title,
-      updated_description,
-      updated_example,
-      updated_reward,
-      updated_status,
-    } = updateQuest;
+    const { id, title, description, example, reward, status } = updateQuest;
 
     // 対象のクエストを取得
-    const targetQuest = await this.findOne(id);
-
-    targetQuest.title = updated_title ?? targetQuest.title;
-    targetQuest.description = updated_description ?? targetQuest.description;
-    targetQuest.example = updated_example ?? targetQuest.example;
-    targetQuest.reward = updated_reward ?? targetQuest.reward;
-    targetQuest.status = updated_status ?? targetQuest.status;
+    const targetQuest = await this.findOneById(id);
+    targetQuest.title = title ?? targetQuest.title;
+    targetQuest.description = description ?? targetQuest.description;
+    targetQuest.example = example ?? targetQuest.example;
+    targetQuest.reward = reward ?? targetQuest.reward;
+    targetQuest.status = status ?? targetQuest.status;
     this.questRepository.save(targetQuest);
     return { id, message: 'update success' };
   }

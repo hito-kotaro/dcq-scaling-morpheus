@@ -77,22 +77,22 @@ export class UpdateQuestDto {
 
   @ApiProperty({ type: String })
   @IsOptional()
-  updated_title: string;
+  title: string;
 
   @ApiProperty({ type: String })
   @IsOptional()
-  updated_description: string;
+  description: string;
 
   @ApiProperty({ type: String })
   @IsOptional()
-  updated_example: string;
+  example: string;
 
   @ApiProperty({ type: Number })
   @IsPositive()
   @IsOptional()
-  updated_reward: number;
+  reward: number;
 
   @ApiProperty({ type: Boolean })
   @IsOptional()
-  updated_status: boolean;
+  status: boolean;
 }

@@ -25,7 +25,7 @@ export class QuestController {
   @Get(':questId')
   @ApiResponse({ status: HttpStatus.OK, type: FindOneQuestResponse })
   async findOne(@Param('questId') id: number) {
-    return await this.questService.findOne(id);
+    return await this.questService.findOneById(id);
   }
 
   @Get('/all/:tenantId')
