@@ -28,16 +28,14 @@ export class RequestService {
   }
 
   async findOne(id: number) {
-    const isExist = await this.requestExist(id);
-
-    if (isExist === false) {
-      throw new NotFoundException('request could not found');
-    }
-
     const request = await this.requestRepository.findOne({
       relations: ['quest'],
       where: { id },
     });
+
+    if (!request) {
+      throw new NotFoundException('could not found request');
+    }
 
     return request;
   }
@@ -71,12 +69,12 @@ export class RequestService {
   }
 
   async update(updateRequest: UpdateRequestDto) {
-    const { id, updatedStatus } = updateRequest;
-    console.log(updatedStatus);
+    const { id, status } = updateRequest;
+    console.log(status);
     //ターゲットを取得
     const targetRequest = await this.findOne(id);
     console.log(targetRequest);
-    targetRequest.status = updatedStatus;
+    targetRequest.status = status;
     this.requestRepository.save(targetRequest);
     return { id: targetRequest.id, message: 'update success' };
   }

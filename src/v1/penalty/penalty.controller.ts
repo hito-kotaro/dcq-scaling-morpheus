@@ -26,7 +26,7 @@ export class PenaltyController {
   @Get(':penaltyId')
   @ApiResponse({ status: HttpStatus.OK, type: FindOnePenaltyResponse })
   async findOne(@Param('penaltyId') id: number) {
-    return await this.penaltyService.findOne(id);
+    return await this.penaltyService.findOneById(id);
   }
 
   @Get('/all/:tenantId')

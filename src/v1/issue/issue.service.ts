@@ -51,7 +51,7 @@ export class IssueService {
     const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOne(team_id);
     const authorizer = await this.userService.findOneById(authorizer_id);
-    const penalty = await this.penaltyService.findOne(penalty_id);
+    const penalty = await this.penaltyService.findOneById(penalty_id);
 
     const createdIssue = await this.issueRepository.save({
       title,

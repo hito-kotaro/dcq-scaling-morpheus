@@ -48,7 +48,7 @@ export class UpdateRequestDto {
   @ApiProperty({ type: Number })
   readonly id: number;
   @ApiProperty({ type: String })
-  updatedStatus: string;
+  status: string;
 }
 
 export class RequestSuccessResponse {

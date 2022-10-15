@@ -25,14 +25,27 @@ export class PenaltyService {
     private penaltyRepository: Repository<Penalties>,
   ) {}
 
-  async findOne(id: number): Promise<FindOnePenaltyResponse> {
+  async findOneById(id: number): Promise<FindOnePenaltyResponse> {
     const penalty = await this.penaltyRepository.findOne({
       relations: ['tenant', 'owner'],
       where: { id },
     });
 
     if (!penalty) {
-      throw new NotFoundException('penalty could not found');
+      throw new NotFoundException('could not found penalty');
+    }
+
+    return penalty;
+  }
+
+  async findOneByName(penaltyTitle: string): Promise<FindOnePenaltyResponse> {
+    const penalty = await this.penaltyRepository.findOne({
+      relations: ['tenant', 'owner'],
+      where: { title: penaltyTitle },
+    });
+
+    if (!penalty) {
+      throw new NotFoundException('could not found penalty');
     }
 
     return penalty;
@@ -89,7 +102,7 @@ export class PenaltyService {
     updatePenalty: UpdatePenaltyDto,
   ): Promise<PenaltySuccessResponse> {
     const { id, title, description, penalty } = updatePenalty;
-    const targetPenalty = await this.findOne(id);
+    const targetPenalty = await this.findOneById(id);
     targetPenalty.title = title ?? targetPenalty.title;
     targetPenalty.description = description ?? targetPenalty.description;
     targetPenalty.penalty = penalty ?? targetPenalty.penalty;
