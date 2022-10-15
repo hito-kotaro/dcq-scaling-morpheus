@@ -36,6 +36,7 @@ export class CreateIssueDto {
   @ApiProperty({ type: String })
   title: string;
 
+  // fixMe: descriptionにしたい
   @ApiProperty({ type: String })
   comment: string;
 
