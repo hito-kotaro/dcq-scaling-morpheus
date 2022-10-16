@@ -8,9 +8,11 @@ import { Tenants } from 'src/entity/tenant.entity';
 import { Repository } from 'typeorm';
 import {
   CreateTenantRequest,
+  CreateTenantResponse,
   FindOneTenantResponse,
   TenantSuccessResponse,
   UpdateTenantRequest,
+  UpdateTenantResponse,
 } from './dto/tenant.dto';
 import * as bcrypt from 'bcryptjs';
 
@@ -54,7 +56,7 @@ export class TenantService {
     return tenant;
   }
 
-  async create(tenant: CreateTenantRequest): Promise<TenantSuccessResponse> {
+  async create(tenant: CreateTenantRequest): Promise<CreateTenantResponse> {
     const isExist = await this.findOneByName(tenant.tenant_name);
 
     if (isExist) {
@@ -66,13 +68,13 @@ export class TenantService {
       password: await bcrypt.hash(tenant.password, 12),
     });
 
-    return { tenant_id: createdTenant.id, message: 'create success' };
+    return createdTenant;
   }
 
   async update(
     id: number,
     tenant: UpdateTenantRequest,
-  ): Promise<TenantSuccessResponse> {
+  ): Promise<UpdateTenantResponse> {
     // 対象を探す -> 対象がなければfindOne内でエラーを投げる
     const updateTenant = await this.findOneById(id);
 
@@ -82,6 +84,6 @@ export class TenantService {
     updateTenant.slack_token = tenant.slack_token ?? updateTenant.slack_token;
     this.tenantRepository.save(updateTenant);
 
-    return { tenant_id: updateTenant.id, message: 'update success' };
+    return updateTenant;
   }
 }

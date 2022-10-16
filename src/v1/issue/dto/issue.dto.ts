@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
 import { Penalties } from 'src/entity/penalty.entity';
 import { Teams } from 'src/entity/team.entity';
 import { Users } from 'src/entity/user.entity';
