@@ -11,7 +11,7 @@ export class FindOneIssueResonse {
   title: string;
 
   @ApiProperty({ type: String })
-  comment: string;
+  description: string;
 
   @ApiProperty({ type: Users })
   authorizer: Users;
@@ -35,9 +35,8 @@ export class CreateIssueRequest {
   @ApiProperty({ type: String })
   title: string;
 
-  // fixMe: descriptionにしたい
   @ApiProperty({ type: String })
-  comment: string;
+  description: string;
 
   @ApiProperty({ type: Number })
   tenant_id: number;

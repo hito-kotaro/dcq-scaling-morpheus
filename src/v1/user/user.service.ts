@@ -46,11 +46,12 @@ export class UserService {
 
   async findOneByName(
     userName: string,
+    tenantId: number,
     isPassword?: boolean,
   ): Promise<FindOneUserResponse> {
     const user: Users = await this.userRepository.findOne({
       relations: ['role', 'team', 'tenant'],
-      where: { user_name: userName },
+      where: { user_name: userName, tenant: { id: tenantId } },
     });
 
     if (!user) {
@@ -80,7 +81,10 @@ export class UserService {
     const { role_id, tenant_id, team_id, user_name, password, point } =
       createUser;
 
-    const isExist = await this.findOneByName(createUser.user_name);
+    const isExist = await this.findOneByName(
+      createUser.user_name,
+      createUser.tenant_id,
+    );
 
     if (isExist) {
       throw new BadRequestException(`${createUser.user_name} already exist`);

@@ -8,7 +8,6 @@ import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
   CreateIssueRequest,
-  DeleteIssueRequest,
   FindAllIssueResponse,
   FindOneIssueResonse,
   IssueSuccessResponse,
@@ -46,8 +45,14 @@ export class IssueService {
   }
 
   async create(createIssue: CreateIssueRequest): Promise<IssueSuccessResponse> {
-    const { title, comment, tenant_id, team_id, authorizer_id, penalty_id } =
-      createIssue;
+    const {
+      title,
+      description,
+      tenant_id,
+      team_id,
+      authorizer_id,
+      penalty_id,
+    } = createIssue;
     const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOne(team_id);
     const authorizer = await this.userService.findOneById(authorizer_id);
@@ -55,7 +60,7 @@ export class IssueService {
 
     const createdIssue = await this.issueRepository.save({
       title,
-      comment,
+      description,
       tenant,
       team,
       authorizer,

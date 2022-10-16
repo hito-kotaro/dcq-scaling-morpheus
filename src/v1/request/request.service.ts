@@ -51,16 +51,14 @@ export class RequestService {
   async create(createRequest: CreateRequestRequest) {
     const { title, description, quest_id, applicant_id, tenant_id } =
       createRequest;
-    // fixMe: appilcant -> applicant
-    const appilcant = await this.userService.findOneById(applicant_id);
+    const applicant = await this.userService.findOneById(applicant_id);
     const quest = await this.questService.findOneById(quest_id);
     const tenant = await this.tenantService.findOneById(tenant_id);
     const createdRequest = await this.requestRepository.save({
       title,
       description,
       quest,
-      // fixMe: appilcant -> applicant
-      appilcant,
+      applicant,
       tenant,
       status: 'open',
     });

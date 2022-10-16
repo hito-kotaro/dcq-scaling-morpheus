@@ -44,7 +44,7 @@ export class Issues {
   title: string;
 
   @Column({ comment: 'ペナルティ付与コメント', type: 'text' })
-  comment: string;
+  description: string;
 
   @ApiProperty()
   @CreateDateColumn({

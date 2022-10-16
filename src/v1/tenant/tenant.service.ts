@@ -57,7 +57,9 @@ export class TenantService {
   }
 
   async create(tenant: CreateTenantRequest): Promise<CreateTenantResponse> {
-    const isExist = await this.findOneByName(tenant.tenant_name);
+    const isExist: Tenants = await this.tenantRepository.findOne({
+      where: { tenant_name: tenant.tenant_name },
+    });
 
     if (isExist) {
       throw new BadRequestException(`${tenant.tenant_name} is already exist`);
@@ -75,10 +77,8 @@ export class TenantService {
     id: number,
     tenant: UpdateTenantRequest,
   ): Promise<UpdateTenantResponse> {
-    // 対象を探す -> 対象がなければfindOne内でエラーを投げる
     const updateTenant = await this.findOneById(id);
 
-    // 更新する値を設定 -> 値がない場合は既存の値をそのまま残す
     updateTenant.password = tenant.password ?? updateTenant.password;
     updateTenant.season_id = tenant.season_id ?? updateTenant.season_id;
     updateTenant.slack_token = tenant.slack_token ?? updateTenant.slack_token;

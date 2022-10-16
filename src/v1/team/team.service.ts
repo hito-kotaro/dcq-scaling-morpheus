@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { throwError } from 'rxjs';
 import { Teams } from 'src/entity/team.entity';
 import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
@@ -16,7 +15,6 @@ import {
   UpdateTeamRequest,
 } from './dto/team.dto';
 
-// FixMe:Findの結果で外部キーのtenantIdが取得できない -> relationsオプションで取得
 @Injectable()
 export class TeamService {
   constructor(
@@ -75,7 +73,6 @@ export class TeamService {
   async create(team: CreateTeamRequest): Promise<TeamSuccessResponse> {
     // 対象のテナントを取得
     const tenant = await this.tenantService.findOneById(team.tenant_id);
-    // fixMe: エラーを一括してハンドリングしたい(duplicate/外部キー)
     if (tenant) {
       throw new BadRequestException(`${team.team_name} already exist`);
     }
