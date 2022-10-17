@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,15 +12,18 @@ import {
   CreateTenantRequest,
   CreateTenantResponse,
   FindOneTenantResponse,
-  TenantSuccessResponse,
   UpdateTenantRequest,
   UpdateTenantResponse,
 } from './dto/tenant.dto';
 import * as bcrypt from 'bcryptjs';
+import { TeamService } from '../team/team.service';
 
 @Injectable()
 export class TenantService {
   constructor(
+    // private readonly teamService: TeamService,
+    @Inject(forwardRef(() => TeamService))
+    private teamService: TeamService,
     @InjectRepository(Tenants) private tenantRepository: Repository<Tenants>,
   ) {}
 
@@ -68,6 +73,11 @@ export class TenantService {
     const createdTenant = await this.tenantRepository.save({
       tenant_name: tenant.tenant_name,
       password: await bcrypt.hash(tenant.password, 12),
+    });
+
+    this.teamService.create({
+      tenant_id: createdTenant.id,
+      team_name: 'DefaultTeam',
     });
 
     return createdTenant;

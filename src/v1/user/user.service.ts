@@ -81,10 +81,12 @@ export class UserService {
     const { role_id, tenant_id, team_id, user_name, password, point } =
       createUser;
 
-    const isExist = await this.findOneByName(
-      createUser.user_name,
-      createUser.tenant_id,
-    );
+    const isExist = await this.userRepository.findOne({
+      where: {
+        user_name: createUser.user_name,
+        tenant: { id: createUser.tenant_id },
+      },
+    });
 
     if (isExist) {
       throw new BadRequestException(`${createUser.user_name} already exist`);

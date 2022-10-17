@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teams } from 'src/entity/team.entity';
+import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
 import {
@@ -19,8 +20,28 @@ import {
 export class TeamService {
   constructor(
     private readonly tenantService: TenantService,
+    @InjectRepository(Users) private userRepository: Repository<Users>,
     @InjectRepository(Teams) private teamRepository: Repository<Teams>,
   ) {}
+
+  // チーム情報の集計
+  async teamSummary(team_id: number) {
+    // member集計
+    const users: Users[] = await this.userRepository.find({
+      relations: ['role', 'team', 'tenant'],
+      where: { team: { id: team_id } },
+    });
+
+    let point;
+    users.map((u: Users) => (point = point + u.point));
+
+    const teamInfo = {
+      member: users.length,
+      point,
+    };
+
+    return teamInfo;
+  }
 
   //特定チームの取得
   async findOne(id: number): Promise<FindOneTeamResponse> {
@@ -33,47 +54,53 @@ export class TeamService {
       where: { id },
     });
 
+    const teamInfo = await this.teamSummary(id);
+
     if (!team) {
       throw new NotFoundException('team could not found');
     }
 
-    return team;
-  }
-
-  //テナント内の全チーム取得
-  async findAll(tenantId: number): Promise<FindAllTeamResponse> {
-    const teams = await this.teamRepository.find({
-      relations: ['tenant'],
-      where: { tenant: { id: tenantId } },
-    });
-
-    const response = {
-      total: teams.length,
-      teams: teams,
+    const response: FindOneTeamResponse = {
+      id: team.id,
+      team_name: team.team_name,
+      member: teamInfo.member,
+      point: teamInfo.point,
+      penalty: team.penalty,
+      tenant_id: team.tenant.id,
     };
 
     return response;
   }
 
-  // チーム存在チェック
-  // async teamExist(team_name: string, tenant_id: number) {
-  //   const team = await this.teamRepository.findOne({
-  //     relations: ['tenant'],
-  //     where: { team_name: team_name, tenant: { id: tenant_id } },
-  //   });
+  //テナント内の全チーム取得
+  async findAll(tenantId: number): Promise<FindAllTeamResponse> {
+    let teamList: FindOneTeamResponse[];
+    const teams = await this.teamRepository.find({
+      relations: ['tenant'],
+      where: { tenant: { id: tenantId } },
+    });
 
-  //   if (team) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
+    teams.map(async (t: Teams) => teamList.push(await this.findOne(t.id)));
+
+    const response = {
+      total: teamList.length,
+      teams: teamList,
+    };
+
+    return response;
+  }
 
   // チーム作成
   async create(team: CreateTeamRequest): Promise<TeamSuccessResponse> {
     // 対象のテナントを取得
     const tenant = await this.tenantService.findOneById(team.tenant_id);
-    if (tenant) {
+
+    const isExist = await this.teamRepository.findOne({
+      relations: ['tenant'],
+      where: { team_name: team.team_name, tenant: { id: team.tenant_id } },
+    });
+
+    if (isExist) {
       throw new BadRequestException(`${team.team_name} already exist`);
     }
 

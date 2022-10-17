@@ -10,10 +10,19 @@ export class FindOneTeamResponse {
   team_name: string;
 
   @ApiProperty({ type: Number })
+  member: number;
+
+  @ApiProperty({ type: Number })
+  point: number;
+
+  @ApiProperty({ type: Number })
   penalty: number;
 
-  @ApiProperty({ type: Tenants })
-  readonly tenant: Tenants;
+  @ApiProperty({ type: Number })
+  readonly tenant_id: number;
+
+  // @ApiProperty({ type: Tenants })
+  // readonly tenant: Tenants;
 }
 
 export class FindAllTeamResponse {
