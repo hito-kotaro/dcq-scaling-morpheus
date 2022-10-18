@@ -32,7 +32,8 @@ export class TeamService {
       where: { team: { id: team_id } },
     });
 
-    let point;
+    let point = 0;
+    console.log(users);
     users.map((u: Users) => (point = point + u.point));
 
     const teamInfo = {
@@ -68,19 +69,27 @@ export class TeamService {
       penalty: team.penalty,
       tenant_id: team.tenant.id,
     };
+    console.log(response);
 
     return response;
   }
 
   //テナント内の全チーム取得
   async findAll(tenantId: number): Promise<FindAllTeamResponse> {
-    let teamList: FindOneTeamResponse[];
+    // const teamList: FindOneTeamResponse[] = [];
     const teams = await this.teamRepository.find({
       relations: ['tenant'],
       where: { tenant: { id: tenantId } },
     });
 
-    teams.map(async (t: Teams) => teamList.push(await this.findOne(t.id)));
+    const teamList = [];
+    const makeList = async () => {
+      // eslint-disable-next-line prefer-const
+      for (let t of teams) {
+        teamList.push(await this.findOne(t.id));
+      }
+    };
+    await makeList();
 
     const response = {
       total: teamList.length,
