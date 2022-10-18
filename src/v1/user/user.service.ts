@@ -67,7 +67,7 @@ export class UserService {
   async findLoginUser(userName: string, tenantName: string) {
     const user = await this.userRepository.findOne({
       relations: ['tenant'],
-      where: { user_name: userName, tenant: { tenant_name: tenantName } },
+      where: { user_name: userName, tenant: { name: tenantName } },
       // where: { user_name: userName },
     });
     console.log(user);

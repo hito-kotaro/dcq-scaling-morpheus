@@ -13,7 +13,7 @@ export class FindOneTenantResponse {
 
   @ApiProperty({ type: String, description: 'テナント名' })
   @IsString()
-  readonly tenant_name: string;
+  readonly name: string;
 
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   password: string;
@@ -44,7 +44,7 @@ export class CreateTenantRequest {
   @IsString()
   @MinLength(1)
   @MaxLength(20)
-  readonly tenant_name: string;
+  readonly name: string;
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   @IsString()
   @MinLength(8)
@@ -58,7 +58,7 @@ export class CreateTenantResponse {
 
   @ApiProperty({ type: String, description: 'テナント名' })
   @IsString()
-  readonly tenant_name: string;
+  readonly name: string;
 
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   password: string;
@@ -82,7 +82,7 @@ export class UpdateTenantResponse {
 
   @ApiProperty({ type: String, description: 'テナント名' })
   @IsString()
-  readonly tenant_name: string;
+  readonly name: string;
 
   @ApiProperty({ type: String, description: 'テナントパスワード' })
   password: string;

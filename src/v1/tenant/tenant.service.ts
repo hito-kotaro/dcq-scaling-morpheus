@@ -27,6 +27,7 @@ export class TenantService {
     @InjectRepository(Tenants) private tenantRepository: Repository<Tenants>,
   ) {}
 
+  // テナントID検索
   async findOneById(
     tenantId: number,
     isPassword?: boolean,
@@ -44,12 +45,13 @@ export class TenantService {
     return tenant;
   }
 
+  // テナント名検索(ログイン用)
   async findOneByName(
     tenantName: string,
     isPassword?: boolean,
   ): Promise<FindOneTenantResponse> {
     const tenant: Tenants = await this.tenantRepository.findOne({
-      where: { tenant_name: tenantName },
+      where: { name: tenantName },
     });
 
     if (!tenant) {
@@ -61,17 +63,18 @@ export class TenantService {
     return tenant;
   }
 
+  // テナント作成
   async create(tenant: CreateTenantRequest): Promise<CreateTenantResponse> {
     const isExist: Tenants = await this.tenantRepository.findOne({
-      where: { tenant_name: tenant.tenant_name },
+      where: { name: tenant.name },
     });
 
     if (isExist) {
-      throw new BadRequestException(`${tenant.tenant_name} is already exist`);
+      throw new BadRequestException(`${tenant.name} is already exist`);
     }
 
     const createdTenant = await this.tenantRepository.save({
-      tenant_name: tenant.tenant_name,
+      name: tenant.name,
       password: await bcrypt.hash(tenant.password, 12),
     });
 
@@ -83,6 +86,7 @@ export class TenantService {
     return createdTenant;
   }
 
+  // テナント情報更新
   async update(
     id: number,
     tenant: UpdateTenantRequest,

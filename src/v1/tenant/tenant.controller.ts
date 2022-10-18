@@ -22,22 +22,6 @@ import { TenantService } from './tenant.service';
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
 
-  @Get('/name/:tenantName')
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })
-  async findOneByName(
-    @Param('tenantName') tenantName: string,
-  ): Promise<FindOneTenantResponse> {
-    return await this.tenantService.findOneByName(tenantName);
-  }
-
-  @Get('/id/:tenantId')
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })
-  async findOneById(
-    @Param('tenantId') tenantId: number,
-  ): Promise<FindOneTenantResponse> {
-    return await this.tenantService.findOneById(tenantId);
-  }
-
   @Post()
   @ApiResponse({
     status: HttpStatus.OK,
@@ -45,6 +29,14 @@ export class TenantController {
   })
   create(@Body(ValidationPipe) createTenant: CreateTenantRequest) {
     return this.tenantService.create(createTenant);
+  }
+
+  @Get(':tenantId')
+  @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })
+  async findOneById(
+    @Param('tenantId') tenantId: number,
+  ): Promise<FindOneTenantResponse> {
+    return await this.tenantService.findOneById(tenantId);
   }
 
   @Put(':tenantId')

@@ -15,7 +15,7 @@ export class Tenants {
 
   @ApiProperty()
   @Column({ comment: 'テナント名', unique: true })
-  tenant_name: string;
+  name: string;
 
   @ApiProperty()
   @Column({ comment: 'テナントパスワード' })
