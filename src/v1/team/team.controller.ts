@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { tokenPayload } from '../auth/dto/auth.dto';
 import {
   CreateTeamRequest,
   FindAllTeamResponse,
@@ -27,7 +26,7 @@ import { TeamService } from './team.service';
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
-  @Get('/all/')
+  @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: FindAllTeamResponse })
   async findAll(@Request() req: any) {
@@ -38,9 +37,10 @@ export class TeamController {
   @Get(':teamId')
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: FindOneTeamResponse })
-  async findOne(@Param('teamId') id): Promise<FindOneTeamResponse> {
-    console.log(id);
-    console.log('getOneteam');
+  async findOne(
+    @Param('teamId') id,
+    @Request() req: any,
+  ): Promise<FindOneTeamResponse> {
     return await this.teamService.findOne(id);
   }
 

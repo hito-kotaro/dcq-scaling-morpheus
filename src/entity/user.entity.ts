@@ -14,7 +14,7 @@ import { Tenants } from './tenant.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
-@Index(['tenant', 'user_name'], { unique: true })
+@Index(['tenant', 'name'], { unique: true })
 export class Users {
   @ApiProperty()
   @PrimaryGeneratedColumn()
@@ -37,7 +37,7 @@ export class Users {
 
   @ApiProperty()
   @Column()
-  user_name: string;
+  name: string;
 
   @ApiProperty()
   @Column()

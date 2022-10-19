@@ -9,7 +9,7 @@ export class FindOneUserResponse {
   readonly id: number;
 
   @ApiProperty({ type: String })
-  user_name: string;
+  name: string;
 
   @ApiProperty({ type: Roles })
   role: Roles;
@@ -43,7 +43,7 @@ export class CreateUserRequest {
   readonly team_id: number;
 
   @ApiProperty({ type: String })
-  readonly user_name: string;
+  readonly name: string;
 
   @ApiProperty({ type: String })
   readonly password: string;
@@ -55,15 +55,15 @@ export class CreateUserRequest {
 export class UpdateUserRequest {
   @ApiProperty({ type: String })
   @IsOptional()
-  readonly updated_user_name: string;
+  readonly name: string;
 
   @IsOptional()
   @ApiProperty({ type: Number })
-  readonly updated_role_id: number;
+  readonly role_id: number;
 
   @IsOptional()
   @ApiProperty({ type: Number })
-  readonly updated_team_id: number;
+  readonly team_id: number;
 
   @IsOptional()
   @ApiProperty({ type: Number })

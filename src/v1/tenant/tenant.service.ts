@@ -68,7 +68,7 @@ export class TenantService {
     const isExist: Tenants = await this.tenantRepository.findOne({
       where: { name: tenant.name },
     });
-
+    console.log(tenant);
     if (isExist) {
       throw new BadRequestException(`${tenant.name} is already exist`);
     }
@@ -80,7 +80,7 @@ export class TenantService {
 
     this.teamService.create({
       tenant_id: createdTenant.id,
-      team_name: 'DefaultTeam',
+      name: 'DefaultTeam',
     });
 
     return createdTenant;

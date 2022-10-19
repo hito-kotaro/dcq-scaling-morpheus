@@ -24,27 +24,34 @@ export class TeamService {
     @InjectRepository(Teams) private teamRepository: Repository<Teams>,
   ) {}
 
-  // チーム情報の集計
-  async teamSummary(team_id: number) {
-    // member集計
+  // チームフォーマット
+  async formatTeamResponse(team: Teams): Promise<FindOneTeamResponse> {
+    // memner数集計
     const users: Users[] = await this.userRepository.find({
       relations: ['role', 'team', 'tenant'],
-      where: { team: { id: team_id } },
+      where: { team: { id: team.id } },
     });
 
+    // point数集計
     let point = 0;
     console.log(users);
     users.map((u: Users) => (point = point + u.point));
 
-    const teamInfo = {
+    // responseを作って返す
+    const response: FindOneTeamResponse = {
+      id: team.id,
+      name: team.name,
       member: users.length,
       point,
+      penalty: team.penalty,
+      tenant_id: team.tenant.id,
     };
-
-    return teamInfo;
+    console.log('format');
+    console.log(response);
+    return response;
   }
 
-  //特定チームの取得
+  //チームID検索
   async findOne(id: number): Promise<FindOneTeamResponse> {
     if (!id) {
       throw new BadRequestException('team id is empty');
@@ -55,41 +62,33 @@ export class TeamService {
       where: { id },
     });
 
-    const teamInfo = await this.teamSummary(id);
-
     if (!team) {
       throw new NotFoundException('team could not found');
     }
 
-    const response: FindOneTeamResponse = {
-      id: team.id,
-      team_name: team.team_name,
-      member: teamInfo.member,
-      point: teamInfo.point,
-      penalty: team.penalty,
-      tenant_id: team.tenant.id,
-    };
-    console.log(response);
-
-    return response;
+    return await this.formatTeamResponse(team);
   }
 
-  //テナント内の全チーム取得
+  //テナント内チーム取得
   async findAll(tenantId: number): Promise<FindAllTeamResponse> {
-    // const teamList: FindOneTeamResponse[] = [];
+    console.log(tenantId);
     const teams = await this.teamRepository.find({
       relations: ['tenant'],
       where: { tenant: { id: tenantId } },
     });
 
     const teamList = [];
+
+    // 全てのチームに対してFindOneで整形したレスポンスを返す
     const makeList = async () => {
       // eslint-disable-next-line prefer-const
       for (let t of teams) {
-        teamList.push(await this.findOne(t.id));
+        teamList.push(await this.formatTeamResponse(t));
       }
     };
     await makeList();
+    console.log('teamList');
+    console.log(teamList);
 
     const response = {
       total: teamList.length,
@@ -106,15 +105,15 @@ export class TeamService {
 
     const isExist = await this.teamRepository.findOne({
       relations: ['tenant'],
-      where: { team_name: team.team_name, tenant: { id: team.tenant_id } },
+      where: { name: team.name, tenant: { id: team.tenant_id } },
     });
 
     if (isExist) {
-      throw new BadRequestException(`${team.team_name} already exist`);
+      throw new BadRequestException(`${team.name} already exist`);
     }
 
     const createdTeam = await this.teamRepository.save({
-      team_name: team.team_name,
+      name: team.name,
       tenant: tenant,
     });
 
@@ -131,7 +130,7 @@ export class TeamService {
     const updateTeam = await this.findOne(id);
 
     // 更新する値を設定 => 値がない場合は既存の値をそのまま残す
-    updateTeam.team_name = team.team_name ?? updateTeam.team_name;
+    updateTeam.name = team.name ?? updateTeam.name;
     updateTeam.penalty = team.penalty ?? updateTeam.penalty;
     this.teamRepository.save(updateTeam);
     return { id, message: 'update success' };

@@ -35,7 +35,11 @@ export class AuthService {
       user_name: '',
     };
 
-    return { access_token: this.jwtService.sign(payload) };
+    return {
+      tenant_name: tenant.name,
+      tenant_id: tenant.id,
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   async userLogin(userLoginParam: UserLoginRequest) {
@@ -49,7 +53,7 @@ export class AuthService {
       tenant_id: user.tenant.id,
       tenant_name: user.tenant.name,
       user_id: user.id,
-      user_name: user.user_name,
+      user_name: user.name,
     };
     return { access_token: this.jwtService.sign(payload) };
   }

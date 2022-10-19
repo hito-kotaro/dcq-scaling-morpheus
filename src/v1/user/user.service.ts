@@ -51,7 +51,7 @@ export class UserService {
   ): Promise<FindOneUserResponse> {
     const user: Users = await this.userRepository.findOne({
       relations: ['role', 'team', 'tenant'],
-      where: { user_name: userName, tenant: { id: tenantId } },
+      where: { name: userName, tenant: { id: tenantId } },
     });
 
     if (!user) {
@@ -67,7 +67,7 @@ export class UserService {
   async findLoginUser(userName: string, tenantName: string) {
     const user = await this.userRepository.findOne({
       relations: ['tenant'],
-      where: { user_name: userName, tenant: { name: tenantName } },
+      where: { name: userName, tenant: { name: tenantName } },
       // where: { user_name: userName },
     });
     console.log(user);
@@ -78,18 +78,17 @@ export class UserService {
   }
 
   async create(createUser: CreateUserRequest): Promise<UserSuccessResponse> {
-    const { role_id, tenant_id, team_id, user_name, password, point } =
-      createUser;
+    const { role_id, tenant_id, team_id, name, password, point } = createUser;
 
     const isExist = await this.userRepository.findOne({
       where: {
-        user_name: createUser.user_name,
-        tenant: { id: createUser.tenant_id },
+        name,
+        tenant: { id: tenant_id },
       },
     });
 
     if (isExist) {
-      throw new BadRequestException(`${createUser.user_name} already exist`);
+      throw new BadRequestException(`${name} already exist`);
     }
 
     // tenant取得
@@ -101,7 +100,7 @@ export class UserService {
       tenant,
       team,
       role,
-      user_name,
+      name,
       password: await bcrypt.hash(password, 12),
       point,
     });
@@ -113,23 +112,22 @@ export class UserService {
     user_id: number,
     user: UpdateUserRequest,
   ): Promise<UserSuccessResponse> {
-    const { updated_user_name, updated_team_id, updated_role_id, add_point } =
-      user;
+    const { name, team_id, role_id, add_point } = user;
     const updateUser = await this.findOneById(user_id);
 
     // チーム、ロールの変更先を取得
     let role;
     let team;
-    if (updated_team_id) {
-      team = await this.teamService.findOne(updated_team_id);
+    if (team_id) {
+      team = await this.teamService.findOne(team_id);
     }
-    if (updated_role_id) {
-      role = await this.roleService.findOne(updated_role_id);
+    if (role_id) {
+      role = await this.roleService.findOne(role_id);
     }
 
     updateUser.team = team ?? updateUser.team;
     updateUser.role = role ?? updateUser.role;
-    updateUser.user_name = updated_user_name ?? updateUser.user_name;
+    updateUser.name = name ?? updateUser.name;
     updateUser.point = updateUser.point + (add_point ?? 0);
     this.userRepository.save(updateUser);
 
