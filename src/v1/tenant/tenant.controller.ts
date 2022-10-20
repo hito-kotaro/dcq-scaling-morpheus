@@ -22,14 +22,14 @@ import { TenantService } from './tenant.service';
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
 
-  @Post()
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: TenantSuccessResponse,
-  })
-  create(@Body(ValidationPipe) createTenant: CreateTenantRequest) {
-    return this.tenantService.create(createTenant);
-  }
+  // @Post()
+  // @ApiResponse({
+  //   status: HttpStatus.OK,
+  //   type: TenantSuccessResponse,
+  // })
+  // create(@Body(ValidationPipe) createTenant: CreateTenantRequest) {
+  //   return this.tenantService.create(createTenant);
+  // }
 
   @Get(':tenantId')
   @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })

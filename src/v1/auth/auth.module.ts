@@ -6,11 +6,13 @@ import { ConfigService } from '@nestjs/config';
 import { TenantModule } from '../tenant/tenant.module';
 import { UserModule } from '../user/user.module';
 import { JwtStrategy } from './auth.strategy';
+import { TeamModule } from '../team/team.module';
 
 @Module({
   imports: [
     TenantModule,
     UserModule,
+    TeamModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => {
         return {

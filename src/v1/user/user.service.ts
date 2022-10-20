@@ -78,7 +78,7 @@ export class UserService {
   }
 
   async create(createUser: CreateUserRequest): Promise<UserSuccessResponse> {
-    const { role_id, tenant_id, team_id, name, password, point } = createUser;
+    const { role_id, tenant_id, team_id, name, password } = createUser;
 
     const isExist = await this.userRepository.findOne({
       where: {
@@ -102,7 +102,7 @@ export class UserService {
       role,
       name,
       password: await bcrypt.hash(password, 12),
-      point,
+      point: 0,
     });
 
     return { id: createdUser.id, message: 'create success' };

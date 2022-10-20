@@ -47,9 +47,6 @@ export class CreateUserRequest {
 
   @ApiProperty({ type: String })
   readonly password: string;
-
-  @ApiProperty({ type: Number })
-  readonly point: number;
 }
 
 export class UpdateUserRequest {

@@ -27,6 +27,10 @@ export class TenantService {
     @InjectRepository(Tenants) private tenantRepository: Repository<Tenants>,
   ) {}
 
+  async validate(name: string) {
+    const tenant = await this.tenantRepository.findOne({ where: { name } });
+    return tenant;
+  }
   // テナントID検索
   async findOneById(
     tenantId: number,
@@ -68,6 +72,7 @@ export class TenantService {
     const isExist: Tenants = await this.tenantRepository.findOne({
       where: { name: tenant.name },
     });
+    console.log('tenant');
     console.log(tenant);
     if (isExist) {
       throw new BadRequestException(`${tenant.name} is already exist`);
@@ -77,12 +82,7 @@ export class TenantService {
       name: tenant.name,
       password: await bcrypt.hash(tenant.password, 12),
     });
-
-    this.teamService.create({
-      tenant_id: createdTenant.id,
-      name: 'DefaultTeam',
-    });
-
+    console.log(createdTenant);
     return createdTenant;
   }
 

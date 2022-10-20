@@ -1,9 +1,18 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { Tenants } from 'src/entity/tenant.entity';
+import { TeamService } from '../team/team.service';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
+  authResponse,
+  SignUptRequest,
+  SignUptResponse,
   TenantLoginRequest,
   tokenPayload,
   UserLoginRequest,
@@ -13,12 +22,15 @@ import {
 export class AuthService {
   constructor(
     // @InjectRepository(Users) private userRepository: Repository<Users>,
+    private readonly teamService: TeamService,
     private readonly userService: UserService,
     private readonly tenantService: TenantService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async tenantLogin(tenantLoginParam: TenantLoginRequest) {
+  async tenantLogin(
+    tenantLoginParam: TenantLoginRequest,
+  ): Promise<authResponse> {
     const { tenant_name, password } = tenantLoginParam;
     const tenant = await this.tenantService.findOneByName(tenant_name, true);
     console.log(tenant);
@@ -36,7 +48,7 @@ export class AuthService {
     };
 
     return {
-      tenant_name: tenant.name,
+      tenant: tenant.name,
       tenant_id: tenant.id,
       access_token: this.jwtService.sign(payload),
     };
@@ -56,5 +68,33 @@ export class AuthService {
       user_name: user.name,
     };
     return { access_token: this.jwtService.sign(payload) };
+  }
+
+  // テナント作成
+  async signup(tenant: SignUptRequest): Promise<authResponse> {
+    console.log(tenant);
+
+    const isExist: Tenants = await this.tenantService.validate(tenant.name);
+
+    if (isExist) {
+      throw new BadRequestException(`${tenant.name} is already exist`);
+    }
+
+    console.log('ExistOK');
+
+    const createdTenant = await this.tenantService.create(tenant);
+
+    const response = await this.tenantLogin({
+      tenant_name: tenant.name,
+      password: tenant.password,
+    });
+
+    // デフォルトチームを作成
+    this.teamService.create({
+      tenant_id: createdTenant.id,
+      name: 'DefaultTeam',
+    });
+
+    return response;
   }
 }

@@ -5,7 +5,7 @@ export class GetOneRoleResponse {
   readonly id: number;
 
   @ApiProperty({ type: String, description: 'ロール名' })
-  readonly role_name: string;
+  readonly name: string;
 }
 
 export class GetAllRolesResponse {
