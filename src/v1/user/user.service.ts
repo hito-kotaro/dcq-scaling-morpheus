@@ -70,7 +70,6 @@ export class UserService {
       where: { name: userName, tenant: { name: tenantName } },
       // where: { user_name: userName },
     });
-    console.log(user);
     if (!user) {
       throw new NotFoundException('could not found user');
     }

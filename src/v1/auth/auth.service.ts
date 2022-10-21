@@ -12,7 +12,6 @@ import { UserService } from '../user/user.service';
 import {
   authResponse,
   SignUptRequest,
-  SignUptResponse,
   TenantLoginRequest,
   tokenPayload,
   UserLoginRequest,
@@ -54,10 +53,12 @@ export class AuthService {
     };
   }
 
-  async userLogin(userLoginParam: UserLoginRequest) {
+  async userLogin(userLoginParam: UserLoginRequest): Promise<authResponse> {
     const { user_name, tenant_name, password } = userLoginParam;
     const user = await this.userService.findLoginUser(user_name, tenant_name);
     const isValid = await bcrypt.compare(password, user.password);
+    console.log('userlogin');
+    console.log(isValid);
     if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -67,7 +68,13 @@ export class AuthService {
       user_id: user.id,
       user_name: user.name,
     };
-    return { access_token: this.jwtService.sign(payload) };
+    return {
+      tenant_id: user.tenant.id,
+      tenant: user.tenant.name,
+      user_id: user.id,
+      user: user.name,
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   // テナント作成

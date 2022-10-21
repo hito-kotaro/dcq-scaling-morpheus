@@ -30,7 +30,6 @@ export class TeamController {
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: FindAllTeamResponse })
   async findAll(@Request() req: any) {
-    console.log(req.user);
     return await this.teamService.findAll(req.user.tenant_id);
   }
 
@@ -47,6 +46,7 @@ export class TeamController {
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
   create(@Body() createTeam: CreateTeamRequest) {
+    console.log('create!');
     return this.teamService.create(createTeam);
   }
 

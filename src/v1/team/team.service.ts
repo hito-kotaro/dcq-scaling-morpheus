@@ -34,7 +34,6 @@ export class TeamService {
 
     // point数集計
     let point = 0;
-    console.log(users);
     users.map((u: Users) => (point = point + u.point));
 
     // responseを作って返す
@@ -46,8 +45,6 @@ export class TeamService {
       penalty: team.penalty,
       tenant_id: team.tenant.id,
     };
-    console.log('format');
-    console.log(response);
     return response;
   }
 
@@ -71,7 +68,6 @@ export class TeamService {
 
   //テナント内チーム取得
   async findAll(tenantId: number): Promise<FindAllTeamResponse> {
-    console.log(tenantId);
     const teams = await this.teamRepository.find({
       relations: ['tenant'],
       where: { tenant: { id: tenantId } },
@@ -87,8 +83,6 @@ export class TeamService {
       }
     };
     await makeList();
-    console.log('teamList');
-    console.log(teamList);
 
     const response = {
       total: teamList.length,
