@@ -13,10 +13,9 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
+  TeamResponse,
+  AllTeamResponse,
   CreateTeamRequest,
-  FindAllTeamResponse,
-  FindOneTeamResponse,
-  TeamSuccessResponse,
   UpdateTeamRequest,
 } from './dto/team.dto';
 import { TeamService } from './team.service';
@@ -28,34 +27,39 @@ export class TeamController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: FindAllTeamResponse })
-  async findAll(@Request() req: any) {
-    return await this.teamService.findAll(req.user.tenant_id);
+  @ApiResponse({ status: HttpStatus.OK, type: AllTeamResponse })
+  async findAll(@Request() req: any): Promise<AllTeamResponse> {
+    const teams = await this.teamService.findAllByTenantId(req.user.tenant_id);
+    const fmtTeams: TeamResponse[] = [];
+    for (const t of teams) {
+      fmtTeams.push(await this.teamService.fmtResponse(t));
+    }
+
+    return { teams: fmtTeams, total: fmtTeams.length };
   }
 
   @Get(':teamId')
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneTeamResponse })
-  async findOne(
-    @Param('teamId') id,
-    @Request() req: any,
-  ): Promise<FindOneTeamResponse> {
-    return await this.teamService.findOne(id);
+  @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
+  async findOne(@Param('teamId') id): Promise<TeamResponse> {
+    const team = await this.teamService.findOne(id);
+    return await this.teamService.fmtResponse(team);
   }
 
   @Post()
-  @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
-  create(@Body() createTeam: CreateTeamRequest) {
-    console.log('create!');
-    return this.teamService.create(createTeam);
+  @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
+  async create(@Body() createTeam: CreateTeamRequest): Promise<TeamResponse> {
+    const team = await this.teamService.create(createTeam);
+    return await this.teamService.fmtResponse(team);
   }
 
   @Put(':teamId')
-  @ApiResponse({ status: HttpStatus.OK, type: TeamSuccessResponse })
-  update(
+  @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
+  async update(
     @Param('teamId') id: number,
     @Body(ValidationPipe) updateTeam: UpdateTeamRequest,
-  ) {
-    return this.teamService.update(id, updateTeam);
+  ): Promise<TeamResponse> {
+    const team = await this.teamService.update(id, updateTeam);
+    return await this.teamService.fmtResponse(team);
   }
 }

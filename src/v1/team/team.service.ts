@@ -10,9 +10,7 @@ import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
 import {
   CreateTeamRequest,
-  FindAllTeamResponse,
-  FindOneTeamResponse,
-  TeamSuccessResponse,
+  TeamResponse,
   UpdateTeamRequest,
 } from './dto/team.dto';
 
@@ -25,7 +23,7 @@ export class TeamService {
   ) {}
 
   // チームフォーマット
-  async formatTeamResponse(team: Teams): Promise<FindOneTeamResponse> {
+  async fmtResponse(team: Teams): Promise<TeamResponse> {
     // memner数集計
     const users: Users[] = await this.userRepository.find({
       relations: ['role', 'team', 'tenant'],
@@ -37,7 +35,7 @@ export class TeamService {
     users.map((u: Users) => (point = point + u.point));
 
     // responseを作って返す
-    const response: FindOneTeamResponse = {
+    const response: TeamResponse = {
       id: team.id,
       name: team.name,
       member: users.length,
@@ -49,7 +47,7 @@ export class TeamService {
   }
 
   //チームID検索
-  async findOne(id: number): Promise<FindOneTeamResponse> {
+  async findOne(id: number): Promise<Teams> {
     if (!id) {
       throw new BadRequestException('team id is empty');
     }
@@ -63,37 +61,37 @@ export class TeamService {
       throw new NotFoundException('team could not found');
     }
 
-    return await this.formatTeamResponse(team);
+    return team;
   }
 
   //テナント内チーム取得
-  async findAll(tenantId: number): Promise<FindAllTeamResponse> {
+  async findAllByTenantId(tenantId: number): Promise<Teams[]> {
     const teams = await this.teamRepository.find({
       relations: ['tenant'],
       where: { tenant: { id: tenantId } },
     });
 
-    const teamList = [];
+    // const teamList = [];
 
-    // 全てのチームに対してFindOneで整形したレスポンスを返す
-    const makeList = async () => {
-      // eslint-disable-next-line prefer-const
-      for (let t of teams) {
-        teamList.push(await this.formatTeamResponse(t));
-      }
-    };
-    await makeList();
+    // // 全てのチームに対してFindOneで整形したレスポンスを返す
+    // const makeList = async () => {
+    //   // eslint-disable-next-line prefer-const
+    //   for (let t of teams) {
+    //     teamList.push(await this.formatTeamResponse(t));
+    //   }
+    // };
+    // await makeList();
 
-    const response = {
-      total: teamList.length,
-      teams: teamList,
-    };
+    // const response = {
+    //   total: teamList.length,
+    //   teams: teamList,
+    // };
 
-    return response;
+    return teams;
   }
 
   // チーム作成
-  async create(team: CreateTeamRequest): Promise<TeamSuccessResponse> {
+  async create(team: CreateTeamRequest): Promise<Teams> {
     // 対象のテナントを取得
     const tenant = await this.tenantService.findOneById(team.tenant_id);
 
@@ -111,15 +109,12 @@ export class TeamService {
       tenant: tenant,
     });
 
-    return { id: createdTeam.id, message: 'create success' };
+    return createdTeam;
   }
 
   // チーム更新
   // 更新可能なパラメータ:penalty, name
-  async update(
-    id: number,
-    team: UpdateTeamRequest,
-  ): Promise<TeamSuccessResponse> {
+  async update(id: number, team: UpdateTeamRequest): Promise<Teams> {
     // 更新対象を取得
     const updateTeam = await this.findOne(id);
 
@@ -127,6 +122,6 @@ export class TeamService {
     updateTeam.name = team.name ?? updateTeam.name;
     updateTeam.penalty = team.penalty ?? updateTeam.penalty;
     this.teamRepository.save(updateTeam);
-    return { id, message: 'update success' };
+    return updateTeam;
   }
 }

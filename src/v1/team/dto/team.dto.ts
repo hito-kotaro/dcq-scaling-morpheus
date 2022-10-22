@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 
-export class FindOneTeamResponse {
+export class TeamResponse {
   @ApiProperty({ type: Number })
   readonly id: number;
 
@@ -19,14 +19,11 @@ export class FindOneTeamResponse {
 
   @ApiProperty({ type: Number })
   readonly tenant_id: number;
-
-  // @ApiProperty({ type: Tenants })
-  // readonly tenant: Tenants;
 }
 
-export class FindAllTeamResponse {
-  @ApiProperty({ type: FindOneTeamResponse })
-  readonly teams: FindOneTeamResponse[];
+export class AllTeamResponse {
+  @ApiProperty({ type: TeamResponse })
+  readonly teams: TeamResponse[];
 
   @ApiProperty({ type: Number })
   readonly total: number;
@@ -46,12 +43,4 @@ export class UpdateTeamRequest {
   @ApiProperty({ type: Number })
   @IsOptional()
   readonly penalty?: number;
-}
-
-export class TeamSuccessResponse {
-  @ApiProperty({ type: Number })
-  readonly id!: number;
-
-  @ApiProperty({ type: String })
-  readonly message: string;
 }
