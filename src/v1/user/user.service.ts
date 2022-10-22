@@ -13,6 +13,8 @@ import {
   CreateUserRequest,
   FindOneUserResponse,
   UpdateUserRequest,
+  UserResponse,
+  UsersResponse,
   UserSuccessResponse,
 } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -25,6 +27,50 @@ export class UserService {
     private readonly roleService: RoleService,
     @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
+
+  async findMemberByTeamId(teamId: number): Promise<UsersResponse> {
+    const response = await this.userRepository.find({
+      relations: ['role', 'team'],
+      where: { team: { id: teamId } },
+    });
+
+    const users: UserResponse[] = response.map((u: Users) => {
+      const response: UserResponse = {
+        id: u.id,
+        name: u.name,
+        role_id: u.role.id,
+        role: u.role.name,
+        team_id: u.team.id,
+        team: u.team.name,
+        point: u.point,
+      };
+      return response;
+    });
+
+    return { users, total: users.length };
+  }
+
+  async findAllByTenantId(tenantId: number): Promise<UsersResponse> {
+    const response = await this.userRepository.find({
+      relations: ['role', 'team'],
+      where: { tenant: { id: tenantId } },
+    });
+
+    const users: UserResponse[] = response.map((u: Users) => {
+      const response: UserResponse = {
+        id: u.id,
+        name: u.name,
+        role_id: u.role.id,
+        role: u.role.name,
+        team_id: u.team.id,
+        team: u.team.name,
+        point: u.point,
+      };
+      return response;
+    });
+
+    return { users, total: users.length };
+  }
 
   async findOneById(
     id: number,

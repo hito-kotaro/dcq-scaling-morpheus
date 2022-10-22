@@ -3,6 +3,7 @@ import { IsOptional } from 'class-validator';
 import { Roles } from 'src/entity/role.entity';
 import { Teams } from 'src/entity/team.entity';
 import { Tenants } from 'src/entity/tenant.entity';
+import { Users } from 'src/entity/user.entity';
 
 export class FindOneUserResponse {
   @ApiProperty({ type: Number })
@@ -22,6 +23,37 @@ export class FindOneUserResponse {
 
   @ApiProperty({ type: Number })
   point: number;
+}
+
+export class UserResponse {
+  @ApiProperty({ type: Number })
+  readonly id: number;
+
+  @ApiProperty({ type: String })
+  name: string;
+
+  @ApiProperty({ type: Number })
+  role_id: number;
+
+  @ApiProperty({ type: String })
+  role: string;
+
+  @ApiProperty({ type: Number })
+  team_id: number;
+
+  @ApiProperty({ type: String })
+  team: string;
+
+  @ApiProperty({ type: Number })
+  point: number;
+}
+
+export class UsersResponse {
+  @ApiProperty({ type: UserResponse })
+  readonly users: UserResponse[];
+
+  @ApiProperty({ type: Number })
+  readonly total: number;
 }
 
 export class UserSuccessResponse {
