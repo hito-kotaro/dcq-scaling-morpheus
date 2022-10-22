@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsPositive } from 'class-validator';
-import { Tenants } from 'src/entity/tenant.entity';
-import { Users } from 'src/entity/user.entity';
 
-export class FindOneQuestResponse {
+export class QuestResponse {
   @ApiProperty({ type: Number })
   readonly id: number;
 
@@ -22,19 +20,19 @@ export class FindOneQuestResponse {
   @IsPositive()
   reward: number;
 
-  @ApiProperty({ type: Boolean })
-  status: boolean;
+  @ApiProperty({ type: String })
+  owner: string;
 
-  @ApiProperty({ type: Tenants })
-  readonly tenant: Tenants;
+  @ApiProperty({ type: Number })
+  owner_id: number;
 
-  @ApiProperty({ type: Users })
-  readonly owner: Users;
+  @ApiProperty({ type: Date })
+  date: Date;
 }
 
-export class FindAllQuestResponse {
-  @ApiProperty({ type: FindOneQuestResponse })
-  quests: FindOneQuestResponse[];
+export class AllQuestResponse {
+  @ApiProperty({ type: QuestResponse })
+  quests: QuestResponse[];
 
   @ApiProperty({ type: Number })
   total: number;
@@ -61,14 +59,6 @@ export class CreateQuestRequest {
 
   @ApiProperty({ type: Number })
   owner_id: number;
-}
-
-export class QuestSuccessResponse {
-  @ApiProperty({ type: Number, description: 'クエストID' })
-  readonly id: number;
-
-  @ApiProperty({ type: String, description: 'メッセージ' })
-  readonly message: string;
 }
 
 export class UpdateQuestRequest {

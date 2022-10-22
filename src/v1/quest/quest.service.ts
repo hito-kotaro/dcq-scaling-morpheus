@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quests } from 'src/entity/quest.entity';
 import { Repository } from 'typeorm';
@@ -10,9 +6,7 @@ import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
   CreateQuestRequest,
-  FindAllQuestResponse,
-  FindOneQuestResponse,
-  QuestSuccessResponse,
+  QuestResponse,
   UpdateQuestRequest,
 } from './dto/quest.dto';
 
@@ -24,41 +18,27 @@ export class QuestService {
     @InjectRepository(Quests) private questRepository: Repository<Quests>,
   ) {}
 
-  // findOne
-  async findOneById(id: number): Promise<FindOneQuestResponse> {
-    const quest = await this.questRepository.findOne({
-      relations: ['tenant', 'owner'],
-      where: { id },
-    });
-    if (!quest) {
-      throw new NotFoundException('could not found quest');
-    }
-
-    return quest;
+  fmtResponse(quest: Quests) {
+    const response: QuestResponse = {
+      id: quest.id,
+      title: quest.title,
+      description: quest.description,
+      example: quest.example,
+      reward: quest.reward,
+      owner: quest.owner.name,
+      owner_id: quest.owner.id,
+      date: quest.updated_at,
+    };
+    return response;
   }
 
-  async findOneByName(title: string): Promise<FindOneQuestResponse> {
-    const quest = await this.questRepository.findOne({
-      relations: ['tenant', 'owner'],
-      where: { title },
-    });
-    if (!quest) {
-      throw new NotFoundException('could not found quest');
-    }
-
-    return quest;
-  }
-
-  async findAll(tenantId: number): Promise<FindAllQuestResponse> {
+  async findAll(tenantId: number): Promise<Quests[]> {
     const quests = await this.questRepository.find({
       relations: ['tenant', 'owner'],
       where: { tenant: { id: tenantId } },
     });
-    const response = {
-      quests,
-      total: quests.length,
-    };
-    return response;
+
+    return quests;
   }
 
   // テナント内同一タイトル重複チェック
@@ -76,14 +56,9 @@ export class QuestService {
   }
 
   // クエスト作成
-  async create(createQuest: CreateQuestRequest): Promise<QuestSuccessResponse> {
+  async create(createQuest: CreateQuestRequest): Promise<Quests> {
     const { tenant_id, owner_id, title, description, example, reward } =
       createQuest;
-    const isExist = await this.titleExist(tenant_id, title);
-
-    if (isExist === true) {
-      throw new BadRequestException(`${title} is already exist`);
-    }
 
     // テナント取得
     const tenant = await this.tenantService.findOneById(tenant_id);
@@ -100,10 +75,24 @@ export class QuestService {
       status: true,
     });
 
-    return { id: createdQuest.id, message: 'create success' };
+    // const response = this.formatResponse(createdQuest);
+
+    return createdQuest;
   }
 
-  async update(updateQuest: UpdateQuestRequest): Promise<QuestSuccessResponse> {
+  // findOne
+  async findOneById(id: number): Promise<Quests> {
+    const quest = await this.questRepository.findOne({
+      relations: ['tenant', 'owner'],
+      where: { id },
+    });
+    if (!quest) {
+      throw new NotFoundException('could not found quest');
+    }
+    return quest;
+  }
+
+  async update(updateQuest: UpdateQuestRequest): Promise<Quests> {
     const { id, title, description, example, reward, status } = updateQuest;
 
     // 対象のクエストを取得
@@ -114,6 +103,6 @@ export class QuestService {
     targetQuest.reward = reward ?? targetQuest.reward;
     targetQuest.status = status ?? targetQuest.status;
     this.questRepository.save(targetQuest);
-    return { id, message: 'update success' };
+    return targetQuest;
   }
 }

@@ -1,18 +1,20 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpStatus,
-  Param,
   Post,
   Put,
+  Request,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Quests } from 'src/entity/quest.entity';
 import {
+  AllQuestResponse,
   CreateQuestRequest,
-  FindOneQuestResponse,
-  QuestSuccessResponse,
+  QuestResponse,
   UpdateQuestRequest,
 } from './dto/quest.dto';
 import { QuestService } from './quest.service';
@@ -22,27 +24,35 @@ import { QuestService } from './quest.service';
 export class QuestController {
   constructor(private readonly questService: QuestService) {}
 
-  @Get(':questId')
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneQuestResponse })
-  async findOne(@Param('questId') id: number) {
-    return await this.questService.findOneById(id);
-  }
+  @Get()
+  @ApiResponse({ status: HttpStatus.OK, type: AllQuestResponse })
+  async findAll(@Request() req: any) {
+    const quests = await this.questService.findAll(req.user.tenant_id);
+    const fmtQuests: QuestResponse[] = quests.map((q: Quests) => {
+      return this.questService.fmtResponse(q);
+    });
 
-  @Get('/all/:tenantId')
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneQuestResponse })
-  async findAll(@Param('tenantId') id: number) {
-    return await this.questService.findAll(id);
+    return { quests: fmtQuests, total: fmtQuests.length };
   }
 
   @Post()
-  @ApiResponse({ status: HttpStatus.OK, type: QuestSuccessResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: QuestResponse })
   async create(@Body(ValidationPipe) createQuest: CreateQuestRequest) {
-    return this.questService.create(createQuest);
+    const exist = await this.questService.titleExist(
+      createQuest.tenant_id,
+      createQuest.title,
+    );
+    if (exist === true) {
+      throw new BadRequestException(`${createQuest.title} is already exist`);
+    }
+    const quest = await this.questService.create(createQuest);
+    return this.questService.fmtResponse(quest);
   }
 
   @Put()
-  @ApiResponse({ status: HttpStatus.OK, type: QuestSuccessResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: QuestResponse })
   async update(@Body(ValidationPipe) updateQuest: UpdateQuestRequest) {
-    return this.questService.update(updateQuest);
+    const quest = await this.questService.update(updateQuest);
+    return this.questService.fmtResponse(quest);
   }
 }
