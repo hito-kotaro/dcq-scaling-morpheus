@@ -1,29 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { Roles } from 'src/entity/role.entity';
-import { Teams } from 'src/entity/team.entity';
-import { Tenants } from 'src/entity/tenant.entity';
-import { Users } from 'src/entity/user.entity';
-
-export class FindOneUserResponse {
-  @ApiProperty({ type: Number })
-  readonly id: number;
-
-  @ApiProperty({ type: String })
-  name: string;
-
-  @ApiProperty({ type: Roles })
-  role: Roles;
-
-  @ApiProperty({ type: Teams })
-  team: Teams;
-
-  @ApiProperty({ type: Tenants })
-  readonly tenant: Tenants;
-
-  @ApiProperty({ type: Number })
-  point: number;
-}
 
 export class UserResponse {
   @ApiProperty({ type: Number })
@@ -48,20 +24,12 @@ export class UserResponse {
   point: number;
 }
 
-export class UsersResponse {
+export class AllUserResponse {
   @ApiProperty({ type: UserResponse })
   readonly users: UserResponse[];
 
   @ApiProperty({ type: Number })
   readonly total: number;
-}
-
-export class UserSuccessResponse {
-  @ApiProperty({ type: Number, description: 'ユーザID' })
-  readonly id: number;
-
-  @ApiProperty({ type: String, description: 'メッセージ' })
-  readonly message: string;
 }
 
 export class CreateUserRequest {
@@ -82,6 +50,9 @@ export class CreateUserRequest {
 }
 
 export class UpdateUserRequest {
+  @ApiProperty({ type: Number })
+  readonly id: number;
+
   @ApiProperty({ type: String })
   @IsOptional()
   readonly name: string;

@@ -12,11 +12,12 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Users } from 'src/entity/user.entity';
 import {
-  CreateUserRequest,
-  FindOneUserResponse,
   UpdateUserRequest,
-  UserSuccessResponse,
+  UserResponse,
+  AllUserResponse,
+  CreateUserRequest,
 } from './dto/user.dto';
 import { UserService } from './user.service';
 
@@ -27,39 +28,47 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: AllUserResponse })
   async findAllByTenantId(@Param('tenantId') id: number, @Request() req: any) {
-    console.log(req.user.tenant_id);
-    return await this.userService.findAllByTenantId(req.user.tenant_id);
+    const users = await this.userService.findAllByTenantId(req.user.tenant_id);
+    const fmtUsers: UserResponse[] = users.map((u: Users) => {
+      return this.userService.fmtResponse(u);
+    });
+
+    return { users: fmtUsers, total: fmtUsers.length };
   }
 
   @Get(':userId')
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
   async findOne(@Param('userId') id: number, @Request() req: any) {
-    console.log(req.user);
-    return await this.userService.findOneById(id);
+    const user = await this.userService.findOneById(id);
+    return this.userService.fmtResponse(user);
   }
 
   @Get('/member/:teamId')
-  // @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneUserResponse })
-  async findMember(@Param('teamId') id: number, @Request() req: any) {
-    return await this.userService.findMemberByTeamId(id);
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({ status: HttpStatus.OK, type: AllUserResponse })
+  async findMember(@Param('teamId') id: number) {
+    const users: Users[] = await this.userService.findAllByTeamId(id);
+    const fmtUsers: UserResponse[] = users.map((u: Users) => {
+      return this.userService.fmtResponse(u);
+    });
+
+    return { users: fmtUsers, total: fmtUsers.length };
   }
 
   @Post()
-  @ApiResponse({ status: HttpStatus.OK, type: UserSuccessResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
   async create(@Body() CreateUser: CreateUserRequest) {
-    return this.userService.create(CreateUser);
+    const user = await this.userService.create(CreateUser);
+    return this.userService.fmtResponse(user);
   }
 
-  @Put(':userId')
-  @ApiResponse({ status: HttpStatus.OK, type: UserSuccessResponse })
-  async update(
-    @Param('userId') id: number,
-    @Body(ValidationPipe) updateUser: UpdateUserRequest,
-  ) {
-    return this.userService.update(id, updateUser);
+  @Put()
+  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
+  async update(@Body(ValidationPipe) updateUser: UpdateUserRequest) {
+    const user = await this.userService.update(updateUser);
+    return this.userService.fmtResponse(user);
   }
 }

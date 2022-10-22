@@ -8,7 +8,6 @@ import { Teams } from 'src/entity/team.entity';
 import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { TenantService } from '../tenant/tenant.service';
-import { UsersResponse } from '../user/dto/user.dto';
 import {
   CreateTeamRequest,
   FindAllTeamResponse,

@@ -11,11 +11,8 @@ import { TeamService } from '../team/team.service';
 import { TenantService } from '../tenant/tenant.service';
 import {
   CreateUserRequest,
-  FindOneUserResponse,
   UpdateUserRequest,
   UserResponse,
-  UsersResponse,
-  UserSuccessResponse,
 } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
 
@@ -28,54 +25,39 @@ export class UserService {
     @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
 
-  async findMemberByTeamId(teamId: number): Promise<UsersResponse> {
-    const response = await this.userRepository.find({
+  fmtResponse(user: Users): UserResponse {
+    const response: UserResponse = {
+      id: user.id,
+      name: user.name,
+      role_id: user.role.id,
+      role: user.role.name,
+      team_id: user.team.id,
+      team: user.team.name,
+      point: user.point,
+    };
+
+    return response;
+  }
+
+  async findAllByTeamId(teamId: number): Promise<Users[]> {
+    const users = await this.userRepository.find({
       relations: ['role', 'team'],
       where: { team: { id: teamId } },
     });
 
-    const users: UserResponse[] = response.map((u: Users) => {
-      const response: UserResponse = {
-        id: u.id,
-        name: u.name,
-        role_id: u.role.id,
-        role: u.role.name,
-        team_id: u.team.id,
-        team: u.team.name,
-        point: u.point,
-      };
-      return response;
-    });
-
-    return { users, total: users.length };
+    return users;
   }
 
-  async findAllByTenantId(tenantId: number): Promise<UsersResponse> {
-    const response = await this.userRepository.find({
+  async findAllByTenantId(tenantId: number): Promise<Users[]> {
+    const users = await this.userRepository.find({
       relations: ['role', 'team'],
       where: { tenant: { id: tenantId } },
     });
 
-    const users: UserResponse[] = response.map((u: Users) => {
-      const response: UserResponse = {
-        id: u.id,
-        name: u.name,
-        role_id: u.role.id,
-        role: u.role.name,
-        team_id: u.team.id,
-        team: u.team.name,
-        point: u.point,
-      };
-      return response;
-    });
-
-    return { users, total: users.length };
+    return users;
   }
 
-  async findOneById(
-    id: number,
-    isPassword?: boolean,
-  ): Promise<FindOneUserResponse> {
+  async findOneById(id: number, isPassword?: boolean): Promise<Users> {
     const user: Users = await this.userRepository.findOne({
       relations: ['role', 'team', 'tenant'],
       where: { id },
@@ -94,7 +76,7 @@ export class UserService {
     userName: string,
     tenantId: number,
     isPassword?: boolean,
-  ): Promise<FindOneUserResponse> {
+  ): Promise<Users> {
     const user: Users = await this.userRepository.findOne({
       relations: ['role', 'team', 'tenant'],
       where: { name: userName, tenant: { id: tenantId } },
@@ -122,7 +104,7 @@ export class UserService {
     return user;
   }
 
-  async create(createUser: CreateUserRequest): Promise<UserSuccessResponse> {
+  async create(createUser: CreateUserRequest): Promise<Users> {
     const { role_id, tenant_id, team_id, name, password } = createUser;
 
     const isExist = await this.userRepository.findOne({
@@ -150,15 +132,12 @@ export class UserService {
       point: 0,
     });
 
-    return { id: createdUser.id, message: 'create success' };
+    return createdUser;
   }
 
-  async update(
-    user_id: number,
-    user: UpdateUserRequest,
-  ): Promise<UserSuccessResponse> {
+  async update(user: UpdateUserRequest): Promise<Users> {
     const { name, team_id, role_id, add_point } = user;
-    const updateUser = await this.findOneById(user_id);
+    const updateUser = await this.findOneById(user.id);
 
     // チーム、ロールの変更先を取得
     let role;
@@ -176,6 +155,6 @@ export class UserService {
     updateUser.point = updateUser.point + (add_point ?? 0);
     this.userRepository.save(updateUser);
 
-    return { id: user_id, message: 'update success' };
+    return updateUser;
   }
 }
