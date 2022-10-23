@@ -53,18 +53,9 @@ export class CreateQuestRequest {
   @ApiProperty({ type: Number })
   @IsPositive()
   reward: number;
-
-  @ApiProperty({ type: Number })
-  tenant_id: number;
-
-  @ApiProperty({ type: Number })
-  owner_id: number;
 }
 
 export class UpdateQuestRequest {
-  @ApiProperty({ type: Number })
-  readonly id: number;
-
   @ApiProperty({ type: String })
   @IsOptional()
   title: string;

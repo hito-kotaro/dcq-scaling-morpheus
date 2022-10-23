@@ -6,12 +6,17 @@ import {
   Param,
   Post,
   Put,
+  Request,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Requests } from 'src/entity/request.entity';
 import {
   CreateRequestRequest,
   FindOneRequestResponse,
+  RequestDataResponse,
   RequestSuccessResponse,
   UpdateRequestRequest,
 } from './dto/request.dto';
@@ -22,27 +27,45 @@ import { RequestService } from './request.service';
 export class RequestController {
   constructor(private readonly requestService: RequestService) {}
 
-  @Get(':requestId')
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: FindOneRequestResponse })
-  async findOne(@Param('requestId') id: number) {
-    return await this.requestService.findOne(id);
-  }
+  async findAll(@Request() req: any) {
+    const requests: Requests[] = await this.requestService.findAllByTenantId(
+      req.user.tenant_id,
+    );
 
-  @Get('/all/:tenantId')
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneRequestResponse })
-  async findAll(@Param('tenantId') id: number) {
-    return await this.requestService.findAll(id);
+    const fmtRequests: RequestDataResponse[] = requests.map((r: Requests) => {
+      return this.requestService.fmtResponse(r);
+    });
+    return { requests: fmtRequests, total: fmtRequests.length };
   }
 
   @Post()
-  @ApiResponse({ status: HttpStatus.OK, type: RequestSuccessResponse })
-  async create(@Body(ValidationPipe) createRequest: CreateRequestRequest) {
-    return this.requestService.create(createRequest);
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({ status: HttpStatus.OK, type: RequestDataResponse })
+  async create(
+    @Body(ValidationPipe) createRequest: CreateRequestRequest,
+    @Request() req: any,
+  ) {
+    const request: Requests = await this.requestService.create(
+      req.user.tenant_id,
+      createRequest,
+    );
+    return this.requestService.fmtResponse(request);
   }
 
-  @Put()
-  @ApiResponse({ status: HttpStatus.OK, type: RequestSuccessResponse })
-  async updadte(@Body(ValidationPipe) updateRequest: UpdateRequestRequest) {
-    return await this.requestService.update(updateRequest);
+  @Put(':requestId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({ status: HttpStatus.OK, type: RequestDataResponse })
+  async updadte(
+    @Param('requestId') id: number,
+    @Body(ValidationPipe) updateRequest: UpdateRequestRequest,
+  ) {
+    const request: Requests = await this.requestService.update(
+      id,
+      updateRequest,
+    );
+    return this.requestService.fmtResponse(request);
   }
 }

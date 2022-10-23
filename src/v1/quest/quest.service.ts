@@ -56,9 +56,12 @@ export class QuestService {
   }
 
   // クエスト作成
-  async create(createQuest: CreateQuestRequest): Promise<Quests> {
-    const { tenant_id, owner_id, title, description, example, reward } =
-      createQuest;
+  async create(
+    createQuest: CreateQuestRequest,
+    tenant_id: number,
+    owner_id: number,
+  ): Promise<Quests> {
+    const { title, description, example, reward } = createQuest;
 
     // テナント取得
     const tenant = await this.tenantService.findOneById(tenant_id);
@@ -92,8 +95,8 @@ export class QuestService {
     return quest;
   }
 
-  async update(updateQuest: UpdateQuestRequest): Promise<Quests> {
-    const { id, title, description, example, reward, status } = updateQuest;
+  async update(id: number, updateQuest: UpdateQuestRequest): Promise<Quests> {
+    const { title, description, example, reward, status } = updateQuest;
 
     // 対象のクエストを取得
     const targetQuest = await this.findOneById(id);

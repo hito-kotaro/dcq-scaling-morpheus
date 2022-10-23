@@ -5,7 +5,11 @@ import { Repository } from 'typeorm';
 import { QuestService } from '../quest/quest.service';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
-import { CreateRequestRequest, UpdateRequestRequest } from './dto/request.dto';
+import {
+  CreateRequestRequest,
+  RequestDataResponse,
+  UpdateRequestRequest,
+} from './dto/request.dto';
 
 @Injectable()
 export class RequestService {
@@ -27,9 +31,25 @@ export class RequestService {
     }
   }
 
-  async findOne(id: number) {
+  fmtResponse(request: Requests): RequestDataResponse {
+    const response: RequestDataResponse = {
+      id: request.id,
+      title: request.title,
+      description: request.description,
+      applicant: request.applicant.name,
+      quest_title: request.quest.title,
+      quest_descriptio: request.quest.description,
+      reward: request.quest.reward,
+      status: request.status,
+      date: request.created_at,
+    };
+
+    return response;
+  }
+
+  async findOneById(id: number): Promise<Requests> {
     const request = await this.requestRepository.findOne({
-      relations: ['quest'],
+      relations: ['quest', 'applicant'],
       where: { id },
     });
 
@@ -40,17 +60,19 @@ export class RequestService {
     return request;
   }
 
-  async findAll(tenantId: number) {
+  async findAllByTenantId(tenantId: number): Promise<Requests[]> {
     const requests = await this.requestRepository.find({
-      relations: ['quest'],
+      relations: ['quest', 'applicant'],
       where: { tenant: { id: tenantId } },
     });
-    return { requests, total: requests.length };
+    return requests;
   }
 
-  async create(createRequest: CreateRequestRequest) {
-    const { title, description, quest_id, applicant_id, tenant_id } =
-      createRequest;
+  async create(
+    tenant_id: number,
+    createRequest: CreateRequestRequest,
+  ): Promise<Requests> {
+    const { title, description, quest_id, applicant_id } = createRequest;
     const applicant = await this.userService.findOneById(applicant_id);
     const quest = await this.questService.findOneById(quest_id);
     const tenant = await this.tenantService.findOneById(tenant_id);
@@ -63,17 +85,19 @@ export class RequestService {
       status: 'open',
     });
 
-    return { id: createdRequest.id, message: 'create success' };
+    return createdRequest;
   }
 
-  async update(updateRequest: UpdateRequestRequest) {
-    const { id, status } = updateRequest;
-    console.log(status);
+  async update(
+    id: number,
+    updateRequest: UpdateRequestRequest,
+  ): Promise<Requests> {
+    console.log(updateRequest);
     //ターゲットを取得
-    const targetRequest = await this.findOne(id);
+    const targetRequest = await this.findOneById(id);
     console.log(targetRequest);
-    targetRequest.status = status;
+    targetRequest.status = updateRequest.status;
     this.requestRepository.save(targetRequest);
-    return { id: targetRequest.id, message: 'update success' };
+    return targetRequest;
   }
 }

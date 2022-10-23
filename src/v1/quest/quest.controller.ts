@@ -4,11 +4,14 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   Put,
   Request,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Quests } from 'src/entity/quest.entity';
 import {
@@ -25,6 +28,7 @@ export class QuestController {
   constructor(private readonly questService: QuestService) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: AllQuestResponse })
   async findAll(@Request() req: any) {
     const quests = await this.questService.findAll(req.user.tenant_id);
@@ -36,23 +40,36 @@ export class QuestController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: QuestResponse })
-  async create(@Body(ValidationPipe) createQuest: CreateQuestRequest) {
+  async create(
+    @Body(ValidationPipe) createQuest: CreateQuestRequest,
+    @Request() res: any,
+  ) {
+    const { tenant_id, user_id } = res.user;
     const exist = await this.questService.titleExist(
-      createQuest.tenant_id,
+      tenant_id,
       createQuest.title,
     );
     if (exist === true) {
       throw new BadRequestException(`${createQuest.title} is already exist`);
     }
-    const quest = await this.questService.create(createQuest);
+    const quest = await this.questService.create(
+      createQuest,
+      tenant_id,
+      user_id,
+    );
     return this.questService.fmtResponse(quest);
   }
 
-  @Put()
+  @Put(':questId')
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: QuestResponse })
-  async update(@Body(ValidationPipe) updateQuest: UpdateQuestRequest) {
-    const quest = await this.questService.update(updateQuest);
+  async update(
+    @Param('questId') id,
+    @Body(ValidationPipe) updateQuest: UpdateQuestRequest,
+  ) {
+    const quest = await this.questService.update(id, updateQuest);
     return this.questService.fmtResponse(quest);
   }
 }
