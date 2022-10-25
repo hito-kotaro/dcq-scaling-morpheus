@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Penalties } from 'src/entity/penalty.entity';
 import { Repository } from 'typeorm';
@@ -10,9 +6,7 @@ import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
   CreatePenaltyRequest,
-  FindAllPenaltyResponse,
-  FindOnePenaltyResponse,
-  PenaltySuccessResponse,
+  PenaltyResponse,
   UpdatePenaltyRequest,
 } from './dto/penalty.dto';
 
@@ -25,7 +19,20 @@ export class PenaltyService {
     private penaltyRepository: Repository<Penalties>,
   ) {}
 
-  async findOneById(id: number): Promise<FindOnePenaltyResponse> {
+  fmtResponse(penalty: Penalties) {
+    const response: PenaltyResponse = {
+      id: penalty.id,
+      title: penalty.title,
+      description: penalty.description,
+      penalty: penalty.penalty,
+      owner_id: penalty.owner.id,
+      owner: penalty.owner.name,
+      date: penalty.updated_at,
+    };
+
+    return response;
+  }
+  async findOneById(id: number): Promise<Penalties> {
     const penalty = await this.penaltyRepository.findOne({
       relations: ['tenant', 'owner'],
       where: { id },
@@ -38,26 +45,13 @@ export class PenaltyService {
     return penalty;
   }
 
-  async findOneByName(penaltyTitle: string): Promise<FindOnePenaltyResponse> {
-    const penalty = await this.penaltyRepository.findOne({
-      relations: ['tenant', 'owner'],
-      where: { title: penaltyTitle },
-    });
-
-    if (!penalty) {
-      throw new NotFoundException('could not found penalty');
-    }
-
-    return penalty;
-  }
-
-  async findAll(tenantId: number): Promise<FindAllPenaltyResponse> {
+  async findAll(tenantId: number): Promise<Penalties[]> {
     const penalties = await this.penaltyRepository.find({
       relations: ['tenant', 'owner'],
       where: { tenant: { id: tenantId } },
     });
 
-    return { penalties, total: penalties.length };
+    return penalties;
   }
 
   // テナント内同一タイトル重複チェック
@@ -75,13 +69,11 @@ export class PenaltyService {
   }
 
   async create(
+    tenant_id: number,
+    owner_id: number,
     createPenalty: CreatePenaltyRequest,
-  ): Promise<PenaltySuccessResponse> {
-    const { title, description, penalty, tenant_id, owner_id } = createPenalty;
-    const isExist = await this.titleExist(tenant_id, title);
-    if (isExist === true) {
-      throw new BadRequestException(`${title} is already exist`);
-    }
+  ): Promise<Penalties> {
+    const { title, description, penalty } = createPenalty;
     // テナント取得
     const tenant = await this.tenantService.findOneById(tenant_id);
     // ユーザ取得(クエストオーナー)
@@ -95,18 +87,16 @@ export class PenaltyService {
       penalty,
     });
 
-    return { id: createdPenalty.id, message: 'create success' };
+    return createdPenalty;
   }
 
-  async update(
-    updatePenalty: UpdatePenaltyRequest,
-  ): Promise<PenaltySuccessResponse> {
+  async update(updatePenalty: UpdatePenaltyRequest): Promise<Penalties> {
     const { id, title, description, penalty } = updatePenalty;
     const targetPenalty = await this.findOneById(id);
     targetPenalty.title = title ?? targetPenalty.title;
     targetPenalty.description = description ?? targetPenalty.description;
     targetPenalty.penalty = penalty ?? targetPenalty.penalty;
     this.penaltyRepository.save(targetPenalty);
-    return { id: targetPenalty.id, message: 'create success' };
+    return targetPenalty;
   }
 }

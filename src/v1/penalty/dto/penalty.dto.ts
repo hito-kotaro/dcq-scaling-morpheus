@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsPositive } from 'class-validator';
-import { Tenants } from 'src/entity/tenant.entity';
-import { Users } from 'src/entity/user.entity';
 
-export class FindOnePenaltyResponse {
+export class PenaltyResponse {
   @ApiProperty({ type: Number })
   readonly id: number;
 
@@ -17,20 +15,22 @@ export class FindOnePenaltyResponse {
   @ApiProperty({ type: Number })
   @IsPositive()
   penalty: number;
-
-  @ApiProperty({ type: Tenants })
-  readonly tenant: Tenants;
-
-  @ApiProperty({ type: Users })
-  readonly owner: Users;
-}
-
-export class FindAllPenaltyResponse {
-  @ApiProperty({ type: FindOnePenaltyResponse })
-  penalties: FindOnePenaltyResponse[];
+  @ApiProperty({ type: String })
+  readonly owner: string;
 
   @ApiProperty({ type: Number })
-  total: number;
+  readonly owner_id: number;
+
+  @ApiProperty({ type: Date })
+  date: Date;
+}
+
+export class AllPenaltyResponse {
+  @ApiProperty({ type: PenaltyResponse })
+  readonly penalties: PenaltyResponse[];
+
+  @ApiProperty({ type: Number })
+  readonly total: number;
 }
 
 export class CreatePenaltyRequest {
@@ -43,12 +43,6 @@ export class CreatePenaltyRequest {
   @ApiProperty({ type: Number })
   @IsPositive()
   penalty: number;
-
-  @ApiProperty({ type: Number })
-  tenant_id: number;
-
-  @ApiProperty({ type: Number })
-  owner_id: number;
 }
 
 export class UpdatePenaltyRequest {
@@ -66,12 +60,4 @@ export class UpdatePenaltyRequest {
   @ApiProperty({ type: Number })
   @IsOptional()
   penalty: number;
-}
-
-export class PenaltySuccessResponse {
-  @ApiProperty({ type: Number, description: 'ペナルティID' })
-  readonly id: number;
-
-  @ApiProperty({ type: String, description: 'メッセージ' })
-  readonly message: string;
 }
