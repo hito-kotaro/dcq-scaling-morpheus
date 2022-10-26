@@ -46,9 +46,6 @@ export class CreatePenaltyRequest {
 }
 
 export class UpdatePenaltyRequest {
-  @ApiProperty({ type: Number })
-  id: number;
-
   @ApiProperty({ type: String })
   @IsOptional()
   title: string;

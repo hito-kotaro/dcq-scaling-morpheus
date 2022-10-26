@@ -32,14 +32,26 @@ export class Requests {
   @JoinColumn({ name: 'user_id' })
   applicant: Users;
 
+  @ApiProperty()
   @Column({ comment: 'リクエストタイトル' })
   title: string;
 
+  @ApiProperty()
   @Column({ comment: 'リクエスト内容', type: 'text' })
   description: string;
 
+  @ApiProperty()
   @Column({ comment: 'リクエストステータス' })
   status: string;
+
+  @ApiProperty()
+  @ManyToOne(() => Users, (user) => user.id)
+  @JoinColumn({ name: 'authorizer_id' })
+  authorizer: Users;
+
+  @ApiProperty()
+  @Column({ comment: '承認コメント', type: 'text', nullable: true })
+  auth_comment: string;
 
   @ApiProperty()
   @CreateDateColumn({

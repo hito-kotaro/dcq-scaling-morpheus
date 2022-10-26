@@ -17,7 +17,6 @@ import {
   CreateRequestRequest,
   FindOneRequestResponse,
   RequestDataResponse,
-  RequestSuccessResponse,
   UpdateRequestRequest,
 } from './dto/request.dto';
 import { RequestService } from './request.service';
@@ -61,9 +60,11 @@ export class RequestController {
   async updadte(
     @Param('requestId') id: number,
     @Body(ValidationPipe) updateRequest: UpdateRequestRequest,
+    @Request() req: any,
   ) {
     const request: Requests = await this.requestService.update(
       id,
+      req.user.user_id,
       updateRequest,
     );
     return this.requestService.fmtResponse(request);

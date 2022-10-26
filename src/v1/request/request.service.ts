@@ -32,16 +32,20 @@ export class RequestService {
   }
 
   fmtResponse(request: Requests): RequestDataResponse {
+    console.log(request);
     const response: RequestDataResponse = {
       id: request.id,
       title: request.title,
       description: request.description,
       applicant: request.applicant.name,
       quest_title: request.quest.title,
-      quest_descriptio: request.quest.description,
+      quest_description: request.quest.description,
       reward: request.quest.reward,
       status: request.status,
-      date: request.created_at,
+      auth_comment: request.auth_comment ?? '',
+      authorizer: request.authorizer ? request.authorizer.name : '',
+      created_at: request.created_at,
+      updated_at: request.updated_at,
     };
 
     return response;
@@ -62,7 +66,7 @@ export class RequestService {
 
   async findAllByTenantId(tenantId: number): Promise<Requests[]> {
     const requests = await this.requestRepository.find({
-      relations: ['quest', 'applicant'],
+      relations: ['quest', 'applicant', 'authorizer'],
       where: { tenant: { id: tenantId } },
     });
     return requests;
@@ -90,13 +94,16 @@ export class RequestService {
 
   async update(
     id: number,
+    authorizer_id: number,
     updateRequest: UpdateRequestRequest,
   ): Promise<Requests> {
-    console.log(updateRequest);
+    console.log(authorizer_id);
     //ターゲットを取得
     const targetRequest = await this.findOneById(id);
-    console.log(targetRequest);
+    const authorizer = await this.userService.findOneById(authorizer_id);
     targetRequest.status = updateRequest.status;
+    targetRequest.auth_comment = updateRequest.auth_comment;
+    targetRequest.authorizer = authorizer;
     this.requestRepository.save(targetRequest);
     return targetRequest;
   }

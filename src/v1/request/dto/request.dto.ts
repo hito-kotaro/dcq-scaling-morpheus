@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 import { Quests } from 'src/entity/quest.entity';
 import { Users } from 'src/entity/user.entity';
 
@@ -19,7 +20,7 @@ export class RequestDataResponse {
   quest_title: string;
 
   @ApiProperty({ type: String })
-  quest_descriptio: string;
+  quest_description: string;
 
   @ApiProperty({ type: Number })
   reward: number;
@@ -27,8 +28,19 @@ export class RequestDataResponse {
   @ApiProperty({ type: String })
   status: string;
 
+  @ApiProperty({ type: String })
+  @IsOptional()
+  authorizer?: string;
+
+  @ApiProperty({ type: String })
+  @IsOptional()
+  auth_comment?: string;
+
   @ApiProperty({ type: Date })
-  date: Date;
+  created_at: Date;
+
+  @ApiProperty({ type: Date })
+  updated_at: Date;
 }
 
 export class AllRequestDataResponse {
@@ -80,13 +92,8 @@ export class CreateRequestRequest {
 
 export class UpdateRequestRequest {
   @ApiProperty({ type: String })
+  auth_comment: string;
+
+  @ApiProperty({ type: String })
   status: string;
-}
-
-export class RequestSuccessResponse {
-  @ApiProperty({ type: Number, description: 'リクエストID' })
-  readonly id: number;
-
-  @ApiProperty({ type: String, description: 'メッセージ' })
-  readonly message: string;
 }

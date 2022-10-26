@@ -90,8 +90,11 @@ export class PenaltyService {
     return createdPenalty;
   }
 
-  async update(updatePenalty: UpdatePenaltyRequest): Promise<Penalties> {
-    const { id, title, description, penalty } = updatePenalty;
+  async update(
+    id: number,
+    updatePenalty: UpdatePenaltyRequest,
+  ): Promise<Penalties> {
+    const { title, description, penalty } = updatePenalty;
     const targetPenalty = await this.findOneById(id);
     targetPenalty.title = title ?? targetPenalty.title;
     targetPenalty.description = description ?? targetPenalty.description;

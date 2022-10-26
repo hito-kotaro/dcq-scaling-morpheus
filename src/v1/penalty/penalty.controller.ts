@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   Put,
   Request,
@@ -65,13 +66,14 @@ export class PenaltyController {
     return this.penaltyService.fmtResponse(penalty);
   }
 
-  @Put()
+  @Put(':penaltyId')
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: PenaltyResponse })
   async update(
+    @Param('penaltyId') id: number,
     @Body(ValidationPipe) updateQuest: UpdatePenaltyRequest,
   ): Promise<PenaltyResponse> {
-    const penalty = await this.penaltyService.update(updateQuest);
+    const penalty = await this.penaltyService.update(id, updateQuest);
     return this.penaltyService.fmtResponse(penalty);
   }
 }
