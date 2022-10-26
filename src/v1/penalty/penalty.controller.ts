@@ -7,8 +7,10 @@ import {
   Post,
   Put,
   Request,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Penalties } from 'src/entity/penalty.entity';
 import {
@@ -25,24 +27,26 @@ export class PenaltyController {
   constructor(private readonly penaltyService: PenaltyService) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: AllPenaltyResponse })
   async findAll(@Request() req: any): Promise<AllPenaltyResponse> {
+    console.log('fetch penalty');
     const penalties = await this.penaltyService.findAll(req.user.tenant_id);
     const fmtPenalties: PenaltyResponse[] = penalties.map((p: Penalties) => {
       return this.penaltyService.fmtResponse(p);
     });
-
+    console.log(fmtPenalties);
     return { penalties: fmtPenalties, total: fmtPenalties.length };
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: PenaltyResponse })
   async create(
     @Body(ValidationPipe) createPenalty: CreatePenaltyRequest,
     @Request() req: any,
   ): Promise<PenaltyResponse> {
     const { tenant_id, user_id } = req.user;
-
     const exist = await this.penaltyService.titleExist(
       tenant_id,
       createPenalty.title,
@@ -62,6 +66,7 @@ export class PenaltyController {
   }
 
   @Put()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: PenaltyResponse })
   async update(
     @Body(ValidationPipe) updateQuest: UpdatePenaltyRequest,

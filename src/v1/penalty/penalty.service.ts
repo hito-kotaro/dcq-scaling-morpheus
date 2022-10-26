@@ -50,7 +50,7 @@ export class PenaltyService {
       relations: ['tenant', 'owner'],
       where: { tenant: { id: tenantId } },
     });
-
+    console.log(penalties);
     return penalties;
   }
 
