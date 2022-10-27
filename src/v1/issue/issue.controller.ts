@@ -43,12 +43,6 @@ export class IssueController {
     @Body(ValidationPipe) createIssue: CreateIssueRequest,
     @Request() req: any,
   ): Promise<IssueResponse> {
-    const exist = await this.issueService.IssueExist(createIssue.title);
-
-    if (exist === true) {
-      throw new BadRequestException('already exist');
-    }
-
     const issue = await this.issueService.create(
       req.user.tenant_id,
       req.user.user_id,

@@ -15,7 +15,6 @@ import { Tenants } from './tenant.entity';
 import { Users } from './user.entity';
 
 @Entity()
-@Index(['tenant', 'title'], { unique: true })
 export class Issues {
   @PrimaryGeneratedColumn({ comment: '発行済みペナルティID' })
   id: number;
