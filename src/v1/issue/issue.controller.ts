@@ -1,19 +1,21 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  Delete,
   Get,
   HttpStatus,
-  Param,
   Post,
+  Request,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Issues } from 'src/entity/issue.entity';
 import {
+  AllIssueResponse,
   CreateIssueRequest,
-  FindAllIssueResponse,
-  FindOneIssueResonse,
-  IssueSuccessResponse,
+  IssueResponse,
 } from './dto/issue.dto';
 import { IssueService } from './issue.service';
 
@@ -22,27 +24,36 @@ import { IssueService } from './issue.service';
 export class IssueController {
   constructor(private readonly issueService: IssueService) {}
 
-  @Get(':IssueId')
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneIssueResonse })
-  async findOne(@Param('IssueId') id: number) {
-    return await this.issueService.findOne(id);
-  }
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({ status: HttpStatus.OK, type: AllIssueResponse })
+  async findAll(@Request() req: any): Promise<AllIssueResponse> {
+    const issues = await this.issueService.findAll(req.user.tenant_id);
+    const fmtIssues: IssueResponse[] = issues.map((i: Issues) => {
+      return this.issueService.fmtResponse(i);
+    });
 
-  @Get('/all/:tenantId')
-  @ApiResponse({ status: HttpStatus.OK, type: FindAllIssueResponse })
-  async findAll(@Param('tenantId') id: number) {
-    return await this.issueService.findAll(id);
+    return { issues: fmtIssues, total: fmtIssues.length };
   }
 
   @Post()
-  @ApiResponse({ status: HttpStatus.OK, type: IssueSuccessResponse })
-  async create(@Body(ValidationPipe) createQuest: CreateIssueRequest) {
-    return this.issueService.create(createQuest);
-  }
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({ status: HttpStatus.OK, type: IssueResponse })
+  async create(
+    @Body(ValidationPipe) createIssue: CreateIssueRequest,
+    @Request() req: any,
+  ): Promise<IssueResponse> {
+    const exist = await this.issueService.IssueExist(createIssue.title);
 
-  @Delete(':IssueId')
-  @ApiResponse({ status: HttpStatus.OK, type: IssueSuccessResponse })
-  async delete(@Param('IssueId') id: number) {
-    return await this.issueService.delete(id);
+    if (exist === true) {
+      throw new BadRequestException('already exist');
+    }
+
+    const issue = await this.issueService.create(
+      req.user.tenant_id,
+      createIssue,
+    );
+
+    return this.issueService.fmtResponse(issue);
   }
 }

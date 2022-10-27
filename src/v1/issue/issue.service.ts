@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Issues } from 'src/entity/issue.entity';
 import { Repository } from 'typeorm';
@@ -6,12 +6,7 @@ import { PenaltyService } from '../penalty/penalty.service';
 import { TeamService } from '../team/team.service';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
-import {
-  CreateIssueRequest,
-  FindAllIssueResponse,
-  FindOneIssueResonse,
-  IssueSuccessResponse,
-} from './dto/issue.dto';
+import { CreateIssueRequest, IssueResponse } from './dto/issue.dto';
 
 @Injectable()
 export class IssueService {
@@ -23,36 +18,55 @@ export class IssueService {
     @InjectRepository(Issues) private issueRepository: Repository<Issues>,
   ) {}
 
-  async findOne(id: number): Promise<FindOneIssueResonse> {
+  //　存在チェック
+  async IssueExist(title: string) {
+    const issue = await this.issueRepository.findOne({ where: { title } });
+    if (issue) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  fmtResponse(issue: Issues): IssueResponse {
+    const response: IssueResponse = {
+      id: issue.id,
+      title: issue.title,
+      description: issue.description,
+      authorizer: issue.authorizer.name,
+      team_id: issue.team.id,
+      team: issue.team.name,
+      penalty_title: issue.penalty.title,
+      penalty_description: issue.penalty.description,
+    };
+
+    return response;
+  }
+
+  async findOne(id: number): Promise<Issues> {
     const issue = await this.issueRepository.findOne({
       relations: ['tenant', 'authorizer', 'team', 'penalty'],
       where: { id },
     });
-    if (!issue) {
-      throw new NotFoundException('issue could not found');
-    }
 
     return issue;
   }
 
-  async findAll(tenantId: number): Promise<FindAllIssueResponse> {
+  async findAll(tenantId: number): Promise<Issues[]> {
     const issues = await this.issueRepository.find({
       relations: ['tenant', 'authorizer', 'team', 'penalty'],
       where: { tenant: { id: tenantId } },
     });
 
-    return { issues, total: issues.length };
+    return issues;
   }
 
-  async create(createIssue: CreateIssueRequest): Promise<IssueSuccessResponse> {
-    const {
-      title,
-      description,
-      tenant_id,
-      team_id,
-      authorizer_id,
-      penalty_id,
-    } = createIssue;
+  async create(
+    tenant_id: number,
+    createIssue: CreateIssueRequest,
+  ): Promise<Issues> {
+    const { title, description, team_id, authorizer_id, penalty_id } =
+      createIssue;
     const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOne(team_id);
     const authorizer = await this.userService.findOneById(authorizer_id);
@@ -67,12 +81,6 @@ export class IssueService {
       penalty,
     });
 
-    return { id: createdIssue.id, message: 'create success' };
-  }
-
-  async delete(id: number): Promise<IssueSuccessResponse> {
-    await this.issueRepository.delete({ id });
-
-    return { id, message: 'delete success' };
+    return createdIssue;
   }
 }

@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Penalties } from 'src/entity/penalty.entity';
-import { Teams } from 'src/entity/team.entity';
-import { Users } from 'src/entity/user.entity';
 
-export class FindOneIssueResonse {
+export class IssueResponse {
   @ApiProperty({ type: Number })
   readonly id: number;
 
@@ -13,19 +10,25 @@ export class FindOneIssueResonse {
   @ApiProperty({ type: String })
   description: string;
 
-  @ApiProperty({ type: Users })
-  authorizer: Users;
+  @ApiProperty({ type: String })
+  authorizer: string;
 
-  @ApiProperty({ type: Teams })
-  team: Teams;
+  @ApiProperty({ type: Number })
+  team_id: number;
 
-  @ApiProperty({ type: Penalties })
-  penalty: Penalties;
+  @ApiProperty({ type: String })
+  team: string;
+
+  @ApiProperty({ type: String })
+  penalty_title: string;
+
+  @ApiProperty({ type: String })
+  penalty_description: string;
 }
 
-export class FindAllIssueResponse {
-  @ApiProperty({ type: FindOneIssueResonse })
-  issues: FindOneIssueResonse[];
+export class AllIssueResponse {
+  @ApiProperty({ type: IssueResponse })
+  issues: IssueResponse[];
 
   @ApiProperty({ type: Number })
   total: number;
@@ -49,17 +52,4 @@ export class CreateIssueRequest {
 
   @ApiProperty({ type: Number })
   penalty_id: number;
-}
-
-export class DeleteIssueRequest {
-  @ApiProperty({ type: Number })
-  id: number;
-}
-
-export class IssueSuccessResponse {
-  @ApiProperty({ type: Number, description: 'ペナルティ付与ID' })
-  readonly id: number;
-
-  @ApiProperty({ type: String, description: 'メッセージ' })
-  readonly message: string;
 }
