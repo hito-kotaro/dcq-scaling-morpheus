@@ -41,9 +41,9 @@ export class AuthService {
 
     const payload: tokenPayload = {
       tenant_id: tenant.id,
-      tenant_name: tenant.name,
+      tenant: tenant.name,
       user_id: 0,
-      user_name: '',
+      user: '',
     };
 
     return {
@@ -64,9 +64,9 @@ export class AuthService {
     }
     const payload: tokenPayload = {
       tenant_id: user.tenant.id,
-      tenant_name: user.tenant.name,
+      tenant: user.tenant.name,
       user_id: user.id,
-      user_name: user.name,
+      user: user.name,
     };
     return {
       tenant_id: user.tenant.id,

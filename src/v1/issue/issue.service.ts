@@ -33,11 +33,15 @@ export class IssueService {
       id: issue.id,
       title: issue.title,
       description: issue.description,
+      point: issue.penalty.point,
       authorizer: issue.authorizer.name,
       team_id: issue.team.id,
       team: issue.team.name,
       penalty_title: issue.penalty.title,
       penalty_description: issue.penalty.description,
+      penalty_updated_at: issue.penalty.updated_at,
+      created_at: issue.created_at,
+      updated_at: issue.updated_at,
     };
 
     return response;
@@ -63,10 +67,10 @@ export class IssueService {
 
   async create(
     tenant_id: number,
+    authorizer_id: number,
     createIssue: CreateIssueRequest,
   ): Promise<Issues> {
-    const { title, description, team_id, authorizer_id, penalty_id } =
-      createIssue;
+    const { title, description, team_id, penalty_id } = createIssue;
     const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOne(team_id);
     const authorizer = await this.userService.findOneById(authorizer_id);

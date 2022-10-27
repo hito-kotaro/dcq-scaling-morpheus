@@ -24,6 +24,18 @@ export class IssueResponse {
 
   @ApiProperty({ type: String })
   penalty_description: string;
+
+  @ApiProperty({ type: Number })
+  point: number;
+
+  @ApiProperty({ type: Date })
+  penalty_updated_at: Date;
+
+  @ApiProperty({ type: Date })
+  created_at: Date;
+
+  @ApiProperty({ type: Date })
+  updated_at: Date;
 }
 
 export class AllIssueResponse {
@@ -40,12 +52,6 @@ export class CreateIssueRequest {
 
   @ApiProperty({ type: String })
   description: string;
-
-  @ApiProperty({ type: Number })
-  tenant_id: number;
-
-  @ApiProperty({ type: Number })
-  authorizer_id: number;
 
   @ApiProperty({ type: Number })
   team_id: number;

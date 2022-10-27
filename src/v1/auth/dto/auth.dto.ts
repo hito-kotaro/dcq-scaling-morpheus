@@ -42,13 +42,13 @@ export class tokenPayload {
   readonly tenant_id: number;
 
   @ApiProperty({ type: String })
-  readonly tenant_name: string;
+  readonly tenant: string;
 
   @ApiProperty({ type: Number })
   readonly user_id: number;
 
   @ApiProperty({ type: String })
-  readonly user_name: string;
+  readonly user: string;
 }
 
 export class SignUptRequest {

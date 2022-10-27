@@ -51,6 +51,7 @@ export class IssueController {
 
     const issue = await this.issueService.create(
       req.user.tenant_id,
+      req.user.user_id,
       createIssue,
     );
 
