@@ -7,9 +7,9 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Timestamp,
   UpdateDateColumn,
 } from 'typeorm';
+import { Teams } from './team.entity';
 import { Tenants } from './tenant.entity';
 import { Users } from './user.entity';
 
@@ -39,7 +39,7 @@ export class Penalties {
 
   @ApiProperty()
   @Column({ comment: 'ペナルティポイント' })
-  penalty: number;
+  point: number;
 
   @ApiProperty()
   @CreateDateColumn({

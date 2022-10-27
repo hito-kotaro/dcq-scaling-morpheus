@@ -14,7 +14,8 @@ export class PenaltyResponse {
 
   @ApiProperty({ type: Number })
   @IsPositive()
-  penalty: number;
+  point: number;
+
   @ApiProperty({ type: String })
   readonly owner: string;
 
@@ -22,7 +23,10 @@ export class PenaltyResponse {
   readonly owner_id: number;
 
   @ApiProperty({ type: Date })
-  date: Date;
+  created_at: Date;
+
+  @ApiProperty({ type: Date })
+  updated_at: Date;
 }
 
 export class AllPenaltyResponse {
@@ -42,7 +46,7 @@ export class CreatePenaltyRequest {
 
   @ApiProperty({ type: Number })
   @IsPositive()
-  penalty: number;
+  point: number;
 }
 
 export class UpdatePenaltyRequest {
@@ -56,5 +60,5 @@ export class UpdatePenaltyRequest {
 
   @ApiProperty({ type: Number })
   @IsOptional()
-  penalty: number;
+  point: number;
 }

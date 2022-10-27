@@ -24,14 +24,16 @@ export class PenaltyService {
       id: penalty.id,
       title: penalty.title,
       description: penalty.description,
-      penalty: penalty.penalty,
-      owner_id: penalty.owner.id,
+      point: penalty.point,
       owner: penalty.owner.name,
-      date: penalty.updated_at,
+      owner_id: penalty.owner.id,
+      created_at: penalty.created_at,
+      updated_at: penalty.updated_at,
     };
 
     return response;
   }
+
   async findOneById(id: number): Promise<Penalties> {
     const penalty = await this.penaltyRepository.findOne({
       relations: ['tenant', 'owner'],
@@ -73,7 +75,7 @@ export class PenaltyService {
     owner_id: number,
     createPenalty: CreatePenaltyRequest,
   ): Promise<Penalties> {
-    const { title, description, penalty } = createPenalty;
+    const { title, description, point } = createPenalty;
     // テナント取得
     const tenant = await this.tenantService.findOneById(tenant_id);
     // ユーザ取得(クエストオーナー)
@@ -84,7 +86,7 @@ export class PenaltyService {
       owner,
       title,
       description,
-      penalty,
+      point,
     });
 
     return createdPenalty;
@@ -94,11 +96,11 @@ export class PenaltyService {
     id: number,
     updatePenalty: UpdatePenaltyRequest,
   ): Promise<Penalties> {
-    const { title, description, penalty } = updatePenalty;
+    const { title, description, point } = updatePenalty;
     const targetPenalty = await this.findOneById(id);
     targetPenalty.title = title ?? targetPenalty.title;
     targetPenalty.description = description ?? targetPenalty.description;
-    targetPenalty.penalty = penalty ?? targetPenalty.penalty;
+    targetPenalty.point = point ?? targetPenalty.point;
     this.penaltyRepository.save(targetPenalty);
     return targetPenalty;
   }
