@@ -1,29 +1,39 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Tenants } from 'src/entity/tenant.entity';
-import { Repository } from 'typeorm';
-import { TenantController } from './tenant.controller';
+import { repositoryMockFactory } from './tenant.mock.spec';
 import { TenantService } from './tenant.service';
-
+// テストコード内でServiceでINJECTしているモジュール類に触れない
 describe('TenantService', () => {
-  let service: TenantService;
-  let mockRepository: Repository<Tenants>;
+  let tenantService;
+  let tenantRepository;
+  // const mockTenantRepository = () => ({
+  //   validate: jest.fn(),
+  //   findOneById: jest.fn(),
+  //   findOneByName: jest.fn(),
+  //   create: jest.fn(),
+  //   update: jest.fn(),
+  // });
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [TenantController],
+    const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         TenantService,
-        { provide: getRepositoryToken(Tenants), useClass: Repository },
+        {
+          provide: getRepositoryToken(Tenants),
+          useFactory: repositoryMockFactory,
+        },
       ],
     }).compile();
-
-    mockRepository = module.get<Repository<Tenants>>(
-      getRepositoryToken(Tenants),
-    );
-    service = module.get<TenantService>(TenantService);
+    tenantService = await moduleRef.get<TenantService>(TenantService);
+    tenantRepository = await moduleRef.get(getRepositoryToken(Tenants));
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  describe('test', () => {
+    it('should return number', async () => {
+      tenantRepository.test.mockReturnValue(1);
+      const result = await tenantService.test(1);
+      console.log(result);
+      expect(result).toBe(1);
+    });
   });
 });

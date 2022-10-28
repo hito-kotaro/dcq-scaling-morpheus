@@ -30,6 +30,10 @@ export class TenantController {
   // create(@Body(ValidationPipe) createTenant: CreateTenantRequest) {
   //   return this.tenantService.create(createTenant);
   // }
+  @Get()
+  async kuso() {
+    return { status: 200 };
+  }
 
   @Get(':tenantId')
   @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })
