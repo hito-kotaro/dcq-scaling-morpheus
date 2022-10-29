@@ -1,27 +1,45 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Tenants } from 'src/entity/tenant.entity';
-import { Repository } from 'typeorm';
-import { CreateTenantDto } from './dto/tenant.dto';
 import { TenantController } from './tenant.controller';
 import { TenantService } from './tenant.service';
 
-describe('TenantController', () => {
+describe('UserController', () => {
   let controller: TenantController;
-  let mockRepository: Repository<Tenants>;
 
+  // mockを定義しておく　多分この中にテスト用のダミーメソッドを書く？
+  const mockTenantService = {
+    fmtResponse: jest.fn(() => {
+      return {
+        id: 1,
+        name: 'test',
+        session_id: '',
+        slack_token: '',
+        created_at: Date.now(),
+        updated_at: Date.now(),
+      };
+    }),
+    findOneById: jest.fn((): Tenants => {
+      return {
+        id: 0,
+        name: '',
+        password: '',
+        season_id: 0,
+        slack_token: '',
+        created_at: undefined,
+        updated_at: undefined,
+      };
+    }),
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TenantController],
-      providers: [
-        TenantService,
-        { provide: getRepositoryToken(Tenants), useClass: Repository },
-      ],
-    }).compile();
+      providers: [TenantService],
+    })
+      // ここでUserServiceに定義したmockをオーバーライドしている->だからDIの依存解決ができていなくでも通る？
+      .overrideProvider(TenantService)
+      .useValue(mockTenantService)
+      .compile();
 
-    mockRepository = module.get<Repository<Tenants>>(
-      getRepositoryToken(Tenants),
-    );
     controller = module.get<TenantController>(TenantController);
   });
 
@@ -29,44 +47,19 @@ describe('TenantController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('findOne method returns a user.', async () => {
-    // 独自実装したメソッドでtestデータの生成
-    const tenant: Tenants = {
-      id: 1,
-      tenantName: 'MockunTenant',
-      password: 'password',
-      seasonId: 1,
-      slackId: 'slacknochannelaidexidesu',
-      createdAt: new Date('2022/01/01'),
-      updatedAt: new Date('2022/01/01'),
-    };
+  it('should be get tenatn and exclude passowrd', async () => {
+    const resuslt = await controller.findOneById(1);
+    expect(resuslt).toEqual({
+      id: expect.any(Number),
+      name: expect.any(String),
+      session_id: expect.any(String),
+      slack_token: expect.any(String),
+      created_at: expect.any(Number),
+      updated_at: expect.any(Number),
+    });
 
-    const tenant2: Tenants = {
-      id: 111,
-      tenant_name: 'MockunTenant2',
-      password: 'password2',
-      season_id: 2,
-      slack_token: 'slacknochannelaidexidesu2',
-      created_at: new Date('2022/01/01'),
-      updated_at: new Date('2022/01/01'),
-    };
-
-    // モックしたい関数のモック実装を渡す
-    jest
-      .spyOn(mockRepository, 'findOne')
-      .mockImplementation(async () => tenant);
-
-    // Get(findOne)のテスト
-    const test = await controller.findOne(tenant.id);
-    const test2 = await controller.findOne(tenant2.id);
-    expect((await controller.findOne(tenant.id)) === tenant2);
-
-    // Post(create)のテスト
-    const createTenant: CreateTenantDto = {
-      tenant_name: 'MockunTenant2',
-      password: 'password',
-    };
-
-    expect(await controller.create(createTenant));
+    expect(resuslt).not.toEqual(
+      expect.objectContaining({ password: expect.any(String) }),
+    );
   });
 });

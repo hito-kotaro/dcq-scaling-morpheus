@@ -31,7 +31,8 @@ export class TenantController {
   async findOneById(
     @Param('tenantId') tenantId: number,
   ): Promise<TenantResponse> {
-    return await this.tenantService.findOneById(tenantId);
+    const tenant = await this.tenantService.findOneById(tenantId);
+    return this.tenantService.fmtResponse(tenant);
   }
 
   @Put(':tenantId')
