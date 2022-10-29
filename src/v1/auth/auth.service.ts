@@ -31,7 +31,7 @@ export class AuthService {
     tenantLoginParam: TenantLoginRequest,
   ): Promise<authResponse> {
     const { tenant_name, password } = tenantLoginParam;
-    const tenant = await this.tenantService.findOneByName(tenant_name, true);
+    const tenant = await this.tenantService.findOneByName(tenant_name);
     console.log(tenant);
     const isValid = await bcrypt.compare(password, tenant.password);
     console.log(isValid);

@@ -9,12 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  CreateTenantRequest,
-  FindOneTenantResponse,
-  TenantSuccessResponse,
-  UpdateTenantRequest,
-} from './dto/tenant.dto';
+import { TenantResponse, UpdateTenantRequest } from './dto/tenant.dto';
 import { TenantService } from './tenant.service';
 
 @ApiTags('tenant')
@@ -30,23 +25,19 @@ export class TenantController {
   // create(@Body(ValidationPipe) createTenant: CreateTenantRequest) {
   //   return this.tenantService.create(createTenant);
   // }
-  @Get()
-  async kuso() {
-    return { status: 200 };
-  }
 
   @Get(':tenantId')
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneTenantResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: TenantResponse })
   async findOneById(
     @Param('tenantId') tenantId: number,
-  ): Promise<FindOneTenantResponse> {
+  ): Promise<TenantResponse> {
     return await this.tenantService.findOneById(tenantId);
   }
 
   @Put(':tenantId')
   @ApiResponse({
     status: HttpStatus.OK,
-    type: TenantSuccessResponse,
+    type: TenantResponse,
   })
   update(
     @Param('tenantId') id: number,

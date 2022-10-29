@@ -1,17 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tenants } from 'src/entity/tenant.entity';
 import { Repository } from 'typeorm';
 import {
   CreateTenantRequest,
-  CreateTenantResponse,
-  FindOneTenantResponse,
+  TenantResponse,
   UpdateTenantRequest,
-  UpdateTenantResponse,
 } from './dto/tenant.dto';
 import * as bcrypt from 'bcryptjs';
 
@@ -27,70 +21,53 @@ export class TenantService {
     return id;
   }
 
+  fmtResponse(tenant: Tenants) {
+    const response: TenantResponse = {
+      id: tenant.id,
+      name: tenant.name,
+      season_id: tenant.season_id,
+      slack_token: tenant.slack_token,
+      created_at: tenant.created_at,
+      updated_at: tenant.updated_at,
+    };
+
+    return response;
+  }
+
   async validate(name: string) {
     const tenant = await this.tenantRepository.findOne({ where: { name } });
     return tenant;
   }
+
   // テナントID検索
-  async findOneById(
-    tenantId: number,
-    isPassword?: boolean,
-  ): Promise<FindOneTenantResponse> {
+  async findOneById(tenantId: number): Promise<Tenants> {
     const tenant: Tenants = await this.tenantRepository.findOne({
       where: { id: tenantId },
     });
 
-    if (!tenant) {
-      throw new NotFoundException('could not found tenant');
-    }
-
-    const password = isPassword ? tenant.password : '';
-    tenant.password = password;
     return tenant;
   }
 
   // テナント名検索(ログイン用)
-  async findOneByName(
-    tenantName: string,
-    isPassword?: boolean,
-  ): Promise<FindOneTenantResponse> {
+  async findOneByName(tenantName: string): Promise<Tenants> {
     const tenant: Tenants = await this.tenantRepository.findOne({
       where: { name: tenantName },
     });
 
-    if (!tenant) {
-      throw new NotFoundException('could not found tenant');
-    }
-
-    const password = isPassword ? tenant.password : '';
-    tenant.password = password;
     return tenant;
   }
 
   // テナント作成
-  async create(tenant: CreateTenantRequest): Promise<CreateTenantResponse> {
-    const isExist: Tenants = await this.tenantRepository.findOne({
-      where: { name: tenant.name },
-    });
-    console.log('tenant');
-    console.log(tenant);
-    if (isExist) {
-      throw new BadRequestException(`${tenant.name} is already exist`);
-    }
-
+  async create(tenant: CreateTenantRequest): Promise<Tenants> {
     const createdTenant = await this.tenantRepository.save({
       name: tenant.name,
       password: await bcrypt.hash(tenant.password, 12),
     });
-    console.log(createdTenant);
     return createdTenant;
   }
 
   // テナント情報更新
-  async update(
-    id: number,
-    tenant: UpdateTenantRequest,
-  ): Promise<UpdateTenantResponse> {
+  async update(id: number, tenant: UpdateTenantRequest): Promise<Tenants> {
     const updateTenant = await this.findOneById(id);
 
     updateTenant.password = tenant.password ?? updateTenant.password;

@@ -7,16 +7,13 @@ import {
   IsInt,
 } from 'class-validator';
 
-export class FindOneTenantResponse {
+export class TenantResponse {
   @ApiProperty({ type: Number, description: 'テナントID' })
-  readonly id: number;
+  id: number;
 
   @ApiProperty({ type: String, description: 'テナント名' })
   @IsString()
-  readonly name: string;
-
-  @ApiProperty({ type: String, description: 'テナントパスワード' })
-  password: string;
+  name: string;
 
   @ApiProperty({ type: Number, description: 'シーズン設定' })
   season_id: number;
@@ -25,18 +22,10 @@ export class FindOneTenantResponse {
   slack_token: string;
 
   @ApiProperty({ type: Date, description: '登録日時' })
-  readonly created_at: Date;
+  created_at: Date;
 
   @ApiProperty({ type: Date, description: '更新日時' })
   updated_at: Date;
-}
-
-export class TenantSuccessResponse {
-  @ApiProperty({ type: Number, description: 'テナントID' })
-  readonly tenant_id: number;
-
-  @ApiProperty({ type: String, description: 'メッセージ' })
-  readonly message: string;
 }
 
 export class CreateTenantRequest {
@@ -53,30 +42,6 @@ export class CreateTenantRequest {
 }
 
 export class CreateTenantResponse {
-  @ApiProperty({ type: Number, description: 'テナントID' })
-  readonly id: number;
-
-  @ApiProperty({ type: String, description: 'テナント名' })
-  @IsString()
-  readonly name: string;
-
-  @ApiProperty({ type: String, description: 'テナントパスワード' })
-  password: string;
-
-  @ApiProperty({ type: Number, description: 'シーズン設定' })
-  season_id: number;
-
-  @ApiProperty({ type: Number, description: 'slack設定' })
-  slack_token: string;
-
-  @ApiProperty({ type: Date, description: '登録日時' })
-  readonly created_at: Date;
-
-  @ApiProperty({ type: Date, description: '更新日時' })
-  updated_at: Date;
-}
-
-export class UpdateTenantResponse {
   @ApiProperty({ type: Number, description: 'テナントID' })
   readonly id: number;
 
