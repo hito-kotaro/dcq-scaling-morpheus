@@ -18,8 +18,8 @@ import {
 export class TeamService {
   constructor(
     private readonly tenantService: TenantService,
-    @InjectRepository(Users) private userRepository: Repository<Users>,
     @InjectRepository(Teams) private teamRepository: Repository<Teams>,
+    @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
 
   // チームフォーマット
