@@ -34,40 +34,28 @@ export class PenaltyService {
     return response;
   }
 
-  async findOneById(id: number): Promise<Penalties> {
-    const penalty = await this.penaltyRepository.findOne({
-      relations: ['tenant', 'owner'],
-      where: { id },
-    });
-
-    if (!penalty) {
-      throw new NotFoundException('could not found penalty');
-    }
-
-    return penalty;
-  }
-
-  async findAll(tenantId: number): Promise<Penalties[]> {
-    const penalties = await this.penaltyRepository.find({
+  async findAllByTenantId(tenantId: number): Promise<Penalties[]> {
+    return await this.penaltyRepository.find({
       relations: ['tenant', 'owner'],
       where: { tenant: { id: tenantId } },
     });
-    console.log(penalties);
-    return penalties;
   }
 
-  // テナント内同一タイトル重複チェック
-  async titleExist(tenantId: number, title: string) {
-    const penalty = await this.penaltyRepository.findOne({
-      relations: ['tenant'],
+  async findOneById(id: number): Promise<Penalties> {
+    return await this.penaltyRepository.findOne({
+      relations: ['tenant', 'owner'],
+      where: { id },
+    });
+  }
+
+  async findOneByTitleAndTenantId(
+    title: string,
+    tenantId: number,
+  ): Promise<Penalties> {
+    return await this.penaltyRepository.findOne({
+      relations: ['tenant', 'owner'],
       where: { title, tenant: { id: tenantId } },
     });
-
-    if (penalty) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   async create(
@@ -76,20 +64,18 @@ export class PenaltyService {
     createPenalty: CreatePenaltyRequest,
   ): Promise<Penalties> {
     const { title, description, point } = createPenalty;
-    // テナント取得
+
+    // 関連エンティティの取得
     const tenant = await this.tenantService.findOneById(tenant_id);
-    // ユーザ取得(クエストオーナー)
     const owner = await this.userService.findOneById(owner_id);
 
-    const createdPenalty = await this.penaltyRepository.save({
+    return await this.penaltyRepository.save({
       tenant,
       owner,
       title,
       description,
       point,
     });
-
-    return createdPenalty;
   }
 
   async update(
@@ -101,7 +87,6 @@ export class PenaltyService {
     targetPenalty.title = title ?? targetPenalty.title;
     targetPenalty.description = description ?? targetPenalty.description;
     targetPenalty.point = point ?? targetPenalty.point;
-    this.penaltyRepository.save(targetPenalty);
-    return targetPenalty;
+    return this.penaltyRepository.save(targetPenalty);
   }
 }

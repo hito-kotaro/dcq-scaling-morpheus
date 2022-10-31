@@ -28,7 +28,9 @@ export class IssueController {
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: AllIssueResponse })
   async findAll(@Request() req: any): Promise<AllIssueResponse> {
-    const issues = await this.issueService.findAll(req.user.tenant_id);
+    const issues = await this.issueService.findAllByTenantId(
+      req.user.tenant_id,
+    );
     const fmtIssues: IssueResponse[] = issues.map((i: Issues) => {
       return this.issueService.fmtResponse(i);
     });

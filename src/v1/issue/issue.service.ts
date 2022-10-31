@@ -18,16 +18,6 @@ export class IssueService {
     @InjectRepository(Issues) private issueRepository: Repository<Issues>,
   ) {}
 
-  //　存在チェック
-  async IssueExist(title: string) {
-    const issue = await this.issueRepository.findOne({ where: { title } });
-    if (issue) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   fmtResponse(issue: Issues): IssueResponse {
     const response: IssueResponse = {
       id: issue.id,
@@ -47,22 +37,11 @@ export class IssueService {
     return response;
   }
 
-  async findOne(id: number): Promise<Issues> {
-    const issue = await this.issueRepository.findOne({
-      relations: ['tenant', 'authorizer', 'team', 'penalty'],
-      where: { id },
-    });
-
-    return issue;
-  }
-
-  async findAll(tenantId: number): Promise<Issues[]> {
-    const issues = await this.issueRepository.find({
+  async findAllByTenantId(tenantId: number): Promise<Issues[]> {
+    return await this.issueRepository.find({
       relations: ['tenant', 'authorizer', 'team', 'penalty'],
       where: { tenant: { id: tenantId } },
     });
-
-    return issues;
   }
 
   async create(
@@ -71,12 +50,14 @@ export class IssueService {
     createIssue: CreateIssueRequest,
   ): Promise<Issues> {
     const { title, description, team_id, penalty_id } = createIssue;
+
+    // 関連エンティティの取得
     const tenant = await this.tenantService.findOneById(tenant_id);
-    const team = await this.teamService.findOne(team_id);
+    const team = await this.teamService.findOneById(team_id);
     const authorizer = await this.userService.findOneById(authorizer_id);
     const penalty = await this.penaltyService.findOneById(penalty_id);
 
-    const createdIssue = await this.issueRepository.save({
+    return await this.issueRepository.save({
       title,
       description,
       tenant,
@@ -84,7 +65,5 @@ export class IssueService {
       authorizer,
       penalty,
     });
-
-    return createdIssue;
   }
 }

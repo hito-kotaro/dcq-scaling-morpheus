@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -60,7 +61,17 @@ export class UserController {
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
-  async create(@Body() CreateUser: CreateUserRequest) {
+  async create(@Body() CreateUser: CreateUserRequest, @Request() req: any) {
+    // 重複チェック
+    if (
+      await this.userService.findOneByNameAndTenatnId(
+        CreateUser.name,
+        req.user.tenant_id,
+      )
+    ) {
+      throw new BadRequestException('already exist');
+    }
+
     const user = await this.userService.create(CreateUser);
     return this.userService.fmtResponse(user);
   }

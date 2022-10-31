@@ -31,7 +31,9 @@ export class QuestController {
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: AllQuestResponse })
   async findAll(@Request() req: any) {
-    const quests = await this.questService.findAll(req.user.tenant_id);
+    const quests = await this.questService.findAllByTenatnId(
+      req.user.tenant_id,
+    );
     const fmtQuests: QuestResponse[] = quests.map((q: Quests) => {
       return this.questService.fmtResponse(q);
     });
@@ -44,16 +46,19 @@ export class QuestController {
   @ApiResponse({ status: HttpStatus.OK, type: QuestResponse })
   async create(
     @Body(ValidationPipe) createQuest: CreateQuestRequest,
-    @Request() res: any,
+    @Request() req: any,
   ) {
-    const { tenant_id, user_id } = res.user;
-    const exist = await this.questService.titleExist(
-      tenant_id,
-      createQuest.title,
-    );
-    if (exist === true) {
+    const { tenant_id, user_id } = req.user;
+
+    if (
+      await this.questService.findOneByTitleAndTenantId(
+        createQuest.title,
+        tenant_id,
+      )
+    ) {
       throw new BadRequestException(`${createQuest.title} is already exist`);
     }
+
     const quest = await this.questService.create(
       createQuest,
       tenant_id,

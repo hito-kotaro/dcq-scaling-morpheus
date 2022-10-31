@@ -20,19 +20,7 @@ export class RequestService {
     @InjectRepository(Requests) private requestRepository: Repository<Requests>,
   ) {}
 
-  // 存在チェック
-  async requestExist(id: number) {
-    const request = await this.requestRepository.findOne({ where: { id } });
-
-    if (request) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   fmtResponse(request: Requests): RequestDataResponse {
-    console.log(request);
     const response: RequestDataResponse = {
       id: request.id,
       title: request.title,
@@ -52,24 +40,17 @@ export class RequestService {
   }
 
   async findOneById(id: number): Promise<Requests> {
-    const request = await this.requestRepository.findOne({
+    return await this.requestRepository.findOne({
       relations: ['quest', 'applicant'],
       where: { id },
     });
-
-    if (!request) {
-      throw new NotFoundException('could not found request');
-    }
-
-    return request;
   }
 
   async findAllByTenantId(tenantId: number): Promise<Requests[]> {
-    const requests = await this.requestRepository.find({
+    return await this.requestRepository.find({
       relations: ['quest', 'applicant', 'authorizer'],
       where: { tenant: { id: tenantId } },
     });
-    return requests;
   }
 
   async create(
@@ -77,10 +58,11 @@ export class RequestService {
     createRequest: CreateRequestRequest,
   ): Promise<Requests> {
     const { title, description, quest_id, applicant_id } = createRequest;
+    // 関連エンティティの取得
     const applicant = await this.userService.findOneById(applicant_id);
     const quest = await this.questService.findOneById(quest_id);
     const tenant = await this.tenantService.findOneById(tenant_id);
-    const createdRequest = await this.requestRepository.save({
+    return await this.requestRepository.save({
       title,
       description,
       quest,
@@ -88,8 +70,6 @@ export class RequestService {
       tenant,
       status: 'open',
     });
-
-    return createdRequest;
   }
 
   async update(
@@ -104,7 +84,7 @@ export class RequestService {
     targetRequest.status = updateRequest.status;
     targetRequest.auth_comment = updateRequest.auth_comment;
     targetRequest.authorizer = authorizer;
-    this.requestRepository.save(targetRequest);
-    return targetRequest;
+
+    return this.requestRepository.save(targetRequest);
   }
 }

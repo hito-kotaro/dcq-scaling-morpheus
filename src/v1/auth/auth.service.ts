@@ -55,7 +55,10 @@ export class AuthService {
 
   async userLogin(userLoginParam: UserLoginRequest): Promise<authResponse> {
     const { user_name, tenant_name, password } = userLoginParam;
-    const user = await this.userService.findLoginUser(user_name, tenant_name);
+    const user = await this.userService.findOneByNameAndTenatnName(
+      user_name,
+      tenant_name,
+    );
     const isValid = await bcrypt.compare(password, user.password);
     console.log('userlogin');
     console.log(isValid);

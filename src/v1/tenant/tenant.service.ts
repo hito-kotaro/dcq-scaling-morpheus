@@ -17,10 +17,6 @@ export class TenantService {
     private tenantRepository: Repository<Tenants>,
   ) {}
 
-  async test(id: number) {
-    return id;
-  }
-
   fmtResponse(tenant: Tenants) {
     const response: TenantResponse = {
       id: tenant.id,
@@ -40,21 +36,17 @@ export class TenantService {
   }
 
   // テナントID検索
-  async findOneById(tenantId: number): Promise<Tenants> {
-    const tenant: Tenants = await this.tenantRepository.findOne({
-      where: { id: tenantId },
+  async findOneById(id: number): Promise<Tenants> {
+    return await this.tenantRepository.findOne({
+      where: { id },
     });
-
-    return tenant;
   }
 
   // テナント名検索(ログイン用)
-  async findOneByName(tenantName: string): Promise<Tenants> {
-    const tenant: Tenants = await this.tenantRepository.findOne({
-      where: { name: tenantName },
+  async findOneByName(name: string): Promise<Tenants> {
+    return await this.tenantRepository.findOne({
+      where: { name },
     });
-
-    return tenant;
   }
 
   // テナント作成
@@ -64,10 +56,7 @@ export class TenantService {
       password: await bcrypt.hash(tenant.password, 12),
     });
 
-    const tmp = await this.tenantRepository.save(newTenant);
-    console.log('save-console');
-    console.log(tmp);
-    return tmp;
+    return await this.tenantRepository.save(newTenant);
   }
 
   // テナント情報更新

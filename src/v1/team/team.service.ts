@@ -42,18 +42,20 @@ export class TeamService {
     return response;
   }
 
-  async teamExist(name: string) {
-    const team = await this.teamRepository.findOne({ where: { name } });
-    return team;
-  }
-
   //チームID検索
-  async findOne(id: number): Promise<Teams> {
-    const team = await this.teamRepository.findOne({
+  async findOneById(id: number): Promise<Teams> {
+    return await this.teamRepository.findOne({
       relations: ['tenant'],
       where: { id },
     });
-    return team;
+  }
+
+  //チーム名検索
+  async findOneByName(name: string): Promise<Teams> {
+    return await this.teamRepository.findOne({
+      relations: ['tenant'],
+      where: { name },
+    });
   }
 
   //テナント内チーム取得
@@ -83,7 +85,7 @@ export class TeamService {
   // 更新可能なパラメータ:penalty, name
   async update(id: number, team: UpdateTeamRequest): Promise<Teams> {
     // 更新対象を取得
-    const updateTeam = await this.findOne(id);
+    const updateTeam = await this.findOneById(id);
 
     // 更新する値を設定 => 値がない場合は既存の値をそのまま残す
     updateTeam.name = team.name ?? updateTeam.name;

@@ -32,27 +32,29 @@ export class QuestService {
     return response;
   }
 
-  async findAll(tenantId: number): Promise<Quests[]> {
-    const quests = await this.questRepository.find({
+  async findAllByTenatnId(tenantId: number): Promise<Quests[]> {
+    return await this.questRepository.find({
       relations: ['tenant', 'owner'],
       where: { tenant: { id: tenantId } },
     });
-
-    return quests;
   }
 
-  // テナント内同一タイトル重複チェック
-  async titleExist(tenantId: number, title: string) {
-    const quest = await this.questRepository.findOne({
-      relations: ['tenant'],
+  // findOne
+  async findOneById(id: number): Promise<Quests> {
+    return await this.questRepository.findOne({
+      relations: ['tenant', 'owner'],
+      where: { id },
+    });
+  }
+
+  async findOneByTitleAndTenantId(
+    title: string,
+    tenantId: number,
+  ): Promise<Quests> {
+    return await this.questRepository.findOne({
+      relations: ['tenant', 'owner'],
       where: { title, tenant: { id: tenantId } },
     });
-
-    if (quest) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   // クエスト作成
@@ -63,12 +65,11 @@ export class QuestService {
   ): Promise<Quests> {
     const { title, description, example, reward } = createQuest;
 
-    // テナント取得
+    // 関連エンティティーの取得
     const tenant = await this.tenantService.findOneById(tenant_id);
-    // ユーザ取得(クエストオーナー)
     const owner = await this.userService.findOneById(owner_id);
 
-    const createdQuest = await this.questRepository.save({
+    return await this.questRepository.save({
       tenant,
       owner,
       title,
@@ -77,22 +78,6 @@ export class QuestService {
       reward,
       status: true,
     });
-
-    // const response = this.formatResponse(createdQuest);
-
-    return createdQuest;
-  }
-
-  // findOne
-  async findOneById(id: number): Promise<Quests> {
-    const quest = await this.questRepository.findOne({
-      relations: ['tenant', 'owner'],
-      where: { id },
-    });
-    if (!quest) {
-      throw new NotFoundException('could not found quest');
-    }
-    return quest;
   }
 
   async update(id: number, updateQuest: UpdateQuestRequest): Promise<Quests> {
@@ -105,7 +90,6 @@ export class QuestService {
     targetQuest.example = example ?? targetQuest.example;
     targetQuest.reward = reward ?? targetQuest.reward;
     targetQuest.status = status ?? targetQuest.status;
-    this.questRepository.save(targetQuest);
-    return targetQuest;
+    return this.questRepository.save(targetQuest);
   }
 }

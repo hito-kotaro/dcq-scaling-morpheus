@@ -49,8 +49,12 @@ export class TeamController {
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: String,
+  })
   async create(@Body() createTeam: CreateTeamRequest): Promise<TeamResponse> {
-    if (await this.teamService.teamExist(createTeam.name)) {
+    if (await this.teamService.findOneByName(createTeam.name)) {
       throw new BadRequestException('already exist');
     }
     const team = await this.teamService.create(createTeam);

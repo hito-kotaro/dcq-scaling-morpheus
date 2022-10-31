@@ -32,7 +32,9 @@ export class PenaltyController {
   @ApiResponse({ status: HttpStatus.OK, type: AllPenaltyResponse })
   async findAll(@Request() req: any): Promise<AllPenaltyResponse> {
     console.log('fetch penalty');
-    const penalties = await this.penaltyService.findAll(req.user.tenant_id);
+    const penalties = await this.penaltyService.findAllByTenantId(
+      req.user.tenant_id,
+    );
     const fmtPenalties: PenaltyResponse[] = penalties.map((p: Penalties) => {
       return this.penaltyService.fmtResponse(p);
     });
@@ -48,12 +50,13 @@ export class PenaltyController {
     @Request() req: any,
   ): Promise<PenaltyResponse> {
     const { tenant_id, user_id } = req.user;
-    const exist = await this.penaltyService.titleExist(
-      tenant_id,
-      createPenalty.title,
-    );
 
-    if (exist === true) {
+    if (
+      await this.penaltyService.findOneByTitleAndTenantId(
+        createPenalty.title,
+        tenant_id,
+      )
+    ) {
       throw new BadRequestException(`${createPenalty.title} is already exist`);
     }
 

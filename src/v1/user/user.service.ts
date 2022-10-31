@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -39,91 +35,58 @@ export class UserService {
     return response;
   }
 
+  // 指定チームのユーザ取得
   async findAllByTeamId(teamId: number): Promise<Users[]> {
-    const users = await this.userRepository.find({
+    return await this.userRepository.find({
       relations: ['role', 'team'],
       where: { team: { id: teamId } },
     });
-
-    return users;
   }
 
+  // 指定テナントのユーザ取得
   async findAllByTenantId(tenantId: number): Promise<Users[]> {
-    const users = await this.userRepository.find({
+    return await this.userRepository.find({
       relations: ['role', 'team'],
       where: { tenant: { id: tenantId } },
     });
-
-    return users;
   }
 
-  async findOneById(id: number, isPassword?: boolean): Promise<Users> {
-    const user: Users = await this.userRepository.findOne({
+  // 指定Idのユーザ取得
+  async findOneById(id: number): Promise<Users> {
+    return await this.userRepository.findOne({
       relations: ['role', 'team', 'tenant'],
       where: { id },
     });
-
-    if (!user) {
-      throw new NotFoundException('could not found user');
-    }
-    const password = isPassword ? user.password : '';
-    user.password = password;
-
-    return user;
   }
 
-  async findOneByName(
+  // 指定テナントID内の指定のユーザ名を取得
+  async findOneByNameAndTenatnId(
     userName: string,
     tenantId: number,
-    isPassword?: boolean,
   ): Promise<Users> {
-    const user: Users = await this.userRepository.findOne({
+    return await this.userRepository.findOne({
       relations: ['role', 'team', 'tenant'],
       where: { name: userName, tenant: { id: tenantId } },
     });
-
-    if (!user) {
-      throw new NotFoundException('could not found user');
-    }
-    const password = isPassword ? user.password : '';
-    user.password = password;
-
-    return user;
   }
 
-  // fixMe: 同一テナント内に同姓同名がいるとログインで特定できないので、userServiceで絞る
-  async findLoginUser(userName: string, tenantName: string) {
-    const user = await this.userRepository.findOne({
+  //  指定テナント名内の指定ユーザ名を取得
+  async findOneByNameAndTenatnName(userName: string, tenantName: string) {
+    return await this.userRepository.findOne({
       relations: ['tenant'],
       where: { name: userName, tenant: { name: tenantName } },
-      // where: { user_name: userName },
     });
-    if (!user) {
-      throw new NotFoundException('could not found user');
-    }
-    return user;
   }
 
   async create(createUser: CreateUserRequest): Promise<Users> {
     const { role_id, tenant_id, team_id, name, password } = createUser;
 
-    const isExist = await this.userRepository.findOne({
-      where: {
-        name,
-        tenant: { id: tenant_id },
-      },
-    });
-
-    if (isExist) {
-      throw new BadRequestException(`${name} already exist`);
-    }
-
-    // tenant取得
+    // 関連エンティティの取得
     const tenant = await this.tenantService.findOneById(tenant_id);
-    const team = await this.teamService.findOne(team_id);
+    const team = await this.teamService.findOneById(team_id);
     const role = await this.roleService.findOne(role_id);
 
-    const createdUser = await this.userRepository.save({
+    return await this.userRepository.save({
       tenant,
       team,
       role,
@@ -131,8 +94,6 @@ export class UserService {
       password: await bcrypt.hash(password, 12),
       point: 0,
     });
-
-    return createdUser;
   }
 
   async update(user: UpdateUserRequest): Promise<Users> {
@@ -143,7 +104,7 @@ export class UserService {
     let role;
     let team;
     if (team_id) {
-      team = await this.teamService.findOne(team_id);
+      team = await this.teamService.findOneById(team_id);
     }
     if (role_id) {
       role = await this.roleService.findOne(role_id);
