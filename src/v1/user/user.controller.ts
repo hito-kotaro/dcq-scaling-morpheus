@@ -38,13 +38,13 @@ export class UserController {
     return { users: fmtUsers, total: fmtUsers.length };
   }
 
-  @Get(':userId')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
-  async findOne(@Param('userId') id: number, @Request() req: any) {
-    const user = await this.userService.findOneById(id);
-    return this.userService.fmtResponse(user);
-  }
+  // @Get(':userId')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
+  // async findOne(@Param('userId') id: number, @Request() req: any) {
+  //   const user = await this.userService.findOneById(id);
+  //   return this.userService.fmtResponse(user);
+  // }
 
   @Get('/member/:teamId')
   @UseGuards(AuthGuard('jwt'))

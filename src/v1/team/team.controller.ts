@@ -9,6 +9,7 @@ import {
   Put,
   UseGuards,
   ValidationPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -38,17 +39,20 @@ export class TeamController {
     return { teams: fmtTeams, total: fmtTeams.length };
   }
 
-  @Get(':teamId')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
-  async findOne(@Param('teamId') id): Promise<TeamResponse> {
-    const team = await this.teamService.findOne(id);
-    return await this.teamService.fmtResponse(team);
-  }
+  // @Get(':teamId')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
+  // async findOne(@Param('teamId') id): Promise<TeamResponse> {
+  //   const team = await this.teamService.findOne(id);
+  //   return await this.teamService.fmtResponse(team);
+  // }
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
   async create(@Body() createTeam: CreateTeamRequest): Promise<TeamResponse> {
+    if (await this.teamService.teamExist(createTeam.name)) {
+      throw new BadRequestException('already exist');
+    }
     const team = await this.teamService.create(createTeam);
     return await this.teamService.fmtResponse(team);
   }

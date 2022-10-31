@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teams } from 'src/entity/team.entity';
 import { Users } from 'src/entity/user.entity';
@@ -46,21 +42,17 @@ export class TeamService {
     return response;
   }
 
+  async teamExist(name: string) {
+    const team = await this.teamRepository.findOne({ where: { name } });
+    return team;
+  }
+
   //チームID検索
   async findOne(id: number): Promise<Teams> {
-    if (!id) {
-      throw new BadRequestException('team id is empty');
-    }
-
     const team = await this.teamRepository.findOne({
       relations: ['tenant'],
       where: { id },
     });
-
-    if (!team) {
-      throw new NotFoundException('team could not found');
-    }
-
     return team;
   }
 
@@ -71,22 +63,6 @@ export class TeamService {
       where: { tenant: { id: tenantId } },
     });
 
-    // const teamList = [];
-
-    // // 全てのチームに対してFindOneで整形したレスポンスを返す
-    // const makeList = async () => {
-    //   // eslint-disable-next-line prefer-const
-    //   for (let t of teams) {
-    //     teamList.push(await this.formatTeamResponse(t));
-    //   }
-    // };
-    // await makeList();
-
-    // const response = {
-    //   total: teamList.length,
-    //   teams: teamList,
-    // };
-
     return teams;
   }
 
@@ -94,15 +70,6 @@ export class TeamService {
   async create(team: CreateTeamRequest): Promise<Teams> {
     // 対象のテナントを取得
     const tenant = await this.tenantService.findOneById(team.tenant_id);
-
-    const isExist = await this.teamRepository.findOne({
-      relations: ['tenant'],
-      where: { name: team.name, tenant: { id: team.tenant_id } },
-    });
-
-    if (isExist) {
-      throw new BadRequestException(`${team.name} already exist`);
-    }
 
     const createdTeam = await this.teamRepository.save({
       name: team.name,
