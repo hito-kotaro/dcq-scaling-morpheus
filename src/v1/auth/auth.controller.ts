@@ -27,7 +27,7 @@ export class AuthController {
 
   @Post('/user/login')
   @ApiResponse({ status: HttpStatus.OK, type: UserLoginRequest })
-  async login(@Body() userLoginParams: UserLoginRequest) {
+  async userLogin(@Body() userLoginParams: UserLoginRequest) {
     return this.authService.userLogin(userLoginParams);
   }
 }

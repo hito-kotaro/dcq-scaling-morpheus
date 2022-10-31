@@ -32,9 +32,7 @@ export class AuthService {
   ): Promise<authResponse> {
     const { tenant_name, password } = tenantLoginParam;
     const tenant = await this.tenantService.findOneByName(tenant_name);
-    console.log(tenant);
     const isValid = await bcrypt.compare(password, tenant.password);
-    console.log(isValid);
     if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -60,8 +58,6 @@ export class AuthService {
       tenant_name,
     );
     const isValid = await bcrypt.compare(password, user.password);
-    console.log('userlogin');
-    console.log(isValid);
     if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -82,18 +78,14 @@ export class AuthService {
 
   // テナント作成
   async signup(tenant: SignUptRequest): Promise<authResponse> {
-    console.log(tenant);
-
-    const isExist: Tenants = await this.tenantService.validate(tenant.name);
-
-    if (isExist) {
-      throw new BadRequestException(`${tenant.name} is already exist`);
+    // 同名テナントが既に存在していたらエラー
+    if (await this.tenantService.findOneByName(tenant.name)) {
+      throw new BadRequestException('already exist');
     }
-
-    console.log('ExistOK');
 
     const createdTenant = await this.tenantService.create(tenant);
 
+    // 初回はそのままログイン
     const response = await this.tenantLogin({
       tenant_name: tenant.name,
       password: tenant.password,
