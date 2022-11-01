@@ -8,17 +8,21 @@ import {
 } from 'class-validator';
 
 export class TenantResponse {
-  @ApiProperty({ type: Number, description: 'テナントID' })
+  @ApiProperty({ type: Number, description: 'テナントID', example: 1 })
   id: number;
 
-  @ApiProperty({ type: String, description: 'テナント名' })
+  @ApiProperty({ type: String, description: 'テナント名', example: 'TenantA' })
   @IsString()
   name: string;
 
-  @ApiProperty({ type: Number, description: 'シーズン設定' })
+  @ApiProperty({ type: Number, description: 'シーズン設定', example: 1 })
   season_id: number;
 
-  @ApiProperty({ type: Number, description: 'slack設定' })
+  @ApiProperty({
+    type: Number,
+    description: 'slack設定',
+    example: 'sadksla;fjewiaogkdaskd;a',
+  })
   slack_token: string;
 
   @ApiProperty({ type: Date, description: '登録日時' })

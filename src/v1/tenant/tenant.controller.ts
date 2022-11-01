@@ -1,14 +1,25 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  Get,
-  HttpStatus,
   Param,
-  Post,
   Put,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import {
+  BadRequestResponse,
+  NotFoundResponse,
+  UnAuthorizedResponse,
+  UnProcessableEntityResponse,
+} from 'src/dto/error.dto';
 import { TenantResponse, UpdateTenantRequest } from './dto/tenant.dto';
 import { TenantService } from './tenant.service';
 
@@ -26,19 +37,36 @@ export class TenantController {
   //   return this.tenantService.create(createTenant);
   // }
 
-  @Get(':tenantId')
-  @ApiResponse({ status: HttpStatus.OK, type: TenantResponse })
-  async findOneById(
-    @Param('tenantId') tenantId: number,
-  ): Promise<TenantResponse> {
-    const tenant = await this.tenantService.findOneById(tenantId);
-    return this.tenantService.fmtResponse(tenant);
-  }
+  // @Get(':tenantId')
+  // @ApiResponse({ status: HttpStatus.OK, type: TenantResponse })
+  // @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: BadRequestResponse })
+  // async findOneById(
+  //   @Param('tenantId') tenantId: number,
+  // ): Promise<TenantResponse> {
+  //   throw new BadRequestException('already exist');
+  //   const tenant = await this.tenantService.findOneById(tenantId);
+  //   return this.tenantService.fmtResponse(tenant);
+  // }
 
   @Put(':tenantId')
-  @ApiResponse({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     type: TenantResponse,
+  })
+  @ApiUnprocessableEntityResponse({
+    type: UnProcessableEntityResponse,
+    description: 'Un Processable Entity',
+  })
+  @ApiBadRequestResponse({
+    type: BadRequestResponse,
+    description: 'Bad Request',
+  })
+  @ApiUnauthorizedResponse({
+    type: UnAuthorizedResponse,
+    description: 'UnAuthorized',
+  })
+  @ApiNotFoundResponse({
+    type: NotFoundResponse,
+    description: 'Resource Not Found',
   })
   async update(
     @Param('tenantId') id: number,
