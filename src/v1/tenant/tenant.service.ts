@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tenants } from 'src/entity/tenant.entity';
 import { Repository } from 'typeorm';
@@ -30,9 +30,11 @@ export class TenantService {
     return response;
   }
 
-  async validate(name: string) {
-    const tenant = await this.tenantRepository.findOne({ where: { name } });
-    return tenant;
+  async validate(tenant) {
+    throw new NotFoundException('resource could not found');
+    // if (!tenant) {
+
+    // }
   }
 
   // テナントID検索
@@ -62,7 +64,7 @@ export class TenantService {
   // テナント情報更新
   async update(id: number, tenant: UpdateTenantRequest): Promise<Tenants> {
     const updateTenant = await this.findOneById(id);
-
+    await this.validate(updateTenant);
     updateTenant.password = tenant.password ?? updateTenant.password;
     updateTenant.season_id = tenant.season_id ?? updateTenant.season_id;
     updateTenant.slack_token = tenant.slack_token ?? updateTenant.slack_token;

@@ -8,6 +8,21 @@ describe('TenantService', () => {
   let service: TenantService;
 
   const mockTenantRepository = {
+    findOne: jest
+      .fn()
+      .mockImplementation((option: { where: { id: number } }) => {
+        console.log(option);
+        return;
+        // return {
+        //   id: 1,
+        //   name: 'TenantA',
+        //   password: '',
+        //   season_id: 0,
+        //   slack_token: '',
+        //   created_at: undefined,
+        //   updated_at: undefined,
+        // };
+      }),
     create: jest.fn().mockImplementation((dto) => dto),
     save: jest.fn().mockImplementation((tenant) =>
       Promise.resolve({
@@ -37,6 +52,12 @@ describe('TenantService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should return Tenant', async () => {
+    const tenantId = 1;
+    const result = await service.findOneById(tenantId);
+    expect(result).toEqual(1);
   });
 
   it('should return tenant', async () => {

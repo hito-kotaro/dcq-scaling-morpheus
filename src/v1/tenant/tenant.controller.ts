@@ -1,26 +1,14 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Param,
   Put,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
-  ApiUnprocessableEntityResponse,
-} from '@nestjs/swagger';
-import {
-  BadRequestResponse,
-  NotFoundResponse,
-  UnAuthorizedResponse,
-  UnProcessableEntityResponse,
-} from 'src/dto/error.dto';
-import { TenantResponse, UpdateTenantRequest } from './dto/tenant.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
+import { UpdateTenantRequest } from './dto/tenant.dto';
 import { TenantService } from './tenant.service';
 
 @ApiTags('tenant')
@@ -49,25 +37,7 @@ export class TenantController {
   // }
 
   @Put(':tenantId')
-  @ApiOkResponse({
-    type: TenantResponse,
-  })
-  @ApiUnprocessableEntityResponse({
-    type: UnProcessableEntityResponse,
-    description: 'Un Processable Entity',
-  })
-  @ApiBadRequestResponse({
-    type: BadRequestResponse,
-    description: 'Bad Request',
-  })
-  @ApiUnauthorizedResponse({
-    type: UnAuthorizedResponse,
-    description: 'UnAuthorized',
-  })
-  @ApiNotFoundResponse({
-    type: NotFoundResponse,
-    description: 'Resource Not Found',
-  })
+  @UseGuards(AuthGuard('jwt'))
   async update(
     @Param('tenantId') id: number,
     @Body(ValidationPipe) updateTenant: UpdateTenantRequest,
