@@ -30,11 +30,10 @@ export class TenantService {
     return response;
   }
 
-  async validate(tenant) {
-    throw new NotFoundException('resource could not found');
-    // if (!tenant) {
-
-    // }
+  validate(tenant) {
+    if (!tenant) {
+      throw new NotFoundException('resource could not found');
+    }
   }
 
   // テナントID検索
@@ -64,7 +63,7 @@ export class TenantService {
   // テナント情報更新
   async update(id: number, tenant: UpdateTenantRequest): Promise<Tenants> {
     const updateTenant = await this.findOneById(id);
-    await this.validate(updateTenant);
+    this.validate(updateTenant);
     updateTenant.password = tenant.password ?? updateTenant.password;
     updateTenant.season_id = tenant.season_id ?? updateTenant.season_id;
     updateTenant.slack_token = tenant.slack_token ?? updateTenant.slack_token;

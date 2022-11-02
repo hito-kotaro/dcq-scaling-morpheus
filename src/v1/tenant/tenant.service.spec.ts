@@ -6,23 +6,47 @@ import { TenantService } from './tenant.service';
 
 describe('TenantService', () => {
   let service: TenantService;
+  const testTenant: Tenants = {
+    id: 1,
+    name: 'TenantA',
+    password: expect.any(String),
+    season_id: expect.any(Number),
+    slack_token: expect.any(String),
+    created_at: expect.any(Date),
+    updated_at: expect.any(Date),
+  };
+
+  const createRequest: CreateTenantRequest = {
+    name: 'NewTenant',
+    password: 'password',
+  };
+
+  const createResponse: Tenants = {
+    id: expect.any(Number),
+    name: createRequest.name,
+    password: expect.any(String),
+    season_id: 0,
+    slack_token: '',
+    created_at: expect.any(Date),
+    updated_at: expect.any(Date),
+  };
+
+  // const callErrorFun = async (): Promise<void> => {
+  //   throw new NotFoundException('error');
+  // };
 
   const mockTenantRepository = {
-    findOne: jest
-      .fn()
-      .mockImplementation((option: { where: { id: number } }) => {
-        console.log(option);
-        return;
-        // return {
-        //   id: 1,
-        //   name: 'TenantA',
-        //   password: '',
-        //   season_id: 0,
-        //   slack_token: '',
-        //   created_at: undefined,
-        //   updated_at: undefined,
-        // };
-      }),
+    findOne: jest.fn().mockImplementation(() => {
+      return {
+        id: 1,
+        name: 'TenantA',
+        password: '',
+        season_id: 0,
+        slack_token: '',
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+    }),
     create: jest.fn().mockImplementation((dto) => dto),
     save: jest.fn().mockImplementation((tenant) =>
       Promise.resolve({
@@ -50,31 +74,39 @@ describe('TenantService', () => {
     service = module.get<TenantService>(TenantService);
   });
 
+  // it('サンプルthrow、部分一致', async () => {
+  //   await expect(callErrorFun()).rejects.toThrow('error');
+  // });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return Tenant', async () => {
-    const tenantId = 1;
-    const result = await service.findOneById(tenantId);
-    expect(result).toEqual(1);
+  it('should throw 404 error if tenant not found ', () => {
+    const tenant = undefined;
+    expect(() => service.validate(tenant)).toThrow('resource could not found');
   });
 
-  it('should return tenant', async () => {
-    const createRequest: CreateTenantRequest = {
-      name: 'NewTenant',
-      password: 'password',
-    };
+  it('should not throw 404 error if tenant exist ', () => {
+    const tenant = 'tenant';
+    expect(() => service.validate(tenant)).not.toThrow(
+      'resource could not found',
+    );
+  });
 
-    const createResponse: Tenants = {
-      id: expect.any(Number),
-      name: createRequest.name,
-      password: expect.any(String),
-      season_id: 0,
-      slack_token: '',
-      created_at: expect.any(Date),
-      updated_at: expect.any(Date),
-    };
+  it('should return tenant if tenant id exist', async () => {
+    const tenantId = 1;
+    const result = await service.findOneById(tenantId);
+    expect(result).toEqual(testTenant);
+  });
+
+  it('should return tenant if tenant name exist', async () => {
+    const tenantName = 'TenantA';
+    const result = await service.findOneByName(tenantName);
+    expect(result).toEqual(testTenant);
+  });
+
+  it('should return tenant if create success', async () => {
     const result = await service.create(createRequest);
     expect(result).toEqual(createResponse);
   });
