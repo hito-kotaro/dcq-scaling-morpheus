@@ -44,6 +44,7 @@ export class TeamService {
 
   //チームID検索
   async findOneById(id: number): Promise<Teams> {
+    console.log(id);
     if (id <= 0) {
       throw new BadRequestException('id must be a positive integer');
     }

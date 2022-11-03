@@ -19,21 +19,28 @@ describe('TeamService', () => {
     updated_at: expect.any(Date),
   };
   const mockTeamRepository = {
-    findOne: jest.fn().mockImplementation((id?: number, name?: string) => {
-      // 存在しないidまたは名前を引数で受け取った時はundefinedを返す
-      if (id === 10 || name === 'NotFoundTeam') {
-        return;
-      }
-      const team: Teams = {
-        id: id ?? 1,
-        tenant: new Tenants(),
-        name: name ?? 'TeamA',
-        penalty: 0,
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
-      return team;
-    }),
+    findOne: jest
+      .fn()
+      .mockImplementation(
+        (option: {
+          relations: string[];
+          where: { id?: number; name?: string };
+        }) => {
+          // 存在しないidまたは名前を引数で受け取った時はundefinedを返す
+          if (option.where.id === 10 || option.where.name === 'NotFoundTeam') {
+            return;
+          }
+          const team: Teams = {
+            id: option.where.id ?? 1,
+            tenant: new Tenants(),
+            name: option.where.name ?? 'TeamA',
+            penalty: 0,
+            created_at: new Date(),
+            updated_at: new Date(),
+          };
+          return team;
+        },
+      ),
 
     // チームDM mock
     find: jest.fn().mockImplementation((tenantId: number): Teams[] => {
@@ -91,7 +98,6 @@ describe('TeamService', () => {
   // findOneByIdのテスト
   it('should return team if team id eixst', async () => {
     const result = await service.findOneById(1);
-    console.log(result);
     await expect(result).toEqual(returnTeam);
   });
 
