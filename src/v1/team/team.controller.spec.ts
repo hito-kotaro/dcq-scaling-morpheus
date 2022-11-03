@@ -8,6 +8,23 @@ import { TeamService } from './team.service';
 
 describe('TeamController', () => {
   let controller: TeamController;
+
+  const token: tokenPayload = {
+    tenant_id: 1,
+    tenant: 'tenantA',
+    user_id: 1,
+    user: 'userA',
+  };
+
+  const team: TeamResponse = {
+    id: 0,
+    name: '',
+    member: 0,
+    point: 0,
+    penalty: 0,
+    tenant_id: 1,
+  };
+
   const tenant: Tenants = {
     id: 1,
     name: 'TenantA',
@@ -18,7 +35,33 @@ describe('TeamController', () => {
     updated_at: undefined,
   };
 
+  const createTeam = { tenant_id: 1, name: 'newTeam' };
+  const existTeam = { tenant_id: 1, name: 'TeamA' };
+  const fmtTeam: TeamResponse = {
+    id: expect.any(Number),
+    name: createTeam.name,
+    member: 0,
+    point: 0,
+    penalty: 0,
+    tenant_id: createTeam.tenant_id,
+  };
+
   const mockTeamService = {
+    findOneByName: jest.fn((name: string) => {
+      if (name === 'TeamA') {
+        return {
+          id: 1,
+          tenant,
+          name,
+          penalty: 0,
+          created_at: new Date(),
+          updated_at: new Date(),
+        };
+      } else {
+        return;
+      }
+    }),
+
     create: jest.fn((createTeam: CreateTeamRequest) => {
       return {
         id: 0,
@@ -84,37 +127,20 @@ describe('TeamController', () => {
     expect(controller).toBeDefined();
   });
 
+  // GetAllTeam
   it('should return all teams', async () => {
-    const user: tokenPayload = {
-      tenant_id: 1,
-      tenant: 'tenantA',
-      user_id: 1,
-      user: 'userA',
-    };
-
-    const teams: TeamResponse = {
-      id: 0,
-      name: '',
-      member: 0,
-      point: 0,
-      penalty: 0,
-      tenant_id: 1,
-    };
-    const result = await controller.findAll(user);
-    expect(result).toEqual({ teams: [teams], total: 1 });
+    const result = await controller.findAll(token);
+    expect(result).toEqual({ teams: [team], total: 1 });
   });
 
   it('should create a new team', async () => {
-    const createTeam = { tenant_id: 1, name: 'newTeam' };
     const result = await controller.create(createTeam);
-    const fmtTeam: TeamResponse = {
-      id: expect.any(Number),
-      name: createTeam.name,
-      member: 0,
-      point: 0,
-      penalty: 0,
-      tenant_id: createTeam.tenant_id,
-    };
     expect(result).toEqual(fmtTeam);
+  });
+
+  it('should throw bad request if team already exist ', async () => {
+    await expect(() => controller.create(existTeam)).rejects.toThrow(
+      'already exist',
+    );
   });
 });

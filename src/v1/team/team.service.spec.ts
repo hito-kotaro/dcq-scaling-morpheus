@@ -9,8 +9,32 @@ import { TeamService } from './team.service';
 
 describe('TeamService', () => {
   let service: TeamService;
+
+  const returnTeam: Teams = {
+    id: expect.any(Number),
+    tenant: expect.any(Tenants),
+    name: expect.any(String),
+    penalty: expect.any(Number),
+    created_at: expect.any(Date),
+    updated_at: expect.any(Date),
+  };
   const mockTeamRepository = {
-    findOne: jest.fn().mockImplementation((exist: boolean) => exist),
+    findOne: jest.fn().mockImplementation((id?: number, name?: string) => {
+      // 存在しないidまたは名前を引数で受け取った時はundefinedを返す
+      if (id === 10 || name === 'NotFoundTeam') {
+        return;
+      }
+      const team: Teams = {
+        id: id ?? 1,
+        tenant: new Tenants(),
+        name: name ?? 'TeamA',
+        penalty: 0,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      return team;
+    }),
+
     // チームDM mock
     find: jest.fn().mockImplementation((tenantId: number): Teams[] => {
       const team: Teams = {
@@ -24,17 +48,19 @@ describe('TeamService', () => {
       return [team];
     }),
   };
+
   const mockUserRepository = {};
+
   const mockTenantService = {
     findOneById: jest.fn((id: number): Tenants => {
       return {
-        id: id,
+        id,
         name: '',
         password: '',
         season_id: 0,
         slack_token: '',
-        created_at: undefined,
-        updated_at: undefined,
+        created_at: new Date(),
+        updated_at: new Date(),
       };
     }),
   };
@@ -57,6 +83,22 @@ describe('TeamService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  // fmtResponseのテスト
+  it('should return formated team info', () => {});
+
+  // findOneByIdのテスト
+  it('should return team if team id eixst', async () => {
+    const result = await service.findOneById(1);
+    console.log(result);
+    await expect(result).toEqual(returnTeam);
+  });
+
+  it('should return undefined if team id could not foun', () => {});
+
+  it('should throw a 400 error if id is not positive', async () => {
+    await expect(() => service.findOneById(-1)).rejects.toThrow();
   });
 
   it('should return teams', async () => {

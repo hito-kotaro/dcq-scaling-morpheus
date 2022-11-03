@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Teams } from 'src/entity/team.entity';
 import { Users } from 'src/entity/user.entity';
@@ -44,10 +44,16 @@ export class TeamService {
 
   //チームID検索
   async findOneById(id: number): Promise<Teams> {
-    return await this.teamRepository.findOne({
+    if (id <= 0) {
+      throw new BadRequestException('id must be a positive integer');
+    }
+
+    const result = await this.teamRepository.findOne({
       relations: ['tenant'],
       where: { id },
     });
+    console.log(result);
+    return result;
   }
 
   //チーム名検索
