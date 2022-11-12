@@ -49,6 +49,7 @@ export class RequestController {
   ) {
     const request: Requests = await this.requestService.create(
       req.user.tenant_id,
+      req.user.user_id,
       createRequest,
     );
     return this.requestService.fmtResponse(request);

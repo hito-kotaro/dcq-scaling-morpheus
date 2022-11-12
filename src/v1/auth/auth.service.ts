@@ -53,10 +53,13 @@ export class AuthService {
 
   async userLogin(userLoginParam: UserLoginRequest): Promise<authResponse> {
     const { user_name, tenant_name, password } = userLoginParam;
+    console.log(userLoginParam);
+    console.log(user_name);
     const user = await this.userService.findOneByNameAndTenatnName(
       user_name,
       tenant_name,
     );
+    console.log(user);
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');

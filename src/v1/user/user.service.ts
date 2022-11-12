@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
@@ -72,17 +72,24 @@ export class UserService {
 
   //  指定テナント名内の指定ユーザ名を取得
   async findOneByNameAndTenatnName(userName: string, tenantName: string) {
+    console.log(userName);
+    if (!userName) {
+      throw new NotFoundException('userNotFound');
+    }
     return await this.userRepository.findOne({
       relations: ['tenant'],
       where: { name: userName, tenant: { name: tenantName } },
     });
   }
 
-  async create(createUser: CreateUserRequest): Promise<Users> {
-    const { role_id, tenant_id, team_id, name, password } = createUser;
-
+  async create(
+    tenantId: number,
+    createUser: CreateUserRequest,
+  ): Promise<Users> {
+    const { role_id, team_id, name, password } = createUser;
+    console.log(tenantId);
     // 関連エンティティの取得
-    const tenant = await this.tenantService.findOneById(tenant_id);
+    const tenant = await this.tenantService.findOneById(tenantId);
     const team = await this.teamService.findOneById(team_id);
     const role = await this.roleService.findOne(role_id);
 

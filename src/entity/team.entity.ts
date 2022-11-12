@@ -34,6 +34,10 @@ export class Teams {
   penalty: number;
 
   @ApiProperty()
+  @Column({ comment: 'ポイント', default: 0 })
+  point: number;
+
+  @ApiProperty()
   @CreateDateColumn({
     // name: 'created_at',
     type: 'timestamp',

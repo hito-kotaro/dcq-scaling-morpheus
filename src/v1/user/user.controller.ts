@@ -60,9 +60,11 @@ export class UserController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
   async create(@Body() CreateUser: CreateUserRequest, @Request() req: any) {
     // 重複チェック
+    console.log(req.user);
     if (
       await this.userService.findOneByNameAndTenatnId(
         CreateUser.name,
@@ -72,7 +74,7 @@ export class UserController {
       throw new BadRequestException('already exist');
     }
 
-    const user = await this.userService.create(CreateUser);
+    const user = await this.userService.create(req.user.tenant_id, CreateUser);
     return this.userService.fmtResponse(user);
   }
 

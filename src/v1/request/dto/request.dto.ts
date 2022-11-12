@@ -86,8 +86,8 @@ export class CreateRequestRequest {
   @ApiProperty({ type: Number })
   readonly quest_id: number;
 
-  @ApiProperty({ type: Number })
-  readonly applicant_id: number;
+  // @ApiProperty({ type: Number })
+  // readonly applicant_id: number;
 }
 
 export class UpdateRequestRequest {
