@@ -48,16 +48,21 @@ export class TeamController {
   // }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     type: String,
   })
-  async create(@Body() createTeam: CreateTeamRequest): Promise<TeamResponse> {
+  async create(
+    @Body() createTeam: CreateTeamRequest,
+    @Request() req: any,
+  ): Promise<TeamResponse> {
+    const tenantId = req.user.tenant_id;
     if (await this.teamService.findOneByName(createTeam.name)) {
       throw new BadRequestException('already exist');
     }
-    const team = await this.teamService.create(createTeam);
+    const team = await this.teamService.create(tenantId, createTeam);
     return await this.teamService.fmtResponse(team);
   }
 

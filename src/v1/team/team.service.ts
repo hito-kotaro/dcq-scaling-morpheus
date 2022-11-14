@@ -73,9 +73,10 @@ export class TeamService {
   }
 
   // チーム作成
-  async create(team: CreateTeamRequest): Promise<Teams> {
+  async create(tenatnId: number, team: CreateTeamRequest): Promise<Teams> {
+    console.log(team);
     // 対象のテナントを取得
-    const tenant = await this.tenantService.findOneById(team.tenant_id);
+    const tenant = await this.tenantService.findOneById(tenatnId);
 
     const createdTeam = await this.teamRepository.save({
       name: team.name,

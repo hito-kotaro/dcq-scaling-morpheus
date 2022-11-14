@@ -30,8 +30,6 @@ export class AllTeamResponse {
 }
 
 export class CreateTeamRequest {
-  @ApiProperty({ type: Number })
-  readonly tenant_id: number;
   @ApiProperty({ type: String })
   readonly name: string;
 }

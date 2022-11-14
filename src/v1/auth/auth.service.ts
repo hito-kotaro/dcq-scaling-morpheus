@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { Tenants } from 'src/entity/tenant.entity';
 import { TeamService } from '../team/team.service';
 import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
@@ -95,8 +94,7 @@ export class AuthService {
     });
 
     // デフォルトチームを作成
-    this.teamService.create({
-      tenant_id: createdTenant.id,
+    this.teamService.create(createdTenant.id, {
       name: 'DefaultTeam',
     });
 
