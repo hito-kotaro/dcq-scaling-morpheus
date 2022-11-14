@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { create } from 'domain';
-import { Roles } from 'src/entity/role.entity';
 import { Teams } from 'src/entity/team.entity';
 import { Tenants } from 'src/entity/tenant.entity';
 import { Users } from 'src/entity/user.entity';
@@ -29,6 +27,7 @@ describe('TeamService', () => {
     id: 1,
     tenant: dummyTenant,
     name: 'TeamA',
+    point: 0,
     penalty: 0,
     created_at: new Date(),
     updated_at: new Date(),
@@ -38,6 +37,7 @@ describe('TeamService', () => {
     id: 2,
     tenant: dummyTenant,
     name: createTeam.name,
+    point: 0,
     penalty: 0,
     created_at: new Date(),
     updated_at: new Date(),
@@ -47,6 +47,7 @@ describe('TeamService', () => {
     id: expect.any(Number),
     tenant: expect.any(Tenants),
     name: expect.any(String),
+    point: expect.any(Number),
     penalty: expect.any(Number),
     created_at: expect.any(Date),
     updated_at: expect.any(Date),
@@ -79,6 +80,7 @@ describe('TeamService', () => {
             id: option.where.id ?? 1,
             tenant: new Tenants(),
             name: option.where.name ?? 'TeamA',
+            point: 0,
             penalty: 0,
             created_at: new Date(),
             updated_at: new Date(),
@@ -93,6 +95,7 @@ describe('TeamService', () => {
         id: dummyTeam.id,
         tenant: dummyTenant,
         name: dummyTeam.name,
+        point: dummyTeam.point,
         penalty: dummyTeam.penalty,
         created_at: dummyTeam.created_at,
         updated_at: dummyTeam.updated_at,
@@ -112,7 +115,6 @@ describe('TeamService', () => {
               {
                 id: option.where.team.id,
                 tenant: dummyTenant,
-                role: new Roles(),
                 team: dummyTeam,
                 name: 'UserA',
                 password: 'password',
@@ -162,6 +164,7 @@ describe('TeamService', () => {
       id: 1,
       tenant: new Tenants(),
       name: 'TeamA',
+      point: 0,
       penalty: 0,
       created_at: new Date(),
       updated_at: new Date(),

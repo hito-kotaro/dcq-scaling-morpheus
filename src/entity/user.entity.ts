@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Roles } from './role.entity';
 import { Teams } from './team.entity';
 import { Tenants } from './tenant.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -24,11 +23,6 @@ export class Users {
   @ManyToOne(() => Tenants, (tenant) => tenant.id)
   @JoinColumn({ name: 'tenant_id' })
   tenant: Tenants;
-
-  @ApiProperty()
-  @ManyToOne(() => Roles, (role) => role.id)
-  @JoinColumn({ name: 'role_id' })
-  role: Roles;
 
   @ApiProperty()
   @ManyToOne(() => Teams, (team) => team.id)

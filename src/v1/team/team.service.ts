@@ -22,7 +22,7 @@ export class TeamService {
   async fmtResponse(team: Teams): Promise<TeamResponse> {
     // memner数集計
     const users: Users[] = await this.userRepository.find({
-      relations: ['role', 'team', 'tenant'],
+      relations: ['team', 'tenant'],
       where: { team: { id: team.id } },
     });
 
