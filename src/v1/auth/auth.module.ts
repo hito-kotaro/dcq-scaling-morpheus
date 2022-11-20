@@ -5,12 +5,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserModule } from '../user/user.module';
 import { JwtStrategy } from './auth.strategy';
-import { TeamModule } from '../team/team.module';
 
 @Module({
   imports: [
     UserModule,
-    TeamModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => {
         return {

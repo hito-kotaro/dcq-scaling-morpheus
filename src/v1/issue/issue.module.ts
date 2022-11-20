@@ -5,15 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Issues } from 'src/entity/issue.entity';
 import { PenaltyModule } from '../penalty/penalty.module';
 import { UserModule } from '../user/user.module';
-import { TeamModule } from '../team/team.module';
 
 @Module({
-  imports: [
-    PenaltyModule,
-    UserModule,
-    TeamModule,
-    TypeOrmModule.forFeature([Issues]),
-  ],
+  imports: [PenaltyModule, UserModule, TypeOrmModule.forFeature([Issues])],
   providers: [IssueService],
   controllers: [IssueController],
 })

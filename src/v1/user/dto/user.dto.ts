@@ -9,12 +9,6 @@ export class UserResponse {
   name: string;
 
   @ApiProperty({ type: Number })
-  team_id: number;
-
-  @ApiProperty({ type: String })
-  team: string;
-
-  @ApiProperty({ type: Number })
   point: number;
 }
 
@@ -27,9 +21,6 @@ export class AllUserResponse {
 }
 
 export class CreateUserRequest {
-  @ApiProperty({ type: Number })
-  readonly team_id: number;
-
   @ApiProperty({ type: String })
   readonly name: string;
 
@@ -44,10 +35,6 @@ export class UpdateUserRequest {
   @ApiProperty({ type: String })
   @IsOptional()
   readonly name: string;
-
-  @IsOptional()
-  @ApiProperty({ type: Number })
-  readonly team_id: number;
 
   @IsOptional()
   @ApiProperty({ type: Number })

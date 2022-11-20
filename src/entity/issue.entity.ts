@@ -3,14 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Penalties } from './penalty.entity';
-import { Teams } from './team.entity';
 import { Users } from './user.entity';
 
 @Entity()
@@ -27,11 +25,6 @@ export class Issues {
   @ManyToOne(() => Users, (user) => user.id)
   @JoinColumn({ name: 'authorizer_id' })
   authorizer: Users;
-
-  @ApiProperty()
-  @ManyToOne(() => Teams, (team) => team.id)
-  @JoinColumn({ name: 'team_id' })
-  team: Teams;
 
   @Column({ comment: 'ペナルティ付与タイトル' })
   title: string;
