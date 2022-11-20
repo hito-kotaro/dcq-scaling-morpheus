@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 export class UserLoginRequest {
   @ApiProperty({ type: String })

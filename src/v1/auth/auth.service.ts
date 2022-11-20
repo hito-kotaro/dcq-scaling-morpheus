@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { TeamService } from '../team/team.service';
 import { UserService } from '../user/user.service';
 import { authResponse, tokenPayload, UserLoginRequest } from './dto/auth.dto';
 
@@ -13,7 +12,6 @@ import { authResponse, tokenPayload, UserLoginRequest } from './dto/auth.dto';
 export class AuthService {
   constructor(
     // @InjectRepository(Users) private userRepository: Repository<Users>,
-    private readonly teamService: TeamService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}

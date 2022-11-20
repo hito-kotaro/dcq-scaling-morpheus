@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Requests } from 'src/entity/request.entity';
-import { Teams } from 'src/entity/team.entity';
 import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { QuestService } from '../quest/quest.service';
-import { TeamService } from '../team/team.service';
 import { UserService } from '../user/user.service';
 import {
   CreateRequestRequest,
@@ -18,10 +16,8 @@ export class RequestService {
   constructor(
     private readonly userService: UserService,
     private readonly questService: QuestService,
-    private readonly teamService: TeamService,
     @InjectRepository(Requests) private requestRepository: Repository<Requests>,
     @InjectRepository(Users) private userRepository: Repository<Users>,
-    @InjectRepository(Teams) private teamRepository: Repository<Teams>,
   ) {}
 
   fmtResponse(request: Requests): RequestDataResponse {
@@ -84,9 +80,6 @@ export class RequestService {
     //ターゲットを取得
     const targetRequest = await this.findOneById(id);
     const authorizer = await this.userService.findOneById(authorizer_id);
-    const applicant = await this.userService.findOneById(
-      targetRequest.applicant.id,
-    );
     targetRequest.status = updateRequest.status;
     targetRequest.auth_comment = updateRequest.auth_comment;
     targetRequest.authorizer = authorizer;
@@ -94,13 +87,10 @@ export class RequestService {
     if (updateRequest.status === 'approved') {
       //  付与するユーザを取得
       const user = targetRequest.applicant;
-      const team = await this.teamService.findOneById(applicant.team.id);
       // ユーザとチームにポイントを付与
       const point = targetRequest.quest.reward;
       user.point = user.point + point;
-      team.point = team.point + point;
       this.userRepository.save(user);
-      this.teamRepository.save(team);
     }
 
     return this.requestRepository.save(targetRequest);

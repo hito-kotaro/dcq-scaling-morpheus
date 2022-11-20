@@ -13,12 +13,6 @@ export class IssueResponse {
   @ApiProperty({ type: String })
   authorizer: string;
 
-  @ApiProperty({ type: Number })
-  team_id: number;
-
-  @ApiProperty({ type: String })
-  team: string;
-
   @ApiProperty({ type: String })
   penalty_title: string;
 
@@ -52,9 +46,6 @@ export class CreateIssueRequest {
 
   @ApiProperty({ type: String })
   description: string;
-
-  @ApiProperty({ type: Number })
-  team_id: number;
 
   @ApiProperty({ type: Number })
   penalty_id: number;

@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TeamModule } from './v1/team/team.module';
 import { UserModule } from './v1/user/user.module';
 import { QuestModule } from './v1/quest/quest.module';
 import { RequestModule } from './v1/request/request.module';
@@ -31,7 +30,6 @@ import { AuthModule } from './v1/auth/auth.module';
     }),
     AuthModule,
     UserModule,
-    TeamModule,
     QuestModule,
     RequestModule,
     PenaltyModule,

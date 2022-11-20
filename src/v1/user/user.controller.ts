@@ -7,7 +7,6 @@ import {
   Param,
   Post,
   Put,
-  Request,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -46,18 +45,6 @@ export class UserController {
   //   const user = await this.userService.findOneById(id);
   //   return this.userService.fmtResponse(user);
   // }
-
-  @Get('/member/:teamId')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: AllUserResponse })
-  async findMember(@Param('teamId') id: number) {
-    const users: Users[] = await this.userService.findAllByTeamId(id);
-    const fmtUsers: UserResponse[] = users.map((u: Users) => {
-      return this.userService.fmtResponse(u);
-    });
-
-    return { users: fmtUsers, total: fmtUsers.length };
-  }
 
   @Post()
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
