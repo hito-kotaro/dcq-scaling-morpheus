@@ -8,17 +8,12 @@ import {
   PrimaryGeneratedColumn,
   Timestamp,
 } from 'typeorm';
-import { Tenants } from './tenant.entity';
 
 @Entity()
-@Index(['tenant', 'title'], { unique: true })
+@Index(['title'], { unique: true })
 export class Rewards {
   @PrimaryGeneratedColumn({ comment: 'どりかむリストID' })
   id: number;
-
-  @ManyToOne((type) => Tenants, { cascade: true })
-  @JoinColumn()
-  tenant: Tenants;
 
   @Column({ comment: 'どりかむリストタイトル' })
   title: string;

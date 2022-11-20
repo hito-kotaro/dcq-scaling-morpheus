@@ -30,8 +30,8 @@ export class UserController {
   @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: AllUserResponse })
-  async findAllByTenantId(@Param('tenantId') id: number, @Request() req: any) {
-    const users = await this.userService.findAllByTenantId(req.user.tenant_id);
+  async findAll() {
+    const users = await this.userService.findAll();
     const fmtUsers: UserResponse[] = users.map((u: Users) => {
       return this.userService.fmtResponse(u);
     });
@@ -65,16 +65,11 @@ export class UserController {
   async create(@Body() CreateUser: CreateUserRequest, @Request() req: any) {
     // 重複チェック
     console.log(req.user);
-    if (
-      await this.userService.findOneByNameAndTenatnId(
-        CreateUser.name,
-        req.user.tenant_id,
-      )
-    ) {
+    if (await this.userService.findOneByName(CreateUser.name)) {
       throw new BadRequestException('already exist');
     }
 
-    const user = await this.userService.create(req.user.tenant_id, CreateUser);
+    const user = await this.userService.create(CreateUser);
     return this.userService.fmtResponse(user);
   }
 

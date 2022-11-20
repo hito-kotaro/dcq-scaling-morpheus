@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Penalties } from 'src/entity/penalty.entity';
 import { Repository } from 'typeorm';
-import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
   CreatePenaltyRequest,
@@ -13,7 +12,6 @@ import {
 @Injectable()
 export class PenaltyService {
   constructor(
-    private readonly tenantService: TenantService,
     private readonly userService: UserService,
     @InjectRepository(Penalties)
     private penaltyRepository: Repository<Penalties>,
@@ -34,43 +32,36 @@ export class PenaltyService {
     return response;
   }
 
-  async findAllByTenantId(tenantId: number): Promise<Penalties[]> {
+  async findAll(): Promise<Penalties[]> {
     return await this.penaltyRepository.find({
-      relations: ['tenant', 'owner'],
-      where: { tenant: { id: tenantId } },
+      relations: ['owner'],
     });
   }
 
   async findOneById(id: number): Promise<Penalties> {
     return await this.penaltyRepository.findOne({
-      relations: ['tenant', 'owner'],
+      relations: ['owner'],
       where: { id },
     });
   }
 
-  async findOneByTitleAndTenantId(
-    title: string,
-    tenantId: number,
-  ): Promise<Penalties> {
+  async findOneByTitle(title: string): Promise<Penalties> {
     return await this.penaltyRepository.findOne({
-      relations: ['tenant', 'owner'],
-      where: { title, tenant: { id: tenantId } },
+      relations: ['owner'],
+      where: { title },
     });
   }
 
   async create(
-    tenant_id: number,
     owner_id: number,
     createPenalty: CreatePenaltyRequest,
   ): Promise<Penalties> {
     const { title, description, point } = createPenalty;
 
     // 関連エンティティの取得
-    const tenant = await this.tenantService.findOneById(tenant_id);
     const owner = await this.userService.findOneById(owner_id);
 
     return await this.penaltyRepository.save({
-      tenant,
       owner,
       title,
       description,

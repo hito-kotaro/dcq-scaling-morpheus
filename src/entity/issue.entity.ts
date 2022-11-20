@@ -11,18 +11,12 @@ import {
 } from 'typeorm';
 import { Penalties } from './penalty.entity';
 import { Teams } from './team.entity';
-import { Tenants } from './tenant.entity';
 import { Users } from './user.entity';
 
 @Entity()
 export class Issues {
   @PrimaryGeneratedColumn({ comment: '発行済みペナルティID' })
   id: number;
-
-  @ApiProperty()
-  @ManyToOne(() => Tenants, (tenant) => tenant.id)
-  @JoinColumn({ name: 'tenant_id' })
-  tenant: Tenants;
 
   @ApiProperty()
   @ManyToOne(() => Penalties, (penalty) => penalty.id)

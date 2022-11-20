@@ -28,9 +28,6 @@ export class AllUserResponse {
 
 export class CreateUserRequest {
   @ApiProperty({ type: Number })
-  readonly tenant_id: number;
-
-  @ApiProperty({ type: Number })
   readonly team_id: number;
 
   @ApiProperty({ type: String })

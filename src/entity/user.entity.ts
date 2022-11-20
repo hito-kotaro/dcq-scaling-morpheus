@@ -9,20 +9,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Teams } from './team.entity';
-import { Tenants } from './tenant.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
-@Index(['tenant', 'name'], { unique: true })
+@Index(['name'], { unique: true })
 export class Users {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ApiProperty()
-  @ManyToOne(() => Tenants, (tenant) => tenant.id)
-  @JoinColumn({ name: 'tenant_id' })
-  tenant: Tenants;
 
   @ApiProperty()
   @ManyToOne(() => Teams, (team) => team.id)

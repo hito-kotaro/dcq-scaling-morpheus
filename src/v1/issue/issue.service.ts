@@ -4,7 +4,6 @@ import { Issues } from 'src/entity/issue.entity';
 import { Repository } from 'typeorm';
 import { PenaltyService } from '../penalty/penalty.service';
 import { TeamService } from '../team/team.service';
-import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import { CreateIssueRequest, IssueResponse } from './dto/issue.dto';
 
@@ -12,7 +11,6 @@ import { CreateIssueRequest, IssueResponse } from './dto/issue.dto';
 export class IssueService {
   constructor(
     private readonly teamService: TeamService,
-    private readonly tenantService: TenantService,
     private readonly userService: UserService,
     private readonly penaltyService: PenaltyService,
     @InjectRepository(Issues) private issueRepository: Repository<Issues>,
@@ -37,22 +35,19 @@ export class IssueService {
     return response;
   }
 
-  async findAllByTenantId(tenantId: number): Promise<Issues[]> {
+  async findAll(): Promise<Issues[]> {
     return await this.issueRepository.find({
-      relations: ['tenant', 'authorizer', 'team', 'penalty'],
-      where: { tenant: { id: tenantId } },
+      relations: ['authorizer', 'team', 'penalty'],
     });
   }
 
   async create(
-    tenant_id: number,
     authorizer_id: number,
     createIssue: CreateIssueRequest,
   ): Promise<Issues> {
     const { title, description, team_id, penalty_id } = createIssue;
 
     // 関連エンティティの取得
-    const tenant = await this.tenantService.findOneById(tenant_id);
     const team = await this.teamService.findOneById(team_id);
     const authorizer = await this.userService.findOneById(authorizer_id);
     const penalty = await this.penaltyService.findOneById(penalty_id);
@@ -60,7 +55,6 @@ export class IssueService {
     return await this.issueRepository.save({
       title,
       description,
-      tenant,
       team,
       authorizer,
       penalty,

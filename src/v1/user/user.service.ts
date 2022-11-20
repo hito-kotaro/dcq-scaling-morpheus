@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { TeamService } from '../team/team.service';
-import { TenantService } from '../tenant/tenant.service';
 import {
   CreateUserRequest,
   UpdateUserRequest,
@@ -14,7 +13,6 @@ import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class UserService {
   constructor(
-    private readonly tenantService: TenantService,
     private readonly teamService: TeamService,
     @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
@@ -39,57 +37,35 @@ export class UserService {
     });
   }
 
-  // 指定テナントのユーザ取得
-  async findAllByTenantId(tenantId: number): Promise<Users[]> {
+  // ユーザ取得
+  async findAll(): Promise<Users[]> {
     return await this.userRepository.find({
       relations: ['team'],
-      where: { tenant: { id: tenantId } },
     });
   }
 
   // 指定Idのユーザ取得
   async findOneById(id: number): Promise<Users> {
     return await this.userRepository.findOne({
-      relations: ['team', 'tenant'],
+      relations: ['team'],
       where: { id },
     });
   }
 
-  // 指定テナントID内の指定のユーザ名を取得
-  async findOneByNameAndTenatnId(
-    userName: string,
-    tenantId: number,
-  ): Promise<Users> {
+  // 指定名のユーザ取得
+  async findOneByName(name: string): Promise<Users> {
     return await this.userRepository.findOne({
-      relations: ['team', 'tenant'],
-      where: { name: userName, tenant: { id: tenantId } },
+      relations: ['team'],
+      where: { name },
     });
   }
 
-  //  指定テナント名内の指定ユーザ名を取得
-  async findOneByNameAndTenatnName(userName: string, tenantName: string) {
-    console.log(userName);
-    if (!userName) {
-      throw new NotFoundException('userNotFound');
-    }
-    return await this.userRepository.findOne({
-      relations: ['tenant'],
-      where: { name: userName, tenant: { name: tenantName } },
-    });
-  }
-
-  async create(
-    tenantId: number,
-    createUser: CreateUserRequest,
-  ): Promise<Users> {
+  async create(createUser: CreateUserRequest): Promise<Users> {
     const { team_id, name, password } = createUser;
-    console.log(tenantId);
     // 関連エンティティの取得
-    const tenant = await this.tenantService.findOneById(tenantId);
     const team = await this.teamService.findOneById(team_id);
 
     return await this.userRepository.save({
-      tenant,
       team,
       name,
       password: await bcrypt.hash(password, 12),

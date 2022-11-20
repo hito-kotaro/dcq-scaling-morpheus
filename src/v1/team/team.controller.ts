@@ -29,8 +29,8 @@ export class TeamController {
   @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: AllTeamResponse })
-  async findAll(@Request() req: any): Promise<AllTeamResponse> {
-    const teams = await this.teamService.findAllByTenantId(req.user.tenant_id);
+  async findAll(): Promise<AllTeamResponse> {
+    const teams = await this.teamService.findAll();
     const fmtTeams: TeamResponse[] = [];
     for (const t of teams) {
       fmtTeams.push(await this.teamService.fmtResponse(t));
@@ -39,14 +39,6 @@ export class TeamController {
     return { teams: fmtTeams, total: fmtTeams.length };
   }
 
-  // @Get(':teamId')
-  // @UseGuards(AuthGuard('jwt'))
-  // @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
-  // async findOne(@Param('teamId') id): Promise<TeamResponse> {
-  //   const team = await this.teamService.findOne(id);
-  //   return await this.teamService.fmtResponse(team);
-  // }
-
   @Post()
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: TeamResponse })
@@ -54,15 +46,11 @@ export class TeamController {
     status: HttpStatus.BAD_REQUEST,
     type: String,
   })
-  async create(
-    @Body() createTeam: CreateTeamRequest,
-    @Request() req: any,
-  ): Promise<TeamResponse> {
-    const tenantId = req.user.tenant_id;
+  async create(@Body() createTeam: CreateTeamRequest): Promise<TeamResponse> {
     if (await this.teamService.findOneByName(createTeam.name)) {
       throw new BadRequestException('already exist');
     }
-    const team = await this.teamService.create(tenantId, createTeam);
+    const team = await this.teamService.create(createTeam);
     return await this.teamService.fmtResponse(team);
   }
 

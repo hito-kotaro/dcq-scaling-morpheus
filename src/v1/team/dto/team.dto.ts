@@ -16,9 +16,6 @@ export class TeamResponse {
 
   @ApiProperty({ type: Number })
   penalty: number;
-
-  @ApiProperty({ type: Number })
-  readonly tenant_id: number;
 }
 
 export class AllTeamResponse {

@@ -10,19 +10,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Tenants } from './tenant.entity';
 
 @Entity()
-@Index(['tenant', 'name'], { unique: true })
+@Index(['name'], { unique: true })
 export class Teams {
   @ApiProperty()
   @PrimaryGeneratedColumn({ comment: 'チームID' })
   id: number;
-
-  @ApiProperty()
-  @ManyToOne(() => Tenants, (tenant) => tenant.id)
-  @JoinColumn({ name: 'tenant_id' })
-  tenant: Tenants;
 
   @ApiProperty()
   @PrimaryColumn()

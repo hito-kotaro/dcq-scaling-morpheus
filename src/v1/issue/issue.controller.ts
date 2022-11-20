@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -27,10 +26,8 @@ export class IssueController {
   @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: AllIssueResponse })
-  async findAll(@Request() req: any): Promise<AllIssueResponse> {
-    const issues = await this.issueService.findAllByTenantId(
-      req.user.tenant_id,
-    );
+  async findAll(): Promise<AllIssueResponse> {
+    const issues = await this.issueService.findAll();
     const fmtIssues: IssueResponse[] = issues.map((i: Issues) => {
       return this.issueService.fmtResponse(i);
     });
@@ -45,11 +42,7 @@ export class IssueController {
     @Body(ValidationPipe) createIssue: CreateIssueRequest,
     @Request() req: any,
   ): Promise<IssueResponse> {
-    const issue = await this.issueService.create(
-      req.user.tenant_id,
-      req.user.user_id,
-      createIssue,
-    );
+    const issue = await this.issueService.create(req.user.user_id, createIssue);
 
     return this.issueService.fmtResponse(issue);
   }

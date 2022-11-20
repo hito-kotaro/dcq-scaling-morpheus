@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quests } from 'src/entity/quest.entity';
 import { Repository } from 'typeorm';
-import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
   CreateQuestRequest,
@@ -13,7 +12,6 @@ import {
 @Injectable()
 export class QuestService {
   constructor(
-    private readonly tenantService: TenantService,
     private readonly userService: UserService,
     @InjectRepository(Quests) private questRepository: Repository<Quests>,
   ) {}
@@ -32,45 +30,38 @@ export class QuestService {
     return response;
   }
 
-  async findAllByTenatnId(tenantId: number): Promise<Quests[]> {
+  async findAll(): Promise<Quests[]> {
     return await this.questRepository.find({
-      relations: ['tenant', 'owner'],
-      where: { tenant: { id: tenantId } },
+      relations: ['owner'],
     });
   }
 
   // findOne
   async findOneById(id: number): Promise<Quests> {
     return await this.questRepository.findOne({
-      relations: ['tenant', 'owner'],
+      relations: ['owner'],
       where: { id },
     });
   }
 
-  async findOneByTitleAndTenantId(
-    title: string,
-    tenantId: number,
-  ): Promise<Quests> {
+  async findOneByTitle(title: string): Promise<Quests> {
     return await this.questRepository.findOne({
-      relations: ['tenant', 'owner'],
-      where: { title, tenant: { id: tenantId } },
+      relations: ['owner'],
+      where: { title },
     });
   }
 
   // クエスト作成
   async create(
     createQuest: CreateQuestRequest,
-    tenant_id: number,
     owner_id: number,
   ): Promise<Quests> {
     const { title, description, example, reward } = createQuest;
 
     // 関連エンティティーの取得
-    const tenant = await this.tenantService.findOneById(tenant_id);
     const owner = await this.userService.findOneById(owner_id);
 
     return await this.questRepository.save({
-      tenant,
       owner,
       title,
       description,

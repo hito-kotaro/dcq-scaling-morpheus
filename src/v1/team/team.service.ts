@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Teams } from 'src/entity/team.entity';
 import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
-import { TenantService } from '../tenant/tenant.service';
 import {
   CreateTeamRequest,
   TeamResponse,
@@ -13,7 +12,6 @@ import {
 @Injectable()
 export class TeamService {
   constructor(
-    private readonly tenantService: TenantService,
     @InjectRepository(Teams) private teamRepository: Repository<Teams>,
     @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
@@ -22,7 +20,7 @@ export class TeamService {
   async fmtResponse(team: Teams): Promise<TeamResponse> {
     // memner数集計
     const users: Users[] = await this.userRepository.find({
-      relations: ['team', 'tenant'],
+      relations: ['team'],
       where: { team: { id: team.id } },
     });
 
@@ -37,7 +35,6 @@ export class TeamService {
       member: users.length,
       point,
       penalty: team.penalty,
-      tenant_id: team.tenant.id,
     };
     return response;
   }
@@ -49,7 +46,6 @@ export class TeamService {
     }
 
     return await this.teamRepository.findOne({
-      relations: ['tenant'],
       where: { id },
     });
   }
@@ -57,30 +53,21 @@ export class TeamService {
   //チーム名検索
   async findOneByName(name: string): Promise<Teams> {
     return await this.teamRepository.findOne({
-      relations: ['tenant'],
       where: { name },
     });
   }
 
   //テナント内チーム取得
-  async findAllByTenantId(tenantId: number): Promise<Teams[]> {
-    const teams = await this.teamRepository.find({
-      relations: ['tenant'],
-      where: { tenant: { id: tenantId } },
-    });
-
-    return teams;
+  async findAll(): Promise<Teams[]> {
+    return await this.teamRepository.find();
   }
 
   // チーム作成
-  async create(tenatnId: number, team: CreateTeamRequest): Promise<Teams> {
+  async create(team: CreateTeamRequest): Promise<Teams> {
     console.log(team);
-    // 対象のテナントを取得
-    const tenant = await this.tenantService.findOneById(tenatnId);
 
     const createdTeam = await this.teamRepository.save({
       name: team.name,
-      tenant: tenant,
     });
 
     return createdTeam;

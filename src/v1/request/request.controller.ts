@@ -29,10 +29,8 @@ export class RequestController {
   @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: HttpStatus.OK, type: FindOneRequestResponse })
-  async findAll(@Request() req: any) {
-    const requests: Requests[] = await this.requestService.findAllByTenantId(
-      req.user.tenant_id,
-    );
+  async findAll() {
+    const requests: Requests[] = await this.requestService.findAll();
 
     const fmtRequests: RequestDataResponse[] = requests.map((r: Requests) => {
       return this.requestService.fmtResponse(r);
@@ -48,7 +46,6 @@ export class RequestController {
     @Request() req: any,
   ) {
     const request: Requests = await this.requestService.create(
-      req.user.tenant_id,
       req.user.user_id,
       createRequest,
     );

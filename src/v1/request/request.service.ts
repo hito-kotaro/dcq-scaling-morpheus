@@ -6,7 +6,6 @@ import { Users } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { QuestService } from '../quest/quest.service';
 import { TeamService } from '../team/team.service';
-import { TenantService } from '../tenant/tenant.service';
 import { UserService } from '../user/user.service';
 import {
   CreateRequestRequest,
@@ -19,7 +18,6 @@ export class RequestService {
   constructor(
     private readonly userService: UserService,
     private readonly questService: QuestService,
-    private readonly tenantService: TenantService,
     private readonly teamService: TeamService,
     @InjectRepository(Requests) private requestRepository: Repository<Requests>,
     @InjectRepository(Users) private userRepository: Repository<Users>,
@@ -52,15 +50,13 @@ export class RequestService {
     });
   }
 
-  async findAllByTenantId(tenantId: number): Promise<Requests[]> {
+  async findAll(): Promise<Requests[]> {
     return await this.requestRepository.find({
       relations: ['quest', 'applicant', 'authorizer'],
-      where: { tenant: { id: tenantId } },
     });
   }
 
   async create(
-    tenant_id: number,
     applicant_id,
     createRequest: CreateRequestRequest,
   ): Promise<Requests> {
@@ -70,13 +66,11 @@ export class RequestService {
     // 関連エンティティの取得
     const applicant = await this.userService.findOneById(applicant_id);
     const quest = await this.questService.findOneById(quest_id);
-    const tenant = await this.tenantService.findOneById(tenant_id);
     return await this.requestRepository.save({
       title,
       description,
       quest,
       applicant,
-      tenant,
       status: 'open',
     });
   }
