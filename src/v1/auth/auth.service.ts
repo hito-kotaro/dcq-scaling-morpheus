@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from '../user/user.service';
@@ -17,24 +13,53 @@ export class AuthService {
   ) {}
 
   async userLogin(userLoginParam: UserLoginRequest): Promise<authResponse> {
-    const { user_name, password } = userLoginParam;
-    console.log(userLoginParam);
-    console.log(user_name);
-    const user = await this.userService.findOneByName(user_name);
-    console.log(user);
+    const { name, password } = userLoginParam;
+    const user = await this.userService.findOneByName(name);
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      Logger.warn(`user_id ${user.id} login failed`);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload: tokenPayload = {
+      id: user.id,
+      name: user.name,
+    };
+
+    Logger.log(`user_id ${user.id} login success`);
+
+    return {
+      id: user.id,
+      name: user.name,
+      token: this.jwtService.sign(payload),
+    };
+  }
+
+  async adminLogin(userLoginParam: UserLoginRequest): Promise<authResponse> {
+    console.log('admin');
+    const { name, password } = userLoginParam;
+    const user = await this.userService.findOneByName(name);
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    if (user.admin !== true) {
+      Logger.warn(`user_id ${user.id} login failed`);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const payload: tokenPayload = {
-      user_id: user.id,
-      user: user.name,
+      id: user.id,
+      name: user.name,
     };
 
+    Logger.log(`user_id ${user.id} login success`);
+
     return {
-      user_id: user.id,
-      user: user.name,
-      access_token: this.jwtService.sign(payload),
+      id: user.id,
+      name: user.name,
+      token: this.jwtService.sign(payload),
     };
   }
 }

@@ -3,7 +3,7 @@ import { IsOptional } from 'class-validator';
 
 export class UserLoginRequest {
   @ApiProperty({ type: String })
-  readonly user_name: string;
+  readonly name: string;
 
   @ApiProperty({ type: String })
   readonly password: string;
@@ -12,29 +12,27 @@ export class UserLoginRequest {
 export class LoginResponse {
   @ApiProperty({ type: String })
   @IsOptional()
-  readonly user_name?: string;
+  readonly name: string;
 
   @ApiProperty({ type: String })
-  readonly access_token: string;
+  readonly token: string;
 }
 
 export class tokenPayload {
   @ApiProperty({ type: Number })
-  readonly user_id: number;
+  readonly id: number;
 
   @ApiProperty({ type: String })
-  readonly user: string;
+  readonly name: string;
 }
 
 export class authResponse {
   @ApiProperty({ type: Number })
-  @IsOptional()
-  readonly user_id: number;
+  readonly id: number;
 
   @ApiProperty({ type: String })
-  @IsOptional()
-  readonly user: string;
+  readonly name: string;
 
   @ApiProperty({ type: String })
-  readonly access_token: string;
+  readonly token: string;
 }

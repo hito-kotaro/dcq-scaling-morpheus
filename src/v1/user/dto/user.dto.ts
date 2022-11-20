@@ -8,6 +8,9 @@ export class UserResponse {
   @ApiProperty({ type: String })
   name: string;
 
+  @ApiProperty({ type: Boolean })
+  admin: boolean;
+
   @ApiProperty({ type: Number })
   point: number;
 }
@@ -26,6 +29,9 @@ export class CreateUserRequest {
 
   @ApiProperty({ type: String })
   readonly password: string;
+
+  @ApiProperty({ type: Boolean })
+  readonly admin: boolean;
 }
 
 export class UpdateUserRequest {

@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 @Entity()
 @Index(['name'], { unique: true })
@@ -28,6 +29,11 @@ export class Users {
   @ApiProperty()
   @Column()
   point: number;
+
+  @ApiProperty()
+  @Column({ default: false })
+  @IsOptional()
+  admin: boolean;
 
   @ApiProperty()
   @CreateDateColumn({
