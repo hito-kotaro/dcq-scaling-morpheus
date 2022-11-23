@@ -36,6 +36,7 @@ export class AuthService {
     const payload: tokenPayload = {
       id: user.id,
       name: user.name,
+      admin: false,
     };
 
     Logger.log(`user_id ${user.id} login success`);
@@ -74,6 +75,7 @@ export class AuthService {
     const payload: tokenPayload = {
       id: user.id,
       name: user.name,
+      admin: true,
     };
 
     Logger.log(`user_id ${user.id} login success`);

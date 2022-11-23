@@ -1,12 +1,29 @@
-import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { UserLoginRequest } from './dto/auth.dto';
+import { UserLoginRequest, validateTokenResponse } from './dto/auth.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get('/')
+  @ApiResponse({ status: HttpStatus.OK, type: validateTokenResponse })
+  @UseGuards(AuthGuard('jwt'))
+  async loginCheck(@Request() req: any) {
+    console.log(req.user);
+    return { auth: true, admin: req.user.admin };
+  }
 
   @Post('/user')
   @ApiResponse({ status: HttpStatus.OK, type: UserLoginRequest })

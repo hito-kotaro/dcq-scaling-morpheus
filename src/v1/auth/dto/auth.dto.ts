@@ -24,6 +24,9 @@ export class tokenPayload {
 
   @ApiProperty({ type: String })
   readonly name: string;
+
+  @ApiProperty({ type: Boolean })
+  readonly admin: boolean;
 }
 
 export class authResponse {
@@ -35,4 +38,12 @@ export class authResponse {
 
   @ApiProperty({ type: String })
   readonly token: string;
+}
+
+export class validateTokenResponse {
+  @ApiProperty({ type: Boolean })
+  readonly auth: boolean;
+
+  @ApiProperty({ type: Boolean })
+  readonly admin: boolean;
 }
