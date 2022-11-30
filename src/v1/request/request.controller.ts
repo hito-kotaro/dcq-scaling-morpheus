@@ -14,8 +14,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Requests } from 'src/entity/request.entity';
 import {
+  AllRequestDataResponse,
   CreateRequestRequest,
-  FindOneRequestResponse,
   RequestDataResponse,
   UpdateRequestRequest,
 } from './dto/request.dto';
@@ -28,7 +28,7 @@ export class RequestController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  @ApiResponse({ status: HttpStatus.OK, type: FindOneRequestResponse })
+  @ApiResponse({ status: HttpStatus.OK, type: AllRequestDataResponse })
   async findAll() {
     const requests: Requests[] = await this.requestService.findAll();
 
@@ -46,7 +46,7 @@ export class RequestController {
     @Request() req: any,
   ) {
     const request: Requests = await this.requestService.create(
-      req.user.user_id,
+      req.user.id,
       createRequest,
     );
     return this.requestService.fmtResponse(request);
@@ -62,7 +62,7 @@ export class RequestController {
   ) {
     const request: Requests = await this.requestService.update(
       id,
-      req.user.user_id,
+      req.user.id,
       updateRequest,
     );
     return this.requestService.fmtResponse(request);

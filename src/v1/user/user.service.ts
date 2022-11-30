@@ -53,11 +53,13 @@ export class UserService {
     });
   }
 
-  async update(user: UpdateUserRequest): Promise<Users> {
-    const { name, add_point } = user;
-    const updateUser = await this.findOneById(user.id);
+  async update(id: number, user: UpdateUserRequest): Promise<Users> {
+    const { name, password, add_point } = user;
+    const updateUser = await this.findOneById(id);
 
     updateUser.name = name ?? updateUser.name;
+    updateUser.password =
+      (await bcrypt.hash(password, 12)) ?? updateUser.password;
     updateUser.point = updateUser.point + (add_point ?? 0);
     this.userRepository.save(updateUser);
 

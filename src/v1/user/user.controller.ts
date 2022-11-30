@@ -58,10 +58,13 @@ export class UserController {
     return this.userService.fmtResponse(user);
   }
 
-  @Put()
+  @Put(':userId')
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
-  async update(@Body(ValidationPipe) updateUser: UpdateUserRequest) {
-    const user = await this.userService.update(updateUser);
+  async update(
+    @Param('userId') id,
+    @Body(ValidationPipe) updateUser: UpdateUserRequest,
+  ) {
+    const user = await this.userService.update(id, updateUser);
     return this.userService.fmtResponse(user);
   }
 }

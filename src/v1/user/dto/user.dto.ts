@@ -35,14 +35,19 @@ export class CreateUserRequest {
 }
 
 export class UpdateUserRequest {
-  @ApiProperty({ type: Number })
-  readonly id: number;
-
   @ApiProperty({ type: String })
   @IsOptional()
   readonly name: string;
 
+  @ApiProperty({ type: String })
+  @IsOptional()
+  readonly password: string;
+
   @IsOptional()
   @ApiProperty({ type: Number })
   readonly add_point: number;
+
+  @IsOptional()
+  @ApiProperty({ type: Boolean })
+  readonly admin: boolean;
 }

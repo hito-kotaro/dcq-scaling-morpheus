@@ -7,6 +7,9 @@ export class UserLoginRequest {
 
   @ApiProperty({ type: String })
   readonly password: string;
+
+  @ApiProperty({ type: Boolean })
+  readonly admin: boolean;
 }
 
 export class LoginResponse {
@@ -16,6 +19,9 @@ export class LoginResponse {
 
   @ApiProperty({ type: String })
   readonly token: string;
+
+  @ApiProperty({ type: Boolean })
+  readonly admin: boolean;
 }
 
 export class tokenPayload {
@@ -38,6 +44,9 @@ export class authResponse {
 
   @ApiProperty({ type: String })
   readonly token: string;
+
+  @ApiProperty({ type: Boolean })
+  readonly admin: boolean;
 }
 
 export class validateTokenResponse {

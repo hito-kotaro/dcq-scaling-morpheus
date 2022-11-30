@@ -21,7 +21,6 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK, type: validateTokenResponse })
   @UseGuards(AuthGuard('jwt'))
   async loginCheck(@Request() req: any) {
-    console.log(req.user);
     return { auth: true, admin: req.user.admin };
   }
 

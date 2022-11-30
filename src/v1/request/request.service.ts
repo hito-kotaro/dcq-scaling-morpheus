@@ -58,7 +58,6 @@ export class RequestService {
   ): Promise<Requests> {
     const { title, description, quest_id } = createRequest;
     console.log('--- create request ---');
-    console.log(applicant_id);
     // 関連エンティティの取得
     const applicant = await this.userService.findOneById(applicant_id);
     const quest = await this.questService.findOneById(quest_id);
@@ -76,7 +75,9 @@ export class RequestService {
     authorizer_id: number,
     updateRequest: UpdateRequestRequest,
   ): Promise<Requests> {
-    console.log(updateRequest);
+    // console.log(updateRequest);
+    // console.log(authorizer_id);
+    console.log(`authorizer_id : ${authorizer_id}`);
     //ターゲットを取得
     const targetRequest = await this.findOneById(id);
     const authorizer = await this.userService.findOneById(authorizer_id);
