@@ -33,3 +33,28 @@ export class AllListDataResponse {
   @ApiProperty({ type: Number })
   total: number;
 }
+
+export class CreateListtRequest {
+  @ApiProperty({ type: String })
+  title: string;
+
+  @ApiProperty({ type: String })
+  description: string;
+
+  @ApiProperty({ type: Number })
+  @IsPositive()
+  point: number;
+}
+
+export class UpdateListRequest {
+  @ApiProperty({ type: String })
+  @IsOptional()
+  title?: string;
+
+  @ApiProperty({ type: String })
+  description?: string;
+
+  @ApiProperty({ type: Number })
+  @IsPositive()
+  point?: number;
+}
