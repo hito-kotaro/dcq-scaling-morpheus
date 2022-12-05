@@ -1,17 +1,16 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
-  Timestamp,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 @Index(['title'], { unique: true })
-export class Rewards {
+export class Lists {
   @PrimaryGeneratedColumn({ comment: 'どりかむリストID' })
   id: number;
 
@@ -24,9 +23,22 @@ export class Rewards {
   @Column({ comment: '必要ポイント' })
   point: number;
 
-  @CreateDateColumn({ comment: '登録日時' })
-  created_at?: Timestamp;
+  @Column({ comment: '登録者' })
+  created_by: string;
 
-  @CreateDateColumn({ comment: '更新日時' })
-  updated_at?: Timestamp;
+  @ApiProperty()
+  @CreateDateColumn({
+    type: 'timestamp',
+    precision: 0,
+    comment: '登録日時',
+  })
+  created_at: Date;
+
+  @ApiProperty()
+  @UpdateDateColumn({
+    type: 'timestamp',
+    precision: 0,
+    comment: '更新日時',
+  })
+  updated_at: Date;
 }
