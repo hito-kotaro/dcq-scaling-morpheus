@@ -50,4 +50,11 @@ export class ListController {
   ) {
     return await this.listService.update(id, updateRequest, req.user.user);
   }
+
+  @Delete(':listId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({ status: HttpStatus.OK, type: Lists })
+  async delete(@Param('listId') id: number) {
+    return await this.listService.delete(id);
+  }
 }

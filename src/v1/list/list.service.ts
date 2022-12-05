@@ -50,4 +50,9 @@ export class ListService {
 
     return this.listRepository.save(list);
   }
+
+  async delete(id): Promise<Lists> {
+    const list: Lists = await this.listRepository.findOne({ where: { id } });
+    return this.listRepository.remove(list);
+  }
 }
