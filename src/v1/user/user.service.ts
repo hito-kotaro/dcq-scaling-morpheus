@@ -56,7 +56,7 @@ export class UserService {
   async update(id: number, user: UpdateUserRequest): Promise<Users> {
     const { name, password, add_point } = user;
     const updateUser = await this.findOneById(id);
-
+    console.log(updateUser);
     updateUser.name = name ?? updateUser.name;
     updateUser.password =
       (await bcrypt.hash(password, 12)) ?? updateUser.password;

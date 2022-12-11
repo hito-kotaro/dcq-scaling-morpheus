@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Requests } from 'src/entity/request.entity';
 import { Users } from 'src/entity/user.entity';
@@ -15,8 +15,10 @@ import {
 export class RequestService {
   constructor(
     private readonly userService: UserService,
+    @Inject(forwardRef(() => QuestService))
     private readonly questService: QuestService,
-    @InjectRepository(Requests) private requestRepository: Repository<Requests>,
+    @InjectRepository(Requests)
+    private requestRepository: Repository<Requests>,
     @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
 
@@ -95,5 +97,15 @@ export class RequestService {
     }
 
     return this.requestRepository.save(targetRequest);
+  }
+
+  async delete(questId: number) {
+    console.log('klokokokoko');
+    const requests: Requests[] = await this.requestRepository.find({
+      relations: ['quest'],
+      where: { quest: { id: questId } },
+    });
+
+    return this.requestRepository.remove(requests);
   }
 }
