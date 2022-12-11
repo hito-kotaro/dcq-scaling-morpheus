@@ -1,15 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './v1/user/user.module';
-import { QuestModule } from './v1/quest/quest.module';
-import { RequestModule } from './v1/request/request.module';
-import { PenaltyModule } from './v1/penalty/penalty.module';
-import { IssueModule } from './v1/issue/issue.module';
-import { AuthModule } from './v1/auth/auth.module';
-import { ListModule } from './v1/list/list.module';
+// import { UserModule } from './v1/user/user.module';
+// import { QuestModule } from './v1/quest/quest.module';
+// import { RequestModule } from './v1/request/request.module';
+// import { PenaltyModule } from './v1/penalty/penalty.module';
+// import { IssueModule } from './v1/issue/issue.module';
+// import { AuthModule } from './v1/auth/auth.module';
 
 @Module({
   imports: [
@@ -29,13 +28,12 @@ import { ListModule } from './v1/list/list.module';
       //   },
       // },
     }),
-    AuthModule,
-    UserModule,
-    QuestModule,
-    RequestModule,
-    PenaltyModule,
-    IssueModule,
-    ListModule,
+    // AuthModule,
+    // UserModule,
+    // QuestModule,
+    // RequestModule,
+    // PenaltyModule,
+    // IssueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
