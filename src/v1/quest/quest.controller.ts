@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -65,5 +66,12 @@ export class QuestController {
   ) {
     const quest = await this.questService.update(id, updateQuest);
     return this.questService.fmtResponse(quest);
+  }
+
+  @Delete(':questId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({ status: HttpStatus.OK })
+  async delete(@Param('questId') id) {
+    return await this.questService.delete(id);
   }
 }

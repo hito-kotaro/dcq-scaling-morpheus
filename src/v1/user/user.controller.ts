@@ -64,6 +64,8 @@ export class UserController {
     @Param('userId') id,
     @Body(ValidationPipe) updateUser: UpdateUserRequest,
   ) {
+    console.log(id);
+    console.log(updateUser);
     const user = await this.userService.update(id, updateUser);
     return this.userService.fmtResponse(user);
   }

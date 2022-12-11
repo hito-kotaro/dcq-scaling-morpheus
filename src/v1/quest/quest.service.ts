@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quests } from 'src/entity/quest.entity';
 import { Repository } from 'typeorm';
+import { RequestService } from '../request/request.service';
 import { UserService } from '../user/user.service';
 import {
   CreateQuestRequest,
@@ -12,8 +13,11 @@ import {
 @Injectable()
 export class QuestService {
   constructor(
+    @Inject(forwardRef(() => RequestService))
+    private readonly requestService: RequestService,
     private readonly userService: UserService,
-    @InjectRepository(Quests) private questRepository: Repository<Quests>,
+    @InjectRepository(Quests)
+    private questRepository: Repository<Quests>,
   ) {}
 
   fmtResponse(quest: Quests) {
@@ -82,5 +86,12 @@ export class QuestService {
     targetQuest.reward = reward ?? targetQuest.reward;
     targetQuest.status = status ?? targetQuest.status;
     return this.questRepository.save(targetQuest);
+  }
+
+  async delete(id: number) {
+    // 紐づいているrequestを削除
+    await this.requestService.delete(id);
+    const targetQuests = await this.findOneById(id);
+    return this.questRepository.remove(targetQuests);
   }
 }
